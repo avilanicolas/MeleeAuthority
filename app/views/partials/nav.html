@@ -1,0 +1,44 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Melee Authority</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        {{#if character}}
+          <li class="active">
+          {{#if base}}
+          <a href="#">
+          {{else}}
+          <a href="/characters">
+          {{/if}}
+          Characters</a></li>
+          <li><a href="/moves">Moves</a></li>
+          <li><a href="/contact">Contact</a></li>
+        {{else if move}}
+          <li><a href="/characters">Characters</a></li>
+          <li class="active">
+          {{#if base}}
+          <a href="#">
+          {{else}}
+          <a href="/moves">
+          {{/if}}
+          Moves</a></li>
+          <li><a href="/contact">Contact</a></li>
+        {{else if contact}}
+          <li><a href="/characters">Characters</a></li>
+          <li><a href="/moves">Moves</a></li>
+          <li class="active"><a href="#">Contact</a></li>
+        {{else if other}}
+          <li><a href="/characters">Characters</a></li>
+          <li><a href="/moves">Moves</a></li>
+          <li><a href="/contact">Contact</a></li>
+        {{else}}
+          <li><a href="/characters">Characters</a></li>
+          <li><a href="/moves">Moves</a></li>
+          <li><a href="/contact">Contact</a></li>
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+</nav>
