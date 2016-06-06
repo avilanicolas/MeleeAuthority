@@ -6,9 +6,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import net.arhar.meleeauthorityscanner.Animation.AnimationCommand;
 
 public class MeleeAuthorityScanner {
 
@@ -30,6 +35,8 @@ public class MeleeAuthorityScanner {
 
 //        Scanner reader = new Scanner(MeleeAuthorityScanner.class.getResourceAsStream("/anm/Ms.anm"));
 //        System.out.println(reader.nextLine());
+        
+        Map<Character, Map<SubAction, Animation>> animations = generateAnimations(fileSystem);
 
         Files.createDirectories(Paths.get(DIRECTORY_NAME));
         writeCharacters();
@@ -37,8 +44,65 @@ public class MeleeAuthorityScanner {
         writeSharedAnimations(fileSystem);
         writeAnimationCommandTypes();
         writeCharacterAnimationCommands(fileSystem);
+        writeFrameStrips();
         writeBuildScripts();
         System.out.println("Success");
+    }
+    
+    private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {
+        Map<Character, Map<SubAction, Animation>> charactersToAnimations = new HashMap<>();
+        
+        for (Character character : Character.values()) {
+            
+            Map<SubAction, Animation> animations = new HashMap<>();
+            
+            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+
+            for (SubAction subAction : SubAction.values()) {
+                
+                List<AnimationCommand> animationCommands = new ArrayList<>();
+
+                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
+                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
+                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
+                    continue;
+                }
+                if (!temp.contains(internalName)) {
+                    System.out.println("internal name for " + character.name() + " " + subAction.description + " not found: " + internalName);
+                }
+
+                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
+                buffer.position(subactionPointer);
+                int offset = buffer.getInt();
+                buffer.position(offset + 0x20);
+
+                int bytesDown = 0;
+                while (buffer.getInt() != 0) {
+                    buffer.position(offset + 0x20 + bytesDown);
+                    // read the first byte to figure out which command it is
+                    int id = buffer.get() & 0xFF;
+                    // zero out lowest two bits
+                    id = (id & ~0b1) & ~0b10;
+                    AnimationCommandType command = AnimationCommandType.getById(id);
+                    buffer.position(offset + 0x20 + bytesDown);
+
+                    // read command data
+                    byte[] commandData = new byte[command.length];
+                    for (int j = 0; j < command.length; j++) {
+                        commandData[j] = buffer.get();
+                    }
+
+                    animationCommands.add(new AnimationCommand(command, commandData));
+
+                    bytesDown += command.length;
+                    buffer.position(offset + 0x20 + bytesDown);
+                }
+                
+                animations.put(subAction, new Animation(animationCommands));
+            }
+        }
+        
+        return charactersToAnimations;
     }
 
     private static void writeCharacters() throws IOException {
@@ -322,7 +386,6 @@ public class MeleeAuthorityScanner {
         for (Character character : Character.values()) {
             ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
 
-//            for (Entry<Integer, String> subAction : SubAction.SUBACTIONS.entrySet()) {
             for (SubAction subAction : SubAction.values()) {
 
                 String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
@@ -379,6 +442,13 @@ public class MeleeAuthorityScanner {
         }
         writer.write(";");
         writer.newLine();
+        writer.flush();
+        writer.close();
+    }
+    
+    private static void writeFrameStrips() throws IOException {
+        BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "FrameStrips.sql"));
+        
         writer.flush();
         writer.close();
     }
