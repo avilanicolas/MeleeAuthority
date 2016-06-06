@@ -1,0 +1,35 @@
+LandingFallSpecial
+animation for wavedash landing
+
+Escape
+spot dodge
+
+KneeBend
+"jump squat"
+
+JumpF
+jump forward
+
+JumpB
+jump backward
+
+JumpAerial*
+double jump
+
+LandingAirF
+fair landing lag
+
+GuardOn
+start casting shield
+
+Guard
+shielding
+
+GuardOff
+stop shield casting - skipped for jump out of shield
+
+368
+marth up b
+
+FallSpecial
+post up-b "gimp"
