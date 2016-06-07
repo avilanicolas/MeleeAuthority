@@ -5,15 +5,20 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.arhar.meleeauthorityscanner.Animation.AnimationCommand;
+import net.arhar.meleeauthorityscanner.Animation.FrameStripType;
 
 public class MeleeAuthorityScanner {
 
@@ -38,24 +43,24 @@ public class MeleeAuthorityScanner {
         
         Map<Character, Map<SubAction, Animation>> animations = generateAnimations(fileSystem);
 
-        Files.createDirectories(Paths.get(DIRECTORY_NAME));
+        Path dirPath = Paths.get(DIRECTORY_NAME);
+        Files.createDirectories(dirPath);
         writeCharacters();
         writeCharacterAttributes(fileSystem);
         writeSharedAnimations(fileSystem);
         writeAnimationCommandTypes();
         writeCharacterAnimationCommands(fileSystem, animations);
         writeFrameStrips(animations);
+        // TODO writeHitboxes(animations);
         writeBuildScripts();
-        System.out.println("Success");
+        System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
     }
     
     private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {
-        Map<Character, Map<SubAction, Animation>> charactersToAnimations = new HashMap<>();
+        Map<Character, Map<SubAction, Animation>> charactersToAnimations = new LinkedHashMap<>();
         
         for (Character character : Character.values()) {
-            
-            Map<SubAction, Animation> animations = new HashMap<>();
-            
+            Map<SubAction, Animation> animations = new LinkedHashMap<>();
             ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
 
             for (SubAction subAction : SubAction.values()) {
@@ -98,8 +103,15 @@ public class MeleeAuthorityScanner {
                     buffer.position(offset + 0x20 + bytesDown);
                 }
                 
+                if (character == Character.Ms
+                        && subAction == SubAction.AttackAirF) {
+                    Animation.temp = true;
+                }
                 animations.put(subAction, new Animation(animationCommands));
+                Animation.temp = false;
             }
+            
+            charactersToAnimations.put(character, animations);
         }
         
         return charactersToAnimations;
@@ -279,7 +291,7 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.write("VALUES");
         writer.newLine();
-        Character character = Character.Ca;
+        Character character = Character.Ca; // falcon has all the moves we need names for
         boolean first = true;
 //        for (Entry<Integer, String> subAction : SubAction.SUBACTIONS.entrySet()) {
         for (SubAction subAction : SubAction.values()) {
@@ -354,6 +366,8 @@ public class MeleeAuthorityScanner {
         // CREATE TABLE
         writer.write("CREATE TABLE CharacterAnimationCommands (");
         writer.newLine();
+        writer.write(INDENT + "id INT AUTO_INCREMENT,");
+        writer.newLine();
         writer.write(INDENT + "charId CHAR(2),");
         writer.newLine();
         writer.write(INDENT + "animation VARCHAR(32),");
@@ -364,7 +378,9 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.write(INDENT + "commandData TINYBLOB,");
         writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (charId, animation, commandIndex),");
+        writer.write(INDENT + "PRIMARY KEY (id),");
+        writer.newLine();
+        writer.write(INDENT + "UNIQUE (charId, animation, commandIndex),");
         writer.newLine();
         writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
         writer.newLine();
@@ -384,7 +400,7 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.write("VALUES");
         writer.newLine();
-        boolean first = true;
+        AtomicBoolean first = new AtomicBoolean(true);
         charactersToAnimations.forEach((character, actionsToAnimations) -> {
             actionsToAnimations.forEach((action, animation) -> {
                 for (int i = 0; i < animation.commands.size(); i++) {
@@ -393,7 +409,12 @@ public class MeleeAuthorityScanner {
                     for (int j = 0; j < command.data.length; j++) {
                         dataBuilder.append(String.format("%2X", command.data[j] & 0xFF).replace(' ', '0'));
                     }
-                    tryWriteLine(writer, String.format(
+                    if (first.get()) {
+                        first.set(false);
+                    } else {
+                        tryWriteLine(writer, ",");
+                    }
+                    tryWrite(writer, String.format(
                         "%s('%s', '%s', %d, %d, x'%s')",
                         INDENT,
                         character.name(),
@@ -406,63 +427,6 @@ public class MeleeAuthorityScanner {
                 }
             });
         });
-//        for (Character character : Character.values()) {
-//            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-//
-//            for (SubAction subAction : SubAction.values()) {
-//
-//                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
-//                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
-//                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
-//                    continue;
-//                }
-//                if (!temp.contains(internalName)) {
-//                    System.out.println("internal name for " + character.name() + " " + subAction.description + " not found: " + internalName);
-//                }
-//
-//                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
-//                buffer.position(subactionPointer);
-//                int offset = buffer.getInt();
-//                buffer.position(offset + 0x20);
-//
-//                int bytesDown = 0;
-//                for (int i = 0; buffer.getInt() != 0; i++) {
-//                    buffer.position(offset + 0x20 + bytesDown);
-//                    // read the first byte to figure out which command it is
-//                    int id = buffer.get() & 0xFF;
-//                    // zero out lowest two bits
-//                    id = (id & ~0b1) & ~0b10;
-//                    AnimationCommandType command = AnimationCommandType.getById(id);
-//                    buffer.position(offset + 0x20 + bytesDown);
-//
-//                    // read command data
-//                    StringBuilder dataBuilder = new StringBuilder();
-//                    for (int j = 0; j < command.length; j++) {
-//                        int data = buffer.get() & 0xFF;
-//                        dataBuilder.append(String.format("%2X", data).replace(' ', '0'));
-//                    }
-//
-//                    if (first) {
-//                        first = false;
-//                    } else {
-//                        writer.write(",");
-//                        writer.newLine();
-//                    }
-//                    writer.write(String.format(
-//                        "%s('%s', '%s', %d, %d, x'%s')",
-//                        INDENT,
-//                        character.name(),
-////                        internalName,
-//                        subAction.name(),
-//                        i,
-//                        command.id,
-//                        dataBuilder.toString()));
-//
-//                    bytesDown += command.length;
-//                    buffer.position(offset + 0x20 + bytesDown);
-//                }
-//            }
-//        }
         writer.write(";");
         writer.newLine();
         writer.flush();
@@ -472,6 +436,83 @@ public class MeleeAuthorityScanner {
     private static void writeFrameStrips(Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "FrameStrips.sql"));
         
+        // CREATE TABLE
+        writer.write("CREATE TABLE FrameStrips (");
+        writer.newLine();
+        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,");
+        writer.newLine();
+        writer.write(INDENT + "charId CHAR(2),");
+        writer.newLine();
+        writer.write(INDENT + "animation VARCHAR(32),");
+        writer.newLine();
+        writer.write(INDENT + "frame INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "hitbox BOOLEAN,");
+        writer.newLine();
+        writer.write(INDENT + "iasa BOOLEAN,");
+        writer.newLine();
+        writer.write(INDENT + "autocancel BOOLEAN,");
+        writer.newLine();
+        writer.write(INDENT + "PRIMARY KEY (id),");
+        writer.newLine();
+        writer.write(INDENT + "UNIQUE (charId, animation, frame),");
+        writer.newLine();
+        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
+        writer.newLine();
+        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)");
+        writer.newLine();
+        writer.write(");");
+        writer.newLine();
+        writer.newLine();
+        writer.flush();
+        
+        // INSERT
+        AtomicBoolean first = new AtomicBoolean(true);
+        AtomicInteger totalInserts = new AtomicInteger(0);
+        charactersToAnimations.forEach((character, actionToAnimation) -> {
+            actionToAnimation.forEach((action, animation) -> {
+                
+                for (int i = 0; i < animation.frameStrip.size(); i++) {
+                    
+                    // every 50,000 inserts, write another INSERT INTO so that we dont timeout
+                    if (totalInserts.get() % 5000 == 0) {
+                        if (first.get()) {
+                            first.set(false);
+                        } else {
+                            tryWriteLine(writer, ");");
+                            tryWriteLine(writer);
+                        }
+                        
+                        tryWriteLine(writer, "INSERT INTO FrameStrips");
+                        tryWriteLine(writer, INDENT + "(charId, animation, frame, hitbox, iasa, autocancel)");
+                        tryWriteLine(writer, "VALUES");
+                    } else {
+                        tryWriteLine(writer, "),");
+                    }
+                    totalInserts.incrementAndGet();
+                    
+                    EnumSet<FrameStripType> flags = animation.frameStrip.get(i);
+                    tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + i + ", ");
+                    if (flags.contains(FrameStripType.HITBOX)) {
+                        tryWrite(writer, "true, ");
+                    } else {
+                        tryWrite(writer, "false, ");
+                    }
+                    if (flags.contains(FrameStripType.IASA)) {
+                        tryWrite(writer, "true, ");
+                    } else {
+                        tryWrite(writer, "false, ");
+                    }
+                    if (flags.contains(FrameStripType.AUTOCANCEL)) {
+                        tryWrite(writer, "true");
+                    } else {
+                        tryWrite(writer, "false");
+                    }
+                }
+            });
+        });
+        writer.write(");");
+        writer.newLine();
         writer.flush();
         writer.close();
     }
@@ -488,10 +529,14 @@ public class MeleeAuthorityScanner {
         buildWriter.newLine();
         buildWriter.write("source CharacterAnimationCommands.sql");
         buildWriter.newLine();
+        buildWriter.write("source FrameStrips.sql");
+        buildWriter.newLine();
         buildWriter.flush();
         buildWriter.close();
 
         BufferedWriter cleanWriter = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "clean.sql"));
+        cleanWriter.write("DROP TABLE IF EXISTS FrameStrips;");
+        cleanWriter.newLine();
         cleanWriter.write("DROP TABLE IF EXISTS CharacterAnimationCommands;");
         cleanWriter.newLine();
         cleanWriter.write("DROP TABLE IF EXISTS AnimationCommandTypes;");
@@ -508,7 +553,22 @@ public class MeleeAuthorityScanner {
     
     private static void tryWriteLine(BufferedWriter writer, String line) {
         try {
+            writer.write(line); writer.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private static void tryWrite(BufferedWriter writer, String line) {
+        try {
             writer.write(line);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private static void tryWriteLine(BufferedWriter writer) {
+        try {
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
