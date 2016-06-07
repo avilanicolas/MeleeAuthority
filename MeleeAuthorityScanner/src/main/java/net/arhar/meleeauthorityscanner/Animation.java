@@ -1,8 +1,5 @@
 package net.arhar.meleeauthorityscanner;
 
-import static net.arhar.meleeauthorityscanner.AnimationCommandType.ASYNC_TIMER;
-import static net.arhar.meleeauthorityscanner.AnimationCommandType.SYNC_TIMER;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -15,32 +12,11 @@ import com.google.common.collect.Sets;
 public class Animation {
     
     public final List<AnimationCommand> commands;
-    public final EnumSet[] frameStrip;
+    public final List<EnumSet<FrameStripType>> frameStrip;
         
     public Animation(List<AnimationCommand> commands) {
         this.commands = commands;
-        
-        // now build the frame strip
-        
-        // first, figure out how many total frames there are based on timers
-        int lastFrame = 0;
-        int currentFrame = 0;
-        for (AnimationCommand command : commands) {
-            if (command.type == ASYNC_TIMER) {
-                if (command.data[3] > lastFrame) {
-                    lastFrame = command.data[3];
-                }
-            } else if (command.type == SYNC_TIMER) {
-                currentFrame += command.data[3];
-            }
-        }
-        if (currentFrame > lastFrame) {
-            lastFrame = currentFrame;
-        }
-        
-        
-        
-        List<EnumSet<FrameStripType>> asdf = new ArrayList<>();
+        frameStrip = new ArrayList<>();
         
         boolean iasa = false;
         boolean hitbox = false;
@@ -66,25 +42,36 @@ public class Animation {
                     iasa = true;
                     break;
                 case AUTOCANCEL:
-                    // check value?
+                    if ((command.data[3] & 0xFF) == 1) {
+                        autocancel = false;
+                    } else {
+                        autocancel = true;
+                    }
+                    break;
+                case TERMINATE_COLLISIONS:
+                    hitbox = false;
+                    break;
+                case TERMINATE_COLLISION:
+                    // TODO this should specify a hitbox or something
+                    hitbox = false;
                     break;
                 }
             }
             
-            Set<FrameStripType> derp = new HashSet<>();
+            Set<FrameStripType> stripEntry = new HashSet<>();
             if (iasa) {
-                derp.add(FrameStripType.IASA);
+                stripEntry.add(FrameStripType.IASA);
             }
             if (hitbox) {
-                derp.add(FrameStripType.HITBOX);
+                stripEntry.add(FrameStripType.HITBOX);
             }
             if (autocancel) {
-                derp.add(FrameStripType.AUTOCANCEL);
+                stripEntry.add(FrameStripType.AUTOCANCEL);
             }
-            if (derp.isEmpty()) {
-                derp.add(FrameStripType.NOTHING);
+            if (stripEntry.isEmpty()) {
+                stripEntry.add(FrameStripType.NOTHING);
             }
-            asdf.add(Sets.newEnumSet(derp, FrameStripType.class));
+            frameStrip.add(Sets.newEnumSet(stripEntry, FrameStripType.class));
             
             currentFrame++;
         }
@@ -105,6 +92,5 @@ public class Animation {
             this.type = type;
             this.data = data;
         }
-    }
-    
+    }    
 }

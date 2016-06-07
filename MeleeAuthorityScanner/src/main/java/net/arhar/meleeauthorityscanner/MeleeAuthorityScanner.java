@@ -43,8 +43,8 @@ public class MeleeAuthorityScanner {
         writeCharacterAttributes(fileSystem);
         writeSharedAnimations(fileSystem);
         writeAnimationCommandTypes();
-        writeCharacterAnimationCommands(fileSystem);
-        writeFrameStrips();
+        writeCharacterAnimationCommands(fileSystem, animations);
+        writeFrameStrips(animations);
         writeBuildScripts();
         System.out.println("Success");
     }
@@ -346,7 +346,9 @@ public class MeleeAuthorityScanner {
         writer.close();
     }
 
-    private static void writeCharacterAnimationCommands(MeleeImageFileSystem fileSystem) throws IOException {
+    private static void writeCharacterAnimationCommands(
+            MeleeImageFileSystem fileSystem,
+            Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAnimationCommands.sql"));
 
         // CREATE TABLE
@@ -383,70 +385,91 @@ public class MeleeAuthorityScanner {
         writer.write("VALUES");
         writer.newLine();
         boolean first = true;
-        for (Character character : Character.values()) {
-            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-
-            for (SubAction subAction : SubAction.values()) {
-
-                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
-                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
-                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
-                    continue;
-                }
-                if (!temp.contains(internalName)) {
-                    System.out.println("internal name for " + character.name() + " " + subAction.description + " not found: " + internalName);
-                }
-
-                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
-                buffer.position(subactionPointer);
-                int offset = buffer.getInt();
-                buffer.position(offset + 0x20);
-
-                int bytesDown = 0;
-                for (int i = 0; buffer.getInt() != 0; i++) {
-                    buffer.position(offset + 0x20 + bytesDown);
-                    // read the first byte to figure out which command it is
-                    int id = buffer.get() & 0xFF;
-                    // zero out lowest two bits
-                    id = (id & ~0b1) & ~0b10;
-                    AnimationCommandType command = AnimationCommandType.getById(id);
-                    buffer.position(offset + 0x20 + bytesDown);
-
-                    // read command data
+        charactersToAnimations.forEach((character, actionsToAnimations) -> {
+            actionsToAnimations.forEach((action, animation) -> {
+                for (int i = 0; i < animation.commands.size(); i++) {
+                    AnimationCommand command = animation.commands.get(i);
                     StringBuilder dataBuilder = new StringBuilder();
-                    for (int j = 0; j < command.length; j++) {
-                        int data = buffer.get() & 0xFF;
-                        dataBuilder.append(String.format("%2X", data).replace(' ', '0'));
+                    for (int j = 0; j < command.data.length; j++) {
+                        dataBuilder.append(String.format("%2X", command.data[j] & 0xFF).replace(' ', '0'));
                     }
-
-                    if (first) {
-                        first = false;
-                    } else {
-                        writer.write(",");
-                        writer.newLine();
-                    }
-                    writer.write(String.format(
+                    tryWriteLine(writer, String.format(
                         "%s('%s', '%s', %d, %d, x'%s')",
                         INDENT,
                         character.name(),
 //                        internalName,
-                        subAction.name(),
+                        action.name(),
+//                        subAction.name(),
                         i,
-                        command.id,
+                        command.type.id,
                         dataBuilder.toString()));
-
-                    bytesDown += command.length;
-                    buffer.position(offset + 0x20 + bytesDown);
                 }
-            }
-        }
+            });
+        });
+//        for (Character character : Character.values()) {
+//            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+//
+//            for (SubAction subAction : SubAction.values()) {
+//
+//                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
+//                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
+//                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
+//                    continue;
+//                }
+//                if (!temp.contains(internalName)) {
+//                    System.out.println("internal name for " + character.name() + " " + subAction.description + " not found: " + internalName);
+//                }
+//
+//                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
+//                buffer.position(subactionPointer);
+//                int offset = buffer.getInt();
+//                buffer.position(offset + 0x20);
+//
+//                int bytesDown = 0;
+//                for (int i = 0; buffer.getInt() != 0; i++) {
+//                    buffer.position(offset + 0x20 + bytesDown);
+//                    // read the first byte to figure out which command it is
+//                    int id = buffer.get() & 0xFF;
+//                    // zero out lowest two bits
+//                    id = (id & ~0b1) & ~0b10;
+//                    AnimationCommandType command = AnimationCommandType.getById(id);
+//                    buffer.position(offset + 0x20 + bytesDown);
+//
+//                    // read command data
+//                    StringBuilder dataBuilder = new StringBuilder();
+//                    for (int j = 0; j < command.length; j++) {
+//                        int data = buffer.get() & 0xFF;
+//                        dataBuilder.append(String.format("%2X", data).replace(' ', '0'));
+//                    }
+//
+//                    if (first) {
+//                        first = false;
+//                    } else {
+//                        writer.write(",");
+//                        writer.newLine();
+//                    }
+//                    writer.write(String.format(
+//                        "%s('%s', '%s', %d, %d, x'%s')",
+//                        INDENT,
+//                        character.name(),
+////                        internalName,
+//                        subAction.name(),
+//                        i,
+//                        command.id,
+//                        dataBuilder.toString()));
+//
+//                    bytesDown += command.length;
+//                    buffer.position(offset + 0x20 + bytesDown);
+//                }
+//            }
+//        }
         writer.write(";");
         writer.newLine();
         writer.flush();
         writer.close();
     }
     
-    private static void writeFrameStrips() throws IOException {
+    private static void writeFrameStrips(Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "FrameStrips.sql"));
         
         writer.flush();
@@ -481,5 +504,14 @@ public class MeleeAuthorityScanner {
         cleanWriter.newLine();
         cleanWriter.flush();
         cleanWriter.close();
+    }
+    
+    private static void tryWriteLine(BufferedWriter writer, String line) {
+        try {
+            writer.write(line);
+            writer.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
