@@ -14,40 +14,47 @@
     </parent>
 
     <dependencies>
-        <!-- Spring deps -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- MYSQL dep -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.9</version>
         </dependency>
     </dependencies>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
-
-    <configuration>
-        <driver>com.myslq.jdbc.Driver</driver>
-        <url>jdb:mysql://localhost:3000/meleeauthority</url>
-        <username>avilan</username>
-        <password></password> <!-- only accessible by localhost anyways -->
-    </configuration>
 
     <build>
         <plugins>

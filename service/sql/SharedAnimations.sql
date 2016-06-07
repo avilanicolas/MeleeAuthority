@@ -1,0 +1,45 @@
+CREATE TABLE SharedAnimations (
+    internalName VARCHAR(32),
+    description VARCHAR(64),
+    PRIMARY KEY (internalName)
+);
+
+INSERT INTO SharedAnimations
+    (internalName, description)
+VALUES
+    ('Attack11', 'Jab 1'),
+    ('Attack12', 'Jab 2'),
+    ('Attack100Start', 'Rapid Jab Start'),
+    ('Attack100Loop', 'Rapid Jab Loop'),
+    ('Attack100End', 'Rapid Jab End'),
+    ('AttackDash', 'Dash Attack'),
+    ('AttackS3Hi', 'Forward-Tilt (High),'),
+    ('AttackS3S', 'Forward-Tilt'),
+    ('AttackS3Lw', 'Forward-Tilt (Low),'),
+    ('AttackHi3', 'Up-Tilt'),
+    ('AttackLw3', 'Down-Tilt'),
+    ('AttackS4Hi', 'Forward-Smash (High),'),
+    ('AttackS4S', 'Forward-Smash'),
+    ('AttackS4Lw', 'Forward-Smash (Low),'),
+    ('AttackHi4', 'Up-Smash'),
+    ('AttackLw4', 'Down-Smash'),
+    ('AttackAirN', 'Neutral-Air'),
+    ('AttackAirF', 'Forward-Air'),
+    ('AttackAirB', 'Back-Air'),
+    ('AttackAirHi', 'Up-Air'),
+    ('AttackAirLw', 'Down-Air'),
+    ('ThrowF', 'Forward Throw'),
+    ('ThrowB', 'Back Throw'),
+    ('ThrowHi', 'Up Throw'),
+    ('ThrowLw', 'Down Throw'),
+    ('GuardOn', 'Start Shield'),
+    ('GuardOff', 'Stop Shield'),
+    ('EscapeN', 'Spot Dodge'),
+    ('EscapeF', 'Dodge Roll Forward'),
+    ('EscapeB', 'Dodge Roll Backward'),
+    ('EscapeAir', 'Air Dodge'),
+    ('LandingAirN', 'Nair Landing Lag'),
+    ('LandingAirF', 'Fair Landing Lag'),
+    ('LandingAirB', 'Bair Landing Lag'),
+    ('LandingAirHi', 'Uair Landing Lag'),
+    ('LandingAirLw', 'Dair Landing Lag');
