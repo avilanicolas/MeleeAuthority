@@ -60,7 +60,7 @@ public class MeleeDB implements MeleeDAO {
             String commandQuery = String.format(
                 "SELECT * FROM Characters C " +
                 "JOIN CharacterAnimationCommands CAC ON CAC.charId = C.id " +
-                "JOIN AnimationCommantTypes ACT ON ACT.id = CAC.commandType " +
+                "JOIN AnimationCommandTypes ACT ON ACT.id = CAC.commandType " +
                 "JOIN SharedAnimations SA ON SA.internalName = animation " +
                 "WHERE CAC.charId = '%s' AND CAC.animation = '%s' " +
                 "ORDER BY CAC.commandIndex ASC",
@@ -74,8 +74,8 @@ public class MeleeDB implements MeleeDAO {
             for (Map<String, Object> rawCommand : rawCommandList) {
                 AnimationCommand command = new AnimationCommand();
 
-                command.data = (Integer) rawCommand.get("commandData");
-                command.type = (String) rawCommand.get("commandType");
+                command.data = (byte[]) rawCommand.get("commandData");
+                command.type = (String) rawCommand.get("name");
 
                 commandList.add(command);
             }

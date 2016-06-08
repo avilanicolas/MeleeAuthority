@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
 
+@RestController
 public class MeleeMoveController {
 
     private static MeleeDB meleeDB = null;
@@ -23,7 +25,7 @@ public class MeleeMoveController {
         List<MeleeMove> list = ImmutableList.of();
 
         if (ALL.equals(charId)) {
-            list = meleeDB.getAllMoves();
+            list = getDB().getAllMoves();
         } else if (validId(charId)) {
             
         }
