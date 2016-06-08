@@ -1,0 +1,38 @@
+This directory contains the code to launch the REST end of MeleeAuthority.
+This server acts as a pass-through for requests to the underlying data store that is MeleeAuthority.
+
+Building the database:
+  Ensure that your database server is listening on port 3000, and that the database holding MeleeAuthority schema
+  is called "melee_authority". These values are stored in application.properties and can be configured. Either way,
+  these values are passed to a JDBC template to connect to the server. The user used by this REST API is also defined
+  in the application.properties (defaults to 'avilan')
+
+  This database is built/updated with:
+  $ mysql melee_authority -uavilan < clean.sql
+  $ mysql melee_authority -uavilan < build.sql
+
+Launching the server:
+  $ mvn spring-boot:run
+  By default, Spring will start a tomcat server listening on the localhost on port 8080
+
+Supported API calls:
+  /character?filter={attribute}&condition={condition}&value={float}
+    Retrieves a filtered list of qualified characters from MeleeAuthority. All characters returned have a requested quality, defined by:
+      {attribute} {condition} {float}
+      e.g. WalkMaxVel GT 1.0
+           DashAccelA EQ 0.05
+      See CharacterAttributes.sql for acceptable attribute names. An acceptable attribute is either an integer or a float.
+      The list of supported conditional operators:
+        GT => greater than
+        GROEQ => greater than or equal to
+        LT => less than
+        LTOEQ => less than or equal to
+        EQ => equal to
+        NEQ => not equal to
+      If any of these values are invalid (incorrect float value, undefined condition, illegal attribute) are unset, an empty list
+      will be returned.
+      A successful request must have all three above fields defined. The name attribute does not affect this call.
+  /character?name={name}
+    Retrieves the character named by {name}
+  /character
+    Retrieves ALL characters stored in MeleeAuthority (playable or not)
