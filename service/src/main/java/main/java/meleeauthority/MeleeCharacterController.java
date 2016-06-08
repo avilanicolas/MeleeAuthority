@@ -48,6 +48,7 @@ public class MeleeCharacterController {
                 return list;
             } else {
                 System.out.printf("REJECTED request with (%s %s %s)\n", filter, predicate, value);
+                return ImmutableList.of();
             }
         }
 
