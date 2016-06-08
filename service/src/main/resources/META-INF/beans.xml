@@ -14,7 +14,7 @@
    </bean>
 
    <bean id="meleeJDBCTemplate" 
-      class="meleeauthority.MeleeDB">
+      class="main.java.meleeauthority.MeleeDB">
       <property name="dataSource"  ref="dataSource" />    
    </bean>
       

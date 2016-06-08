@@ -24,76 +24,93 @@ public class MeleeDB implements MeleeDAO {
         System.out.println(template.queryForList("SHOW TABLES").size());
     }
 
-    public List<String> getCharacterIdentifiers() {
-        List<Map<String, Object>> result = template.queryForList("SELECT id FROM Characters");
+    public List<String> getCharacterNames() {
+        List<Map<String, Object>> result = template.queryForList("SELECT fullName FROM Characters");
         ImmutableList.Builder<String> builder = new ImmutableList.Builder<String>();
 
         for (Map<String, Object> entry : result) {
-            builder.add((String) entry.get("id"));
+            builder.add((String) entry.get("fullName"));
         }
 
         return builder.build();
     }
 
+    private MeleeCharacter translateEntry(Map<String, Object> entry) {
+        MeleeCharacter newCharacter = new MeleeCharacter();
+
+        newCharacter.AirFriction = (Float) entry.get("AirFriction");
+        newCharacter.AirJMult = (Float) entry.get("AirJMult");
+        newCharacter.AirMobA = (Float) entry.get("AirMobA");
+        newCharacter.AirMobB = (Float) entry.get("AirMobB");
+        newCharacter.ALag = (Integer) entry.get("ALag");
+        newCharacter.BLag = (Integer) entry.get("BLag");
+        newCharacter.ChDirFrames = (Integer) entry.get("ChDrFrames");
+        newCharacter.DashAccelA = (Float) entry.get("DashAccelA");
+        newCharacter.DashAccelB = (Float) entry.get("DashAccelB");
+        newCharacter.DashInitVel = (Float) entry.get("DashInitVel");
+        newCharacter.DashTermVel = (Float) entry.get("DashTermVel");
+        newCharacter.DblJMult = (Float) entry.get("DashTermVel");
+        newCharacter.DLag = (Integer) entry.get("DLag");
+        newCharacter.FastWalkMin = (Float) entry.get("FastWalkMin");
+        newCharacter.FFTermVel = (Float) entry.get("FFTermVel");
+        newCharacter.FLag = (Integer) entry.get("FLag");
+        newCharacter.Friction = (Float) entry.get("Fricton");
+        newCharacter.Gravity = (Float) entry.get("Gravity");
+        newCharacter.InitWalkVel = (Float) entry.get("InitWalkVel");
+        newCharacter.Jab2Window = (Integer) entry.get("Jab2Window");
+        newCharacter.Jab3Window = (Integer) entry.get("Jab3Window");
+        newCharacter.JumpFrames = (Float) entry.get("JumpFrames");
+        newCharacter.JumpHInitVel = (Float) entry.get("JumpHInitVel");
+        newCharacter.JumpHMaxVel = (Float) entry.get("JumpHMaxVel");
+        newCharacter.JumpMomentMult = (Float) entry.get("JumpMomentMult");
+        newCharacter.JumpVInitVel = (Float) entry.get("JumpVInitVel");
+        newCharacter.LdgJmpHVel = (Float) entry.get("LdgJumpHVel");
+        newCharacter.LdgJmpVVel = (Float) entry.get("LdgJumpVVel");
+        newCharacter.MaxAirHVel = (Float) entry.get("MaxAirHVel");
+        newCharacter.MidWalkPoint = (Float) entry.get("MidWalkPoint");
+        newCharacter.ModelScaling = (Float) entry.get("ModelScaling");
+        newCharacter.NLag = (Integer) entry.get("NLag");
+        newCharacter.NumJumps = (Integer) entry.get("NumJumps");
+        newCharacter.RpdJabWindow = (Integer) entry.get("RpdJabWindow");
+        newCharacter.RunAccel = (Float) entry.get("RunAccel");
+        newCharacter.RunAnimScal = (Float) entry.get("RunAnimScal");
+        newCharacter.ShieldSize = (Float) entry.get("ShieldSize");
+        newCharacter.ShldBrkInitVel = (Float) entry.get("ShldBrkInitVel");
+        newCharacter.SHVInitVel = (Float) entry.get("SHVInitVel");
+        newCharacter.SlowWalkMax = (Float) entry.get("SlowWalkMax");
+        newCharacter.StarDmg = (Integer) entry.get("StarDmg");
+        newCharacter.TermVel = (Float) entry.get("TermVel");
+        newCharacter.ThrowVel = (Float) entry.get("ThrowVel");
+        newCharacter.ULag = (Integer) entry.get("ULag");
+        newCharacter.VMdlScaling = (Float) entry.get("VMdlScaling");
+        newCharacter.WalkAccel = (Float) entry.get("WalkAccel");
+        newCharacter.WalkMaxVel = (Float) entry.get("WalkMaxVel");
+        newCharacter.Weight = (Integer) entry.get("Weight");
+        newCharacter.WJmpHVel = (Float) entry.get("WJmpHVel");
+        newCharacter.WJmpVVel = (Float) entry.get("WJmpVVell");
+        newCharacter.id = (String) entry.get("id");
+        newCharacter.name = (String) entry.get("fullName");
+
+        return newCharacter;
+    }
+
+    public MeleeCharacter getCharacter(String name) {
+        List<Map<String, Object>> result = template.queryForList(String.format(
+            "SELECT * FROM Characters C " +
+            "JOIN CharacterAttributes CA ON CA.id = C.id " +
+            "WHERE fullName = '%s'", name));
+
+        return translateEntry(result.get(0));
+    }
+
     public List<MeleeCharacter> getAllCharacters() {
         List<Map<String, Object>> result = template.queryForList(
-            "SELECT id FROM Characters C" +
+            "SELECT * FROM Characters C " +
             "JOIN CharacterAttributes CA ON CA.id = C.id");
 
         ImmutableList.Builder<MeleeCharacter> characterList = new ImmutableList.Builder<MeleeCharacter>();
         for (Map<String, Object> entry : result) {
-            MeleeCharacter newCharacter = new MeleeCharacter();
-            newCharacter.AirFriction = Float.parseFloat((String) entry.get("AirFriction"));
-            newCharacter.AirJMult = Float.parseFloat((String) entry.get("AirJMult"));
-            newCharacter.AirMobA = Float.parseFloat((String) entry.get("AirMobA"));
-            newCharacter.AirMobB = Float.parseFloat((String) entry.get("AirMobB"));
-            newCharacter.ALag = Integer.parseInt((String) entry.get("ALag"));
-            newCharacter.BLag = Integer.parseInt((String) entry.get("BLag"));
-            newCharacter.ChDirFrames = Integer.parseInt((String) entry.get("ChDrFrames"));
-            newCharacter.DashAccelA = Float.parseFloat((String) entry.get("DashAccelA"));
-            newCharacter.DashAccelB = Float.parseFloat((String) entry.get("DashAccelB"));
-            newCharacter.DashInitVel = Float.parseFloat((String) entry.get("DashInitVel"));
-            newCharacter.DashTermVel = Float.parseFloat((String) entry.get("DashTermVel"));
-            newCharacter.DblJMult = Float.parseFloat((String) entry.get("DashTermVel"));
-            newCharacter.DLag = Integer.parseInt((String) entry.get("DLag"));
-            newCharacter.FastWalkMin = Float.parseFloat((String) entry.get("FastWalkMin"));
-            newCharacter.FFTermVel = Float.parseFloat((String) entry.get("FFTermVel"));
-            newCharacter.FLag = Integer.parseInt((String) entry.get("FLag"));
-            newCharacter.Friction = Float.parseFloat((String) entry.get("Fricton"));
-            newCharacter.Gravity = Float.parseFloat((String) entry.get("Gravity"));
-            newCharacter.InitWalkVel = Float.parseFloat((String) entry.get("InitWalkVel"));
-            newCharacter.Jab2Window = Integer.parseInt((String) entry.get("Jab2Window"));
-            newCharacter.Jab3Window = Integer.parseInt((String) entry.get("Jab3Window"));
-            newCharacter.JumpFrames = Float.parseFloat((String) entry.get("JumpFrames"));
-            newCharacter.JumpHInitVel = Float.parseFloat((String) entry.get("JumpHInitVel"));
-            newCharacter.JumpHMaxVel = Float.parseFloat((String) entry.get("JumpHMaxVel"));
-            newCharacter.JumpMomentMult = Float.parseFloat((String) entry.get("JumpMomentMult"));
-            newCharacter.JumpVInitVel = Float.parseFloat((String) entry.get("JumpVInitVel"));
-            newCharacter.LdgJmpHVel = Float.parseFloat((String) entry.get("LdgJumpHVel"));
-            newCharacter.LdgJmpVVel = Float.parseFloat((String) entry.get("LdgJumpVVel"));
-            newCharacter.MaxAirHVel = Float.parseFloat((String) entry.get("MaxAirHVel"));
-            newCharacter.MidWalkPoint = Float.parseFloat((String) entry.get("MidWalkPoint"));
-            newCharacter.ModelScaling = Float.parseFloat((String) entry.get("ModelScaling"));
-            newCharacter.NLag = Integer.parseInt((String) entry.get("NLag"));
-            newCharacter.NumJumps = Integer.parseInt((String) entry.get("NumJumps"));
-            newCharacter.RpdJabWindow = Integer.parseInt((String) entry.get("RpdJabWindow"));
-            newCharacter.RunAccel = Float.parseFloat((String) entry.get("RunAccel"));
-            newCharacter.RunAnimScal = Float.parseFloat((String) entry.get("RunAnimScal"));
-            newCharacter.ShieldSize = Float.parseFloat((String) entry.get("ShieldSize"));
-            newCharacter.ShldBrkInitVel = Float.parseFloat((String) entry.get("ShldBrkInitVel"));
-            newCharacter.SHVInitVel = Float.parseFloat((String) entry.get("SHVInitVel"));
-            newCharacter.SlowWalkMax = Float.parseFloat((String) entry.get("SlowWalkMax"));
-            newCharacter.StarDmg = Integer.parseInt((String) entry.get("StarDmg"));
-            newCharacter.TermVel = Float.parseFloat((String) entry.get("TermVel"));
-            newCharacter.ThrowVel = Float.parseFloat((String) entry.get("ThrowVel"));
-            newCharacter.ULag = Integer.parseInt((String) entry.get("ULag"));
-            newCharacter.VMdlScaling = Integer.parseInt((String) entry.get("VMdlScaling"));
-            newCharacter.WalkAccel = Float.parseFloat((String) entry.get("WalkAccel"));
-            newCharacter.WalkMaxVel = Float.parseFloat((String) entry.get("WalkMaxVel"));
-            newCharacter.Weight = Integer.parseInt((String) entry.get("Weight"));
-            newCharacter.WJmpHVel = Float.parseFloat((String) entry.get("ThrowVel"));
-            newCharacter.WJmpVVel = Float.parseFloat((String) entry.get("ThrowVel"));
-            characterList.add(newCharacter);
+            characterList.add(translateEntry(entry));
         }
 
         return characterList.build();

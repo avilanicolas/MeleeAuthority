@@ -52,7 +52,7 @@ public class MeleeCharacter {
     public Integer BLag;
     public Integer ULag;
     public Integer DLag;
-    public Integer VMdlScaling;
+    public Float VMdlScaling;
     public Float WJmpHVel;
     public Float WJmpVVel;
 }
