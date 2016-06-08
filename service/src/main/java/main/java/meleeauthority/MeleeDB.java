@@ -100,7 +100,7 @@ public class MeleeDB implements MeleeDAO {
         ImmutableSet.Builder<String> filterableSet = new ImmutableSet.Builder<String>();
 
         List<Map<String, Object>> result = template.queryForList(
-            "SELECT column_name FROM informaton_schema.columns " +
+            "SELECT column_name FROM information_schema.columns " +
             "WHERE table_name='CharacterAttributes' AND column_type != 'char(2)'");
     
         for (Map<String, Object> entry : result) {
@@ -129,7 +129,7 @@ public class MeleeDB implements MeleeDAO {
             List<Map<String, Object>> result = template.queryForList(String.format(
                 "SELECT * FROM Characters C " +
                 "JOIN CharacterAttributes CA ON CA.id = C.id " +
-                "WHERE %s %s %d",
+                "WHERE %s %s %f",
                 filterName,
                 predicate.toString(),
                 value));
@@ -137,6 +137,8 @@ public class MeleeDB implements MeleeDAO {
             for (Map<String, Object> entry : result) {
                 characterSet.add(translateEntry(entry));
             }
+        } else {
+            System.out.printf("REJECTED %s %s %s (value == null)\n", filterName, predicate, value);
         }
 
         return characterSet.build();

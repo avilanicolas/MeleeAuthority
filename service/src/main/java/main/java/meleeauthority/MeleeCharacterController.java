@@ -26,7 +26,7 @@ public class MeleeCharacterController {
             @RequestParam(value="filter", defaultValue=NONE) String filter,
             @RequestParam(value="condition", defaultValue=NONE) String predicate,
             @RequestParam(value="value", defaultValue=NONE) String value) {
-        List<MeleeCharacter> list;
+        List<MeleeCharacter> list = null;
 
         if (!filter.equals(NONE)) {
             CharacterPredicate characterPredicate = null;
@@ -44,11 +44,15 @@ public class MeleeCharacterController {
                 && parsedFloat != null
                 && validFilter(filter)) {
                 list = meleeDB.getFilteredCharacters(filter, characterPredicate, parsedFloat);
+                System.out.printf("Resultant size: %d\n", list.size());
+                return list;
+            } else {
+                System.out.printf("REJECTED request with (%s %s %s)\n", filter, predicate, value);
             }
         }
 
 
-        if (name.equals(ALL)) {
+        if (list == null && name.equals(ALL)) {
             list = getDB().getAllCharacters();
         } else {
             if (validName(name)) {
