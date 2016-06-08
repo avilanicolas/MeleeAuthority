@@ -10,7 +10,7 @@ public class Application {
 
     public static void main(String[] args) {
         ApplicationContext context =
-            new ClassPathXmlApplicationContext("beans.xml");
+            new ClassPathXmlApplicationContext("file:src/main/resources/META-INF/beans.xml");
 
         MeleeDB meleeDB =
             (MeleeDB) context.getBean("meleeJDBCTemplate");
