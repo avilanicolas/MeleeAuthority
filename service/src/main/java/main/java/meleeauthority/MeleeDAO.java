@@ -1,4 +1,4 @@
-package meleeauthority;
+package main.java.meleeauthority;
 
 import javax.sql.DataSource;
 
