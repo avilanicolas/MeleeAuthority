@@ -2,8 +2,8 @@ This directory contains the code to launch the REST end of MeleeAuthority.
 This server acts as a pass-through for requests to the underlying data store that is MeleeAuthority.
 
 Building the database:
-  Ensure that your database server is listening on port 3000, and that the database holding MeleeAuthority schema
-  is called "melee_authority". These values are stored in application.properties and can be configured. Either way,
+  Ensure that your database server is listening on port 3306, and that the database holding MeleeAuthority schema
+  is called "melee_authority". These values are stored in beans.xml and can be configured. Either way,
   these values are passed to a JDBC template to connect to the server. The user used by this REST API is also defined
   in the application.properties (defaults to 'avilan')
 
