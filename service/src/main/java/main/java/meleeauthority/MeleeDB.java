@@ -2,12 +2,14 @@ package main.java.meleeauthority;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public class MeleeDB implements MeleeDAO {
     private DataSource dataSource;
@@ -94,6 +96,20 @@ public class MeleeDB implements MeleeDAO {
         return newCharacter;
     }
 
+    public Set<String> getFilterableCharacterFields() {
+        ImmutableSet.Builder<String> filterableSet = new ImmutableSet.Builder<String>();
+
+        List<Map<String, Object>> result = template.queryForList(
+            "SELECT column_name FROM informaton_schema.columns " +
+            "WHERE table_name='CharacterAttributes' AND column_type != 'char(2)'");
+    
+        for (Map<String, Object> entry : result) {
+            filterableSet.add((String) entry.get("column_name"));
+        }
+
+        return filterableSet.build();
+    }
+
     public MeleeCharacter getCharacter(String name) {
         List<Map<String, Object>> result = template.queryForList(String.format(
             "SELECT * FROM Characters C " +
@@ -101,6 +117,29 @@ public class MeleeDB implements MeleeDAO {
             "WHERE fullName = '%s'", name));
 
         return translateEntry(result.get(0));
+    }
+
+    public List<MeleeCharacter> getFilteredCharacters(
+        String filterName,
+        CharacterPredicate predicate,
+        Float value) {
+        ImmutableList.Builder<MeleeCharacter> characterSet = new ImmutableList.Builder<MeleeCharacter>();
+
+        if (value != null) {
+            List<Map<String, Object>> result = template.queryForList(String.format(
+                "SELECT * FROM Characters C " +
+                "JOIN CharacterAttributes CA ON CA.id = C.id " +
+                "WHERE %s %s %d",
+                filterName,
+                predicate.toString(),
+                value));
+
+            for (Map<String, Object> entry : result) {
+                characterSet.add(translateEntry(entry));
+            }
+        }
+
+        return characterSet.build();
     }
 
     public List<MeleeCharacter> getAllCharacters() {
