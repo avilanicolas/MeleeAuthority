@@ -1,10 +1,12 @@
 CREATE TABLE CharacterAnimationCommands (
+    id INT AUTO_INCREMENT,
     charId CHAR(2),
     animation VARCHAR(32),
     commandIndex INTEGER,
     commandType INTEGER,
     commandData TINYBLOB,
-    PRIMARY KEY (charId, animation, commandIndex),
+    PRIMARY KEY (id),
+    UNIQUE (charId, animation, commandIndex),
     FOREIGN KEY (charId) REFERENCES Characters(id),
     FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName),
     FOREIGN KEY (commandType) REFERENCES AnimationCommandTypes(id)
