@@ -1,3 +1,10 @@
 *.class
+service/target
+.metadata
+.recommenders
+.classpath
+.project
+.settings
+bin/*
 MeleeAuthorityScanner/target
 MeleeAuthorityScanner/sql
