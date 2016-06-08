@@ -27,7 +27,7 @@ public class MeleeMoveController {
         if (ALL.equals(charId)) {
             list = getDB().getAllMoves();
         } else if (validId(charId)) {
-            
+            list = getDB().getMovesForCharacter(charId);
         }
 
        return list;

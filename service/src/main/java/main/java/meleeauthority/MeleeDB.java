@@ -8,12 +8,16 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 public class MeleeDB implements MeleeDAO {
     private DataSource dataSource;
     private JdbcTemplate template;
+
+    // This is a really long latency call, so wrap it in an optional to save us some sanity.
+    private Optional<List<MeleeMove>> allMeleeMoves = Optional.absent();
 
     @Override
     public void setDataSource(DataSource ds) {
@@ -48,43 +52,68 @@ public class MeleeDB implements MeleeDAO {
         return builder.build();
     }
 
-    
+    public List<MeleeMove> getMovesForCharacter(String charId) {
+        if (!allMeleeMoves.isPresent()) {
+            getAllMoves();
+        }
+
+        ImmutableList.Builder<MeleeMove> moveList = new ImmutableList.Builder<MeleeMove>();
+
+        for (MeleeMove move : allMeleeMoves.get()) {
+            if (move.charId.equals(charId)) {
+                moveList.add(move);
+            }
+        }
+
+        return moveList.build();
+    }
 
     public List<MeleeMove> getAllMoves() {
+        if (allMeleeMoves.isPresent()) {
+            return allMeleeMoves.get();
+        }
+
         ImmutableList.Builder<MeleeMove> moveList = new ImmutableList.Builder<MeleeMove>();
 
         List<Map<String, Object>> rawMoveList = template.queryForList(
             "SELECT DISTINCT charId, animation FROM CharacterAnimationCommands");
 
         for (Map<String, Object> rawMove : rawMoveList) {
-            String commandQuery = String.format(
-                "SELECT * FROM Characters C " +
-                "JOIN CharacterAnimationCommands CAC ON CAC.charId = C.id " +
-                "JOIN AnimationCommandTypes ACT ON ACT.id = CAC.commandType " +
-                "JOIN SharedAnimations SA ON SA.internalName = animation " +
-                "WHERE CAC.charId = '%s' AND CAC.animation = '%s' " +
-                "ORDER BY CAC.commandIndex ASC",
-                rawMove.get("charId"),
-                rawMove.get("animation"));
-
-            MeleeMove move = new MeleeMove();
-            move.charId = (String) rawMove.get("charId");
-            List<Map<String, Object>> rawCommandList = template.queryForList(commandQuery);
-            ImmutableList.Builder<AnimationCommand> commandList = new ImmutableList.Builder<AnimationCommand>();
-            for (Map<String, Object> rawCommand : rawCommandList) {
-                AnimationCommand command = new AnimationCommand();
-
-                command.data = (byte[]) rawCommand.get("commandData");
-                command.type = (String) rawCommand.get("name");
-
-                commandList.add(command);
-            }
-
-            move.commands = commandList.build();
-            moveList.add(move);
+            moveList.add(buildMeleeMove(
+                (String) rawMove.get("charId"),
+                (String) rawMove.get("animation")));
         }
 
-        return moveList.build();
+        allMeleeMoves = Optional.of(moveList.build());
+        return allMeleeMoves.get();
+    }
+
+    private MeleeMove buildMeleeMove(String charId, String animation) {
+        String commandQuery = String.format(
+            "SELECT * FROM Characters C " +
+            "JOIN CharacterAnimationCommands CAC ON CAC.charId = C.id " +
+            "JOIN AnimationCommantTypes ACT ON ACT.id = CAC.commandType " +
+            "JOIN SharedAnimations SA ON SA.internalName = animation " +
+            "WHERE CAC.charId = '%s' AND CAC.animation = '%s' " +
+            "ORDER BY CAC.commandIndex ASC",
+            charId,
+            animation);
+
+        MeleeMove move = new MeleeMove();
+        move.charId = charId;
+        List<Map<String, Object>> rawCommandList = template.queryForList(commandQuery);
+        ImmutableList.Builder<AnimationCommand> commandList = new ImmutableList.Builder<AnimationCommand>();
+        for (Map<String, Object> rawCommand : rawCommandList) {
+            AnimationCommand command = new AnimationCommand();
+
+            command.data = (Integer) rawCommand.get("commandData");
+            command.type = (String) rawCommand.get("commandType");
+
+            commandList.add(command);
+        }
+
+        move.commands = commandList.build();
+        return move;
     }
 
     public Set<String> getFilterableCharacterFields() {
