@@ -46,12 +46,12 @@ public class MeleeCharacter {
     public Float LdgJmpVVel;
     public Float ThrowVel;
     public Integer StarDmg;
-    public Integer ALag;
-    public Integer NLag;
-    public Integer FLag;
-    public Integer BLag;
-    public Integer ULag;
-    public Integer DLag;
+    public Float ALag;
+    public Float NLag;
+    public Float FLag;
+    public Float BLag;
+    public Float ULag;
+    public Float DLag;
     public Float VMdlScaling;
     public Float WJmpHVel;
     public Float WJmpVVel;
