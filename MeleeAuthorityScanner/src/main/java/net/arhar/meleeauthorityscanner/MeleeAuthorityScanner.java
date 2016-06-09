@@ -121,38 +121,27 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Characters.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE Characters (");
-        writer.newLine();
-        writer.write(INDENT + "id CHAR(2),");
-        writer.newLine();
-        writer.write(INDENT + "fullName VARCHAR(32),");
-        writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (id)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write("CREATE TABLE Characters (\n"
+                + INDENT + "id CHAR(2),\n"
+                + INDENT + "fullName VARCHAR(32),\n"
+                + INDENT + "PRIMARY KEY (id)\n"
+                + ");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO Characters");
-        writer.newLine();
-        writer.write(INDENT + "(id, fullName)");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+        writer.write("INSERT INTO Characters\n"
+                + INDENT + "(id, fullName)\n"
+                + "VALUES\n");
         boolean first = true;
         for (Character character : Character.values()) {
             if (first) {
                 first = false;
             } else {
-                writer.write(", ");
-                writer.newLine();
+                writer.write(",\n");
             }
             writer.write(INDENT + "('" + character.name() + "', '" + character.fullName + "')");
         }
-        writer.write(";");
-        writer.newLine();
+        writer.write(";\n");
         writer.flush();
         writer.close();
     }
@@ -161,34 +150,24 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAttributes.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE CharacterAttributes (");
-        writer.newLine();
-        writer.write(INDENT + "id CHAR(2),");
-        writer.newLine();
+        writer.write("CREATE TABLE CharacterAttributes (\n"
+                + INDENT + "id CHAR(2),");
         for (Attribute attribute : Attribute.values()) {
-            writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",");
-            writer.newLine();
+            writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",\n");
         }
-        writer.write(INDENT + "PRIMARY KEY (id),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (id) REFERENCES Characters(id)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write(INDENT + "PRIMARY KEY (id),\n");
+        writer.write(INDENT + "FOREIGN KEY (id) REFERENCES Characters(id)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO CharacterAttributes");
-        writer.newLine();
+        writer.write("INSERT INTO CharacterAttributes\n");
         writer.write(INDENT + "(id");
         for (Attribute attribute : Attribute.values()) {
             writer.write(", " + attribute.name());
         }
-        writer.write(")");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+        writer.write(")\n"
+                + "VALUES\n");
         writer.flush();
         // add one line for each characters values
         for (int i = 0; i < Character.values().length; i++) {
@@ -211,11 +190,10 @@ public class MeleeAuthorityScanner {
 
             if (i == Character.values().length - 1) {
                 // the last character gets a semicolon instead of a comma
-                writer.write(");");
+                writer.write(");\n");
             } else {
-                writer.write("),");
+                writer.write("),\n");
             }
-            writer.newLine();
         }
         writer.flush();
         writer.close();
@@ -271,26 +249,17 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "SharedAnimations.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE SharedAnimations (");
-        writer.newLine();
-        writer.write(INDENT + "internalName VARCHAR(32),");
-        writer.newLine();
-        writer.write(INDENT + "description VARCHAR(64),");
-        writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (internalName)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write("CREATE TABLE SharedAnimations (\n");
+        writer.write(INDENT + "internalName VARCHAR(32),\n");
+        writer.write(INDENT + "description VARCHAR(64),\n");
+        writer.write(INDENT + "PRIMARY KEY (internalName)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO SharedAnimations");
-        writer.newLine();
-        writer.write(INDENT + "(internalName, description)");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+        writer.write("INSERT INTO SharedAnimations\n");
+        writer.write(INDENT + "(internalName, description)\n");
+        writer.write("VALUES\n");
         Character character = Character.Ca; // falcon has all the moves we need names for
         boolean first = true;
 //        for (Entry<Integer, String> subAction : SubAction.SUBACTIONS.entrySet()) {
@@ -298,15 +267,13 @@ public class MeleeAuthorityScanner {
             if (first) {
                 first = false;
             } else {
-                writer.write(",");
-                writer.newLine();
+                writer.write(",\n");
             }
             String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
             temp.add(internalName);
             writer.write(INDENT + "('" + internalName + "', '" + subAction.description + "')");
         }
-        writer.write(";");
-        writer.newLine();
+        writer.write(";\n");
         writer.flush();
         writer.close();
     }
@@ -317,43 +284,30 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "AnimationCommandTypes.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE AnimationCommandTypes (");
-        writer.newLine();
-        writer.write(INDENT + "id INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "name VARCHAR(32),");
-        writer.newLine();
-        writer.write(INDENT + "numBytes INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (id),");
-        writer.newLine();
-        writer.write(INDENT + "UNIQUE (name)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write("CREATE TABLE AnimationCommandTypes (\n");
+        writer.write(INDENT + "id INTEGER,\n");
+        writer.write(INDENT + "name VARCHAR(32),\n");
+        writer.write(INDENT + "numBytes INTEGER,\n");
+        writer.write(INDENT + "PRIMARY KEY (id),\n");
+        writer.write(INDENT + "UNIQUE (name)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO AnimationCommandTypes");
-        writer.newLine();
-        writer.write(INDENT + "(id, name, numBytes)");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+        writer.write("INSERT INTO AnimationCommandTypes\n");
+        writer.write(INDENT + "(id, name, numBytes)\n");
+        writer.write("VALUES\n");
         boolean first = true;
         for (AnimationCommandType command : AnimationCommandType.values()) {
             if (first) {
                 first = false;
             } else {
-                writer.write(",");
-                writer.newLine();
+                writer.write(",\n");
             }
             // TODO should name() also be used here instead of full description?
             writer.write(INDENT + "(" + command.id + ", '" + command.fullName + "', " + command.length + ")");
         }
-        writer.write(";");
-        writer.newLine();
+        writer.write(";\n");
         writer.flush();
         writer.close();
     }
@@ -364,42 +318,25 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAnimationCommands.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE CharacterAnimationCommands (");
-        writer.newLine();
-        writer.write(INDENT + "id INT AUTO_INCREMENT,");
-        writer.newLine();
-        writer.write(INDENT + "charId CHAR(2),");
-        writer.newLine();
-        writer.write(INDENT + "animation VARCHAR(32),");
-        writer.newLine();
-        writer.write(INDENT + "commandIndex INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "commandType INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "commandData TINYBLOB,");
-        writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (id),");
-        writer.newLine();
-        writer.write(INDENT + "UNIQUE (charId, animation, commandIndex),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (commandType) REFERENCES AnimationCommandTypes(id)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write("CREATE TABLE CharacterAnimationCommands (\n");
+        writer.write(INDENT + "id INT AUTO_INCREMENT,\n");
+        writer.write(INDENT + "charId CHAR(2),\n");
+        writer.write(INDENT + "animation VARCHAR(32),\n");
+        writer.write(INDENT + "commandIndex INTEGER,\n");
+        writer.write(INDENT + "commandType INTEGER,\n");
+        writer.write(INDENT + "commandData TINYBLOB,\n");
+        writer.write(INDENT + "PRIMARY KEY (id),\n");
+        writer.write(INDENT + "UNIQUE (charId, animation, commandIndex),\n");
+        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),\n");
+        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName),\n");
+        writer.write(INDENT + "FOREIGN KEY (commandType) REFERENCES AnimationCommandTypes(id)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO CharacterAnimationCommands");
-        writer.newLine();
-        writer.write(INDENT + "(charId, animation, commandIndex, commandType, commandData)");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+        writer.write("INSERT INTO CharacterAnimationCommands\n");
+        writer.write(INDENT + "(charId, animation, commandIndex, commandType, commandData)\n");
+        writer.write("VALUES\n");
         AtomicBoolean first = new AtomicBoolean(true);
         charactersToAnimations.forEach((character, actionsToAnimations) -> {
             actionsToAnimations.forEach((action, animation) -> {
@@ -427,8 +364,7 @@ public class MeleeAuthorityScanner {
                 }
             });
         });
-        writer.write(";");
-        writer.newLine();
+        writer.write(";\n");
         writer.flush();
         writer.close();
     }
@@ -437,33 +373,19 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "FrameStrips.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE FrameStrips (");
-        writer.newLine();
+        writer.write("CREATE TABLE FrameStrips (\n");
         writer.write(INDENT + "id INTEGER AUTO_INCREMENT,");
-        writer.newLine();
-        writer.write(INDENT + "charId CHAR(2),");
-        writer.newLine();
-        writer.write(INDENT + "animation VARCHAR(32),");
-        writer.newLine();
-        writer.write(INDENT + "frame INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "hitbox BOOLEAN,");
-        writer.newLine();
-        writer.write(INDENT + "iasa BOOLEAN,");
-        writer.newLine();
-        writer.write(INDENT + "autocancel BOOLEAN,");
-        writer.newLine();
-        writer.write(INDENT + "PRIMARY KEY (id),");
-        writer.newLine();
-        writer.write(INDENT + "UNIQUE (charId, animation, frame),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write(INDENT + "charId CHAR(2),\n");
+        writer.write(INDENT + "animation VARCHAR(32),\n");
+        writer.write(INDENT + "frame INTEGER,\n");
+        writer.write(INDENT + "hitbox BOOLEAN,\n");
+        writer.write(INDENT + "iasa BOOLEAN,\n");
+        writer.write(INDENT + "autocancel BOOLEAN,\n");
+        writer.write(INDENT + "PRIMARY KEY (id),\n");
+        writer.write(INDENT + "UNIQUE (charId, animation, frame),\n");
+        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),\n");
+        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
@@ -511,8 +433,7 @@ public class MeleeAuthorityScanner {
                 }
             });
         });
-        writer.write(");");
-        writer.newLine();
+        writer.write(");\n");
         writer.flush();
         writer.close();
     }
@@ -521,61 +442,36 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Hitboxes.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE Hitboxes (");
-        writer.newLine();
-        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,");
-        writer.newLine();
-        writer.write(INDENT + "charId CHAR(2),");
-        writer.newLine();
-        writer.write(INDENT + "animation VARCHAR(32),");
-        writer.newLine();
+        writer.write("CREATE TABLE Hitboxes (\n");
+        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,\n");
+        writer.write(INDENT + "charId CHAR(2),\n");
+        writer.write(INDENT + "animation VARCHAR(32),\n");
 
-        writer.write(INDENT + "groupId INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "hitboxId INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "bone INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "damage INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "zoffset INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "yoffset INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "xoffset INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "angle INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "knockbackScaling INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "fixedKnockback INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "baseKnockback INTEGER,");
-        writer.newLine();
-        writer.write(INDENT + "shieldDamage INTEGER,");
-        writer.newLine();
+        writer.write(INDENT + "groupId INTEGER,\n");
+        writer.write(INDENT + "hitboxId INTEGER,\n");
+        writer.write(INDENT + "bone INTEGER,\n");
+        writer.write(INDENT + "damage INTEGER,\n");
+        writer.write(INDENT + "zoffset INTEGER,\n");
+        writer.write(INDENT + "yoffset INTEGER,\n");
+        writer.write(INDENT + "xoffset INTEGER,\n");
+        writer.write(INDENT + "angle INTEGER,\n");
+        writer.write(INDENT + "knockbackScaling INTEGER,\n");
+        writer.write(INDENT + "fixedKnockback INTEGER,\n");
+        writer.write(INDENT + "baseKnockback INTEGER,\n");
+        writer.write(INDENT + "shieldDamage INTEGER,\n");
 
-        writer.write(INDENT + "PRIMARY KEY (id),");
-        writer.newLine();
-        writer.write(INDENT + "UNIQUE (charId, animation, groupId, hitboxId),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
-        writer.newLine();
-        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)");
-        writer.newLine();
-        writer.write(");");
-        writer.newLine();
-        writer.newLine();
+        writer.write(INDENT + "PRIMARY KEY (id),\n");
+        writer.write(INDENT + "UNIQUE (charId, animation, groupId, hitboxId),\n");
+        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),\n");
+        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO Hitboxes");
-        writer.newLine();
+        writer.write("INSERT INTO Hitboxes\n");
         writer.write(INDENT + "(charId, animation, groupId, hitboxId, bone, damage"
-                + ", zoffset, yoffset, xoffset, angle, knockbackScaling, fixedKnockback, baseKnockback, shieldDamage)");
-        writer.newLine();
-        writer.write("VALUES");
-        writer.newLine();
+                + ", zoffset, yoffset, xoffset, angle, knockbackScaling, fixedKnockback, baseKnockback, shieldDamage)\n");
+        writer.write("VALUES\n");
         AtomicBoolean first = new AtomicBoolean(true);
         charactersToAnimations.forEach((character, actionToAnimation) -> {
             actionToAnimation.forEach((action, animation) -> {
@@ -596,53 +492,38 @@ public class MeleeAuthorityScanner {
                 }
             });
         });
-        writer.write(";");
-        writer.newLine();
+        writer.write(";\n");
         writer.flush();
         writer.close();
     }
 
     private static void writeBuildScripts() throws IOException {
         BufferedWriter buildWriter = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "build.sql"));
-        buildWriter.write("source Characters.sql");
-        buildWriter.newLine();
-        buildWriter.write("source CharacterAttributes.sql");
-        buildWriter.newLine();
-        buildWriter.write("source SharedAnimations.sql");
-        buildWriter.newLine();
-        buildWriter.write("source AnimationCommandTypes.sql");
-        buildWriter.newLine();
-        buildWriter.write("source CharacterAnimationCommands.sql");
-        buildWriter.newLine();
-        buildWriter.write("source FrameStrips.sql");
-        buildWriter.newLine();
-        buildWriter.write("source Hitboxes.sql");
-        buildWriter.newLine();
+        buildWriter.write("source Characters.sql\n");
+        buildWriter.write("source CharacterAttributes.sql\n");
+        buildWriter.write("source SharedAnimations.sql\n");
+        buildWriter.write("source AnimationCommandTypes.sql\n");
+        buildWriter.write("source CharacterAnimationCommands.sql\n");
+        buildWriter.write("source FrameStrips.sql\n");
+        buildWriter.write("source Hitboxes.sql\n");
         buildWriter.flush();
         buildWriter.close();
 
         BufferedWriter cleanWriter = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "clean.sql"));
-        cleanWriter.write("DROP TABLE IF EXISTS Hitboxes;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS FrameStrips;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS CharacterAnimationCommands;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS AnimationCommandTypes;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS SharedAnimations;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS CharacterAttributes;");
-        cleanWriter.newLine();
-        cleanWriter.write("DROP TABLE IF EXISTS Characters;");
-        cleanWriter.newLine();
+        cleanWriter.write("DROP TABLE IF EXISTS Hitboxes;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS FrameStrips;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS CharacterAnimationCommands;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS AnimationCommandTypes;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS SharedAnimations;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS CharacterAttributes;\n");
+        cleanWriter.write("DROP TABLE IF EXISTS Characters;\n");
         cleanWriter.flush();
         cleanWriter.close();
     }
 
     private static void tryWriteLine(BufferedWriter writer, String line) {
         try {
-            writer.write(line); writer.newLine();
+            writer.write(line + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -658,7 +539,7 @@ public class MeleeAuthorityScanner {
 
     private static void tryWriteLine(BufferedWriter writer) {
         try {
-            writer.newLine();
+            writer.write("\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
