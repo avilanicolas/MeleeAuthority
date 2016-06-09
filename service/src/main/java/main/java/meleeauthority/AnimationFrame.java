@@ -1,7 +1,7 @@
 package main.java.meleeauthority;
 
 public class AnimationFrame {
-    boolean hitbox;
-    boolean iasa;
-    boolean autocancel;
+    public boolean hitbox;
+    public boolean iasa;
+    public boolean autocancel;
 }

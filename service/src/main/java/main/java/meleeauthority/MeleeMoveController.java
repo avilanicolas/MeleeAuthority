@@ -29,12 +29,10 @@ public class MeleeMoveController {
 
         if (!NONE.equals(animation) && !ALL.equals(charId)) {
             if (validId(charId) && validAnimation(animation)) {
-                System.out.println("ASDF");
                 return getDB().getMovesQualifiedBy(charId, animation);
             }
         } else if (!NONE.equals(animation)) {
             if (validAnimation(animation)) {
-                System.out.println("BGT");
                 return getDB().getMovesQualifiedBy(null, animation);
             }
         }
@@ -64,8 +62,6 @@ public class MeleeMoveController {
         if (characterAnimations == null) {
             characterAnimations = getDB().getCharacterAnimations();
         }
-        for (String anim : characterAnimations)
-            System.out.println(anim);
         return characterAnimations;
     }
 
