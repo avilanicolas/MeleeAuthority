@@ -156,6 +156,24 @@ public class MeleeDB implements MeleeDAO {
             commandList.add(command);
         }
 
+        String frameQuery = String.format(
+            "SELECT * FROM FrameStrips WHERE charId = '%s' AND animation = '%s' ORDER BY frame ASC",
+            charId,
+            move.internalName);
+        List<Map<String, Object>> rawFrameList = template.queryForList(frameQuery);
+
+        ImmutableList.Builder<AnimationFrame> frameList = new ImmutableList.Builder<AnimationFrame>();
+        for (Map<String, Object> rawFrame : rawFrameList) {
+            AnimationFrame frame = new AnimationFrame();
+
+            frame.autocancel = (boolean) rawFrame.get("autocancel");
+            frame.iasa = (boolean) rawFrame.get("iasa");
+            frame.hitbox = (boolean) rawFrame.get("hitbox");
+
+            frameList.add(frame);
+        }
+
+        move.frames = frameList.build();
         move.commands = commandList.build();
         return move;
     }

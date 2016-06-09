@@ -7,4 +7,5 @@ public class MeleeMove {
     public String animation;
     public String internalName;
     public List<AnimationCommand> commands;
+    public List<AnimationFrame> frames;
 }
