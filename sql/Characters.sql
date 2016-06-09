@@ -33,10 +33,4 @@ VALUES
     ('Sk', 'Sheik'), 
     ('Ys', 'Yoshi'), 
     ('Cl', 'Young Link'), 
-    ('Zd', 'Zelda'), 
-    ('Bo', 'Wireframe (Male)'), 
-    ('Gl', 'Wireframe (Female)'), 
-    ('Gk', 'Giga Bowser'), 
-    ('Sb', 'Sandbag'), 
-    ('Mh', 'Master Hand'), 
-    ('Ch', 'Crazy Hand');
+    ('Zd', 'Zelda');

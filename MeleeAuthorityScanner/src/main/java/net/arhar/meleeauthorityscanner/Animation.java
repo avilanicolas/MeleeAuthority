@@ -12,13 +12,13 @@ import java.util.TreeMap;
 import com.google.common.collect.Sets;
 
 public class Animation {
-    
+
     public final List<AnimationCommand> commands;
     public final List<EnumSet<FrameStripType>> frameStrip;
     public final List<List<Hitbox>> hitboxes;
-    
+
     public static boolean temp = false;
-        
+
     public Animation(List<AnimationCommand> commands) {
     // TODO public Animation(List<AnimationCommand> commands, int numFrames) {
     // the total number of frames is NOT determined by the commands!
@@ -27,21 +27,20 @@ public class Animation {
         }
         this.commands = commands;
         frameStrip = new ArrayList<>();
-        
-//        Map<Integer, List<Hitbox>> hitboxMap = new HashMap<>();
+
         Map<Integer, List<Hitbox>> hitboxMap = new TreeMap<>((one, two) -> one - two); // TODO this could be the wrong order
-        
+
         boolean iasa = false;
         boolean hitbox = false;
         boolean autocancel = false;
         Iterator<AnimationCommand> commandIterator = commands.iterator();
         int waitFrames = 0, currentFrame = 0;
-        while (commandIterator.hasNext() || waitFrames > 0) {
+        frameLoop: while (commandIterator.hasNext() || waitFrames > 0) {
             if (waitFrames > 0) {
                 // advance a frame
                 waitFrames--;
                 currentFrame++;
-                
+
                 Set<FrameStripType> stripEntry = new HashSet<>();
                 if (iasa) {
                     stripEntry.add(FrameStripType.IASA);
@@ -103,23 +102,26 @@ public class Animation {
                     // TODO this should specify a hitbox or something
                     hitbox = false;
                     break;
+                case SUBROUTINE:
+                    // TODO follow the subroutine instead
+                    break frameLoop;
                 }
             }
-            
+
         }
-        
-        // convert the hitboxes to "sets" of hitboxes based on what frame they start on
+
+        // convert the hitboxes to "groups" of hitboxes based on what frame they start on
         hitboxes = new ArrayList<>();
         // assuming .forEach will go over the set TreeMap iteration order
         hitboxMap.forEach((frame, hitboxSet) -> {
             hitboxes.add(hitboxSet);
         });
-        
+
         if (temp) {
             System.out.println();
         }
     }
-        
+
     public static enum FrameStripType {
         IASA,
         HITBOX,
@@ -129,10 +131,10 @@ public class Animation {
     public static class AnimationCommand {
         public final AnimationCommandType type;
         public final byte[] data;
-        
+
         public AnimationCommand(AnimationCommandType type, byte[] data) {
             this.type = type;
             this.data = data;
         }
-    }    
+    }
 }

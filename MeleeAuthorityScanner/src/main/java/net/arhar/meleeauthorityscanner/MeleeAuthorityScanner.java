@@ -40,7 +40,7 @@ public class MeleeAuthorityScanner {
 
 //        Scanner reader = new Scanner(MeleeAuthorityScanner.class.getResourceAsStream("/anm/Ms.anm"));
 //        System.out.println(reader.nextLine());
-        
+
         Map<Character, Map<SubAction, Animation>> animations = generateAnimations(fileSystem);
 
         Path dirPath = Paths.get(DIRECTORY_NAME);
@@ -55,16 +55,16 @@ public class MeleeAuthorityScanner {
         writeBuildScripts();
         System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
     }
-    
+
     private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {
         Map<Character, Map<SubAction, Animation>> charactersToAnimations = new LinkedHashMap<>();
-        
+
         for (Character character : Character.values()) {
             Map<SubAction, Animation> animations = new LinkedHashMap<>();
             ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
 
             for (SubAction subAction : SubAction.values()) {
-                
+
                 List<AnimationCommand> animationCommands = new ArrayList<>();
 
                 String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
@@ -102,7 +102,7 @@ public class MeleeAuthorityScanner {
                     bytesDown += command.length;
                     buffer.position(offset + 0x20 + bytesDown);
                 }
-                
+
                 if (character == Character.Ms
                         && subAction == SubAction.AttackAirF) {
                     Animation.temp = true;
@@ -110,10 +110,10 @@ public class MeleeAuthorityScanner {
                 animations.put(subAction, new Animation(animationCommands));
                 Animation.temp = false;
             }
-            
+
             charactersToAnimations.put(character, animations);
         }
-        
+
         return charactersToAnimations;
     }
 
@@ -432,10 +432,10 @@ public class MeleeAuthorityScanner {
         writer.flush();
         writer.close();
     }
-    
+
     private static void writeFrameStrips(Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "FrameStrips.sql"));
-        
+
         // CREATE TABLE
         writer.write("CREATE TABLE FrameStrips (");
         writer.newLine();
@@ -465,15 +465,15 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.newLine();
         writer.flush();
-        
+
         // INSERT
         AtomicBoolean first = new AtomicBoolean(true);
         AtomicInteger totalInserts = new AtomicInteger(0);
         charactersToAnimations.forEach((character, actionToAnimation) -> {
             actionToAnimation.forEach((action, animation) -> {
-                
+
                 for (int i = 0; i < animation.frameStrip.size(); i++) {
-                    
+
                     // every 50,000 inserts, write another INSERT INTO so that we dont timeout
                     if (totalInserts.get() % 5000 == 0) {
                         if (first.get()) {
@@ -482,7 +482,7 @@ public class MeleeAuthorityScanner {
                             tryWriteLine(writer, ");");
                             tryWriteLine(writer);
                         }
-                        
+
                         tryWriteLine(writer, "INSERT INTO FrameStrips");
                         tryWriteLine(writer, INDENT + "(charId, animation, frame, hitbox, iasa, autocancel)");
                         tryWriteLine(writer, "VALUES");
@@ -490,7 +490,7 @@ public class MeleeAuthorityScanner {
                         tryWriteLine(writer, "),");
                     }
                     totalInserts.incrementAndGet();
-                    
+
                     EnumSet<FrameStripType> flags = animation.frameStrip.get(i);
                     tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + i + ", ");
                     if (flags.contains(FrameStripType.HITBOX)) {
@@ -516,10 +516,10 @@ public class MeleeAuthorityScanner {
         writer.flush();
         writer.close();
     }
-    
+
     private static void writeHitboxes(Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Hitboxes.sql"));
-        
+
         // CREATE TABLE
         writer.write("CREATE TABLE Hitboxes (");
         writer.newLine();
@@ -529,8 +529,8 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.write(INDENT + "animation VARCHAR(32),");
         writer.newLine();
-        
-        writer.write(INDENT + "group INTEGER,");
+
+        writer.write(INDENT + "groupId INTEGER,");
         writer.newLine();
         writer.write(INDENT + "hitboxId INTEGER,");
         writer.newLine();
@@ -554,10 +554,10 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.write(INDENT + "shieldDamage INTEGER,");
         writer.newLine();
-        
+
         writer.write(INDENT + "PRIMARY KEY (id),");
         writer.newLine();
-        writer.write(INDENT + "UNIQUE (charId, animation, group, hitboxId),");
+        writer.write(INDENT + "UNIQUE (charId, animation, groupId, hitboxId),");
         writer.newLine();
         writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
         writer.newLine();
@@ -567,11 +567,11 @@ public class MeleeAuthorityScanner {
         writer.newLine();
         writer.newLine();
         writer.flush();
-        
+
         // INSERT
         writer.write("INSERT INTO Hitboxes");
         writer.newLine();
-        writer.write(INDENT + "(charId, animation, group, hitboxId, bone, damage"
+        writer.write(INDENT + "(charId, animation, groupId, hitboxId, bone, damage"
                 + ", zoffset, yoffset, xoffset, angle, knockbackScaling, fixedKnockback, baseKnockback, shieldDamage)");
         writer.newLine();
         writer.write("VALUES");
@@ -639,7 +639,7 @@ public class MeleeAuthorityScanner {
         cleanWriter.flush();
         cleanWriter.close();
     }
-    
+
     private static void tryWriteLine(BufferedWriter writer, String line) {
         try {
             writer.write(line); writer.newLine();
@@ -647,7 +647,7 @@ public class MeleeAuthorityScanner {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static void tryWrite(BufferedWriter writer, String line) {
         try {
             writer.write(line);
@@ -655,7 +655,7 @@ public class MeleeAuthorityScanner {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static void tryWriteLine(BufferedWriter writer) {
         try {
             writer.newLine();

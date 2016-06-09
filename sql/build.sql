@@ -4,3 +4,4 @@ source SharedAnimations.sql
 source AnimationCommandTypes.sql
 source CharacterAnimationCommands.sql
 source FrameStrips.sql
+source Hitboxes.sql
