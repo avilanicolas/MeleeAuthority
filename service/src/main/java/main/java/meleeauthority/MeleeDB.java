@@ -101,13 +101,22 @@ public class MeleeDB implements MeleeDAO {
 
         MeleeMove move = new MeleeMove();
         move.charId = charId;
+
         List<Map<String, Object>> rawCommandList = template.queryForList(commandQuery);
+        move.animation = (String)rawCommandList.get(0).get("description");
+
         ImmutableList.Builder<AnimationCommand> commandList = new ImmutableList.Builder<AnimationCommand>();
         for (Map<String, Object> rawCommand : rawCommandList) {
             AnimationCommand command = new AnimationCommand();
 
-            command.data = (byte[]) rawCommand.get("commandData");
             command.type = (String) rawCommand.get("name");
+
+            StringBuilder dataBuilder = new StringBuilder();
+            byte[] data = (byte[]) rawCommand.get("commandData");
+            for (byte b : data) {
+                dataBuilder.append(String.format("02X", b));
+            }
+            command.data = dataBuilder.toString();
 
             commandList.add(command);
         }
@@ -128,6 +137,15 @@ public class MeleeDB implements MeleeDAO {
         }
 
         return filterableSet.build();
+    }
+
+    public MeleeCharacter getCharacterById(String charId) {
+        List<Map<String, Object>> result = template.queryForList(String.format(
+            "SELECT * FROM Characters C " +
+            "JOIN CharacterAttributes CA ON CA.id = C.id " +
+            "WHERE C.id = '%s'", charId));
+
+        return translateEntry(result.get(0));
     }
 
     public MeleeCharacter getCharacter(String name) {

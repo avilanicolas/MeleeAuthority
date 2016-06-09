@@ -14,6 +14,7 @@ public class MeleeCharacterController {
 
     private static MeleeDB meleeDB = null;
     private static List<String> characterNames = null;
+    private static List<String> characterIds = null;
     private static Set<String> filterableFields = null;
 
     private static final String ALL = "ALL";
@@ -23,6 +24,7 @@ public class MeleeCharacterController {
     @RequestMapping("/character")
     public List<MeleeCharacter> character(
             @RequestParam(value="name", defaultValue=ALL) String name,
+            @RequestParam(value="charId", defaultValue=NONE) String charId,
             @RequestParam(value="filter", defaultValue=NONE) String filter,
             @RequestParam(value="condition", defaultValue=NONE) String predicate,
             @RequestParam(value="value", defaultValue=NONE) String value) {
@@ -52,6 +54,11 @@ public class MeleeCharacterController {
             }
         }
 
+        if (list == null && !NONE.equals(charId)) {
+            if (validId(charId)) {
+                return ImmutableList.of(getDB().getCharacterById(charId));
+            }
+        }
 
         if (list == null && name.equals(ALL)) {
             list = getDB().getAllCharacters();
@@ -70,6 +77,10 @@ public class MeleeCharacterController {
         return getFilterableFields().contains(filter);
     }
 
+    private boolean validId(String charId) {
+        return getCharacterIds().contains(charId);
+    }
+
     private boolean validName(String name) {
         return getCharacterNames().contains(name);        
     }
@@ -80,6 +91,14 @@ public class MeleeCharacterController {
         }
 
         return filterableFields;
+    }
+
+    private List<String> getCharacterIds() {
+        if (characterIds == null) {
+            characterIds = getDB().getCharacterIds();
+        }
+
+        return characterIds;
     }
 
     private List<String> getCharacterNames() {
