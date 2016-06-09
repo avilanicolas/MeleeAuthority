@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS FrameStrips;
 DROP TABLE IF EXISTS CharacterAnimationCommands;
 DROP TABLE IF EXISTS AnimationCommandTypes;
 DROP TABLE IF EXISTS SharedAnimations;
