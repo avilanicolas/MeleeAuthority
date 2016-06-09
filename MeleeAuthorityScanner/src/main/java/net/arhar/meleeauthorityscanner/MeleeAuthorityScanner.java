@@ -62,7 +62,7 @@ public class MeleeAuthorityScanner {
             Map<SubAction, Animation> animations = new LinkedHashMap<>();
             ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
 
-            for (SubAction subAction : SubAction.values()) {
+            for (SubAction subAction : SubAction.getApplicableActions(character)) {
 
                 List<AnimationCommand> animationCommands = new ArrayList<>();
 

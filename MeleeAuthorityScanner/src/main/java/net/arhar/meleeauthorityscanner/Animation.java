@@ -102,8 +102,12 @@ public class Animation {
                     // TODO this should specify a hitbox or something
                     hitbox = false;
                     break;
+                case EXEC_LOOP:
+                case GOTO:
+                case RETURN:
+                case SET_LOOP:
                 case SUBROUTINE:
-                    // TODO follow the subroutine instead
+                    // TODO
                     break frameLoop;
                 }
             }
