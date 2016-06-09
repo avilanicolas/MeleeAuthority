@@ -51,7 +51,7 @@ public class MeleeAuthorityScanner {
         writeAnimationCommandTypes();
         writeCharacterAnimationCommands(fileSystem, animations);
         writeFrameStrips(animations);
-        // TODO writeHitboxes(animations);
+        writeHitboxes(animations);
         writeBuildScripts();
         System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
     }
@@ -516,6 +516,91 @@ public class MeleeAuthorityScanner {
         writer.flush();
         writer.close();
     }
+    
+    private static void writeHitboxes(Map<Character, Map<SubAction, Animation>> charactersToAnimations) throws IOException {
+        BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Hitboxes.sql"));
+        
+        // CREATE TABLE
+        writer.write("CREATE TABLE Hitboxes (");
+        writer.newLine();
+        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,");
+        writer.newLine();
+        writer.write(INDENT + "charId CHAR(2),");
+        writer.newLine();
+        writer.write(INDENT + "animation VARCHAR(32),");
+        writer.newLine();
+        
+        writer.write(INDENT + "group INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "hitboxId INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "bone INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "damage INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "zoffset INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "yoffset INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "xoffset INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "angle INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "knockbackScaling INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "fixedKnockback INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "baseKnockback INTEGER,");
+        writer.newLine();
+        writer.write(INDENT + "shieldDamage INTEGER,");
+        writer.newLine();
+        
+        writer.write(INDENT + "PRIMARY KEY (id),");
+        writer.newLine();
+        writer.write(INDENT + "UNIQUE (charId, animation, group, hitboxId),");
+        writer.newLine();
+        writer.write(INDENT + "FOREIGN KEY (charId) REFERENCES Characters(id),");
+        writer.newLine();
+        writer.write(INDENT + "FOREIGN KEY (animation) REFERENCES SharedAnimations(internalName)");
+        writer.newLine();
+        writer.write(");");
+        writer.newLine();
+        writer.newLine();
+        writer.flush();
+        
+        // INSERT
+        writer.write("INSERT INTO Hitboxes");
+        writer.newLine();
+        writer.write(INDENT + "(charId, animation, group, hitboxId, bone, damage"
+                + ", zoffset, yoffset, xoffset, angle, knockbackScaling, fixedKnockback, baseKnockback, shieldDamage)");
+        writer.newLine();
+        writer.write("VALUES");
+        writer.newLine();
+        AtomicBoolean first = new AtomicBoolean(true);
+        charactersToAnimations.forEach((character, actionToAnimation) -> {
+            actionToAnimation.forEach((action, animation) -> {
+                for (int i = 0; i < animation.hitboxes.size(); i++) {
+                    List<Hitbox> hitboxGroup = animation.hitboxes.get(i);
+                    for (Hitbox hitbox : hitboxGroup) {
+                        if (first.get()) {
+                            first.set(false);
+                        } else {
+                            tryWriteLine(writer, ",");
+                        }
+                        tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + i
+                                + ", " + hitbox.id + ", " + hitbox.bone + ", " + hitbox.damage
+                                + ", " + hitbox.zoffset + ", " + hitbox.yoffset + ", " + hitbox.xoffset + ", " + hitbox.angle
+                                + ", " + hitbox.knockbackScaling + ", " + hitbox.fixedKnockback + ", " + hitbox.baseKnockback
+                                + ", " + hitbox.shieldDamage + ")");
+                    }
+                }
+            });
+        });
+        writer.write(";");
+        writer.newLine();
+        writer.flush();
+        writer.close();
+    }
 
     private static void writeBuildScripts() throws IOException {
         BufferedWriter buildWriter = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "build.sql"));
@@ -531,10 +616,14 @@ public class MeleeAuthorityScanner {
         buildWriter.newLine();
         buildWriter.write("source FrameStrips.sql");
         buildWriter.newLine();
+        buildWriter.write("source Hitboxes.sql");
+        buildWriter.newLine();
         buildWriter.flush();
         buildWriter.close();
 
         BufferedWriter cleanWriter = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "clean.sql"));
+        cleanWriter.write("DROP TABLE IF EXISTS Hitboxes;");
+        cleanWriter.newLine();
         cleanWriter.write("DROP TABLE IF EXISTS FrameStrips;");
         cleanWriter.newLine();
         cleanWriter.write("DROP TABLE IF EXISTS CharacterAnimationCommands;");

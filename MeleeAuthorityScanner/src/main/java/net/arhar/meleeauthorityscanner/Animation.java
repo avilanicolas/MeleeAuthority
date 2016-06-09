@@ -5,7 +5,9 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.google.common.collect.Sets;
 
@@ -13,17 +15,21 @@ public class Animation {
     
     public final List<AnimationCommand> commands;
     public final List<EnumSet<FrameStripType>> frameStrip;
+    public final List<List<Hitbox>> hitboxes;
     
     public static boolean temp = false;
         
     public Animation(List<AnimationCommand> commands) {
     // TODO public Animation(List<AnimationCommand> commands, int numFrames) {
-    // the total number of frames is NOT determined by the commands
+    // the total number of frames is NOT determined by the commands!
         if (temp) {
             System.out.println();
         }
         this.commands = commands;
         frameStrip = new ArrayList<>();
+        
+//        Map<Integer, List<Hitbox>> hitboxMap = new HashMap<>();
+        Map<Integer, List<Hitbox>> hitboxMap = new TreeMap<>((one, two) -> one - two); // TODO this could be the wrong order
         
         boolean iasa = false;
         boolean hitbox = false;
@@ -69,6 +75,9 @@ public class Animation {
                     }
                     break;
                 case HITBOX:
+                    // add the hitbox
+                    hitboxMap.putIfAbsent(currentFrame, new ArrayList<>());
+                    hitboxMap.get(currentFrame).add(new Hitbox(command.data));
                     hitbox = true;
                     break;
                 case IASA:
@@ -96,7 +105,16 @@ public class Animation {
                     break;
                 }
             }
+            
         }
+        
+        // convert the hitboxes to "sets" of hitboxes based on what frame they start on
+        hitboxes = new ArrayList<>();
+        // assuming .forEach will go over the set TreeMap iteration order
+        hitboxMap.forEach((frame, hitboxSet) -> {
+            hitboxes.add(hitboxSet);
+        });
+        
         if (temp) {
             System.out.println();
         }
