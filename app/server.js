@@ -2,10 +2,12 @@ var express = require("express");
 var request = require('request');
 var exphbs = require('express-handlebars');
 var helpers = require('./public/js/helpers.js');
+var melee = require('./public/js/melee.js');
 var app = express();
 var router = express.Router();
 var htmlpath = __dirname + '/views/';
 var csspath = __dirname + '/css/';
+var api = 'http://meleeauthority.com:8080/';
 
 var hbs = exphbs.create({extname: '.html', defaultLayout: 'default.html'});
 
@@ -14,16 +16,10 @@ hbs.helpers = helpers.get(hbs);
 app.set('views', __dirname + '/views');
 app.engine('html', hbs.engine);
 app.set('view engine', 'html');
-app.set('port', process.env.PORT || 3000);
+app.set('port', 80);
 
 router.use(function (req,res,next) {
-  console.log("req baseUrl: " + req.baseUrl);
-  console.log("req body: " + req.body);
-  console.log("req originalUrl: " + req.originalUrl);
-  console.log("req params: " + req.params);
-  console.log("req path: " + req.path);
-  console.log("req query: " + req.query);
-  console.log("/" + req.method);
+  console.log(req.path);
   next();
 });
 
@@ -32,59 +28,76 @@ router.get("/",function(req,res){
 });
 
 router.get("/characters",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1', // API CALL GOES HERE
+  request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
       settings.title = 'Characters';
       settings.character = true;
       settings.base = true;
+      console.log(req.originalUrl);
+      settings.url = req.originalUrl;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("allcharacters", settings);
     } else {
-      console.log("ErroR: " + error + " status " + response.statusCode);
+      response = response || {statusCode: 404};
+      console.log(error);
+      res.status(response.statusCode).render(
+        '404',
+        {title: 'API Call Failed',
+        body: api + ' returned error code ' + response.statusCode});
     }
   });
 });
 
 router.get("/characters/:character",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1',
+   request(api + '/character?charId=' + melee.getCharId(req.params.character),
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
-      settings.title = req.params.character;
+      settings.title = settings.td[0].name;
+      settings.url = req.originalUrl;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("character", settings);
+    } else {
+      console.log(error);
+      res.status(404).render("404", {title: 'Page Not Found'});
     }
   });
 });
 
 router.get("/characters/:character/moves",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1',
+  request(api + '/move/?charId=' + melee.getCharId(req.params.character),
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
       settings.title = req.params.character + ' - Moves';
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("allmoves", settings);
+    } else {
+      console.log(error);
+      res.status(404).render("404", {title: 'Page Not Found'});
     }
   });
 });
 
 router.get("/characters/:character/:move",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1',
+  request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
       settings.title = req.params.character + ' - ' + req.params.move;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("move", settings);
+    } else {
+      console.log(error);
+      res.status(404).render("404", {title: 'Page Not Found'});
     }
   });
 });
 
 router.get("/moves",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1',
+  request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
@@ -93,18 +106,24 @@ router.get("/moves",function(req,res){
       settings.base = true;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("allmoves", settings);
+    } else {
+      console.log(error);
+      res.status(404).render("404", {title: 'Page Not Found'});
     }
   });
 });
 
 router.get("/moves/:move",function(req,res){
-  request('http://jsonplaceholder.typicode.com/posts?userId=1',
+  request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
       settings.title = req.params.move;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("move", settings);
+    } else {
+      console.log(error);
+      res.status(404).render("404", {title: 'Page Not Found'});
     }
   });
 });
@@ -123,8 +142,8 @@ app.use("*",function(req,res){
   res.status(404).render("404", {title: 'Page Not Found'});
 });
 
-app.listen(3000,function(){
-  console.log("Live at Port 3000");
+app.listen(80,function(){
+  console.log("Live at Port 80");
 });
 
 

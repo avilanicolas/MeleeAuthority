@@ -1,1 +1,5 @@
-<h4>Page not found. Think it should exist? <a href="/contact">Contact Us</a>. Thanks!</h4>
+{{#if body}}
+  <h4>{{{body}}}</h4>
+{{else}}
+  <h4>Page not found. Think it should exist? <a href="/contact">Contact Us</a>. Thanks!</h4>
+{{/if}}
