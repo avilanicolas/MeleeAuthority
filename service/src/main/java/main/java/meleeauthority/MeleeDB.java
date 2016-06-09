@@ -291,7 +291,7 @@ public class MeleeDB implements MeleeDAO {
         newCharacter.ShldBrkInitVel = (Float) entry.get("ShldBrkInitVel");
         newCharacter.SHVInitVel = (Float) entry.get("SHVInitVel");
         newCharacter.SlowWalkMax = (Float) entry.get("SlowWalkMax");
-        newCharacter.StarDmg = (Integer) entry.get("StarDmg");
+        newCharacter.StarDmg = (Float) entry.get("StarDmg");
         newCharacter.TermVel = (Float) entry.get("TermVel");
         newCharacter.ThrowVel = (Float) entry.get("ThrowVel");
         newCharacter.ULag = (Float) entry.get("ULag");
