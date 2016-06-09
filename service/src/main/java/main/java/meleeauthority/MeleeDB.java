@@ -93,8 +93,8 @@ public class MeleeDB implements MeleeDAO {
         ImmutableList.Builder<MeleeMove> moveList = new ImmutableList.Builder<MeleeMove>();
 
         for (MeleeMove move : allMeleeMoves.get()) {
-            if (charId == null && move.animation.equals(animation) ||
-                move.charId.equals(charId) && move.animation.equals(animation)) {
+            if (charId == null && move.internalName.equals(animation) ||
+                move.charId.equals(charId) && move.internalName.equals(animation)) {
                 moveList.add(move);
             }
         }
@@ -137,7 +137,8 @@ public class MeleeDB implements MeleeDAO {
         move.charId = charId;
 
         List<Map<String, Object>> rawCommandList = template.queryForList(commandQuery);
-        move.animation = (String)rawCommandList.get(0).get("description");
+        move.animation = (String) rawCommandList.get(0).get("description");
+        move.internalName = (String) rawCommandList.get(0).get("internalName"); 
 
         ImmutableList.Builder<AnimationCommand> commandList = new ImmutableList.Builder<AnimationCommand>();
         for (Map<String, Object> rawCommand : rawCommandList) {
@@ -148,7 +149,7 @@ public class MeleeDB implements MeleeDAO {
             StringBuilder dataBuilder = new StringBuilder();
             byte[] data = (byte[]) rawCommand.get("commandData");
             for (byte b : data) {
-                dataBuilder.append(String.format("02X", b));
+                dataBuilder.append(String.format("%02X", b));
             }
             command.data = dataBuilder.toString();
 
