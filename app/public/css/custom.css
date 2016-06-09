@@ -9,10 +9,15 @@ body {
   margin-bottom: 20px;
 }
 
-.theme-showcase > p > .btn {
-  margin: 5px 0;
-}
-
 .theme-showcase .navbar .container {
   width: auto;
+}
+
+.jumbotron {
+   padding: 30px 40px 30px 40px;
+}
+
+.dropdown {
+   display: inline-grid;
+   margin-right: 15px;
 }
