@@ -68,6 +68,40 @@ public class MeleeDB implements MeleeDAO {
         return moveList.build();
     }
 
+    public List<String> getCharacterAnimations() {
+        ImmutableList.Builder<String> animationList = new ImmutableList.Builder<String>();
+ 
+        List<Map<String, Object>> rawAnimationList = template.queryForList(
+            "SELECT internalName FROM SharedAnimations");
+
+        for (Map<String, Object> animation : rawAnimationList) {
+            animationList.add((String) animation.get("internalName"));
+        }
+
+        return animationList.build();
+    }
+
+    public List<MeleeMove> getMovesQualifiedBy(String charId, String animation) {
+        if (animation == null) {
+            return ImmutableList.of();
+        }
+
+        if (!allMeleeMoves.isPresent()) {
+            getAllMoves();
+        }
+
+        ImmutableList.Builder<MeleeMove> moveList = new ImmutableList.Builder<MeleeMove>();
+
+        for (MeleeMove move : allMeleeMoves.get()) {
+            if (charId == null && move.animation.equals(animation) ||
+                move.charId.equals(charId) && move.animation.equals(animation)) {
+                moveList.add(move);
+            }
+        }
+
+        return moveList.build();
+    }
+
     public List<MeleeMove> getAllMoves() {
         if (allMeleeMoves.isPresent()) {
             return allMeleeMoves.get();
