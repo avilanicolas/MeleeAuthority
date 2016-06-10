@@ -39,7 +39,7 @@ public class MeleeCharacterController {
                 parsedFloat = Float.parseFloat(value);
                 
             } catch (IllegalArgumentException | NullPointerException e) {
-                e.printStackTrace();
+                return ImmutableList.of();
             }
 
             if (characterPredicate != null
@@ -52,21 +52,24 @@ public class MeleeCharacterController {
                 System.out.printf("REJECTED request with (%s %s %s)\n", filter, predicate, value);
                 return ImmutableList.of();
             }
+        } else if (!predicate.equals(NONE) || !value.equals(NONE)) {
+            // ie if either predicate or value are set, but filter is not
+            return ImmutableList.of();
         }
 
         if (list == null && !NONE.equals(charId)) {
             if (validId(charId)) {
                 return ImmutableList.of(getDB().getCharacterById(charId));
             }
+
+            return ImmutableList.of();
         }
 
         if (list == null && name.equals(ALL)) {
-            list = getDB().getAllCharacters();
+            return getDB().getAllCharacters();
         } else {
             if (validName(name)) {
-                list = ImmutableList.of(getDB().getCharacter(name));
-            } else {
-                list = ImmutableList.of();
+                return ImmutableList.of(getDB().getCharacter(name));
             }
         }
 
