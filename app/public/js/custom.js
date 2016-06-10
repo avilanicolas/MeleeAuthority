@@ -24,7 +24,8 @@ $(document).ready(function() {
       } else {
          table.search($(this).val()).draw();
       }
-   })
+   });
+   $("input:first").focus();
    $('.dropdown-menu li a').on('click', function() {
       var selText = $(this).text();
       $(this).parents('.dropdown').find('.dropdown-toggle')
