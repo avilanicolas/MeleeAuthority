@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class MeleeDB implements MeleeDAO {
-    private DataSource dataSource;
     private JdbcTemplate template;
 
     // This is a really long latency call, so wrap it in an optional to save us some sanity.
@@ -22,7 +21,6 @@ public class MeleeDB implements MeleeDAO {
 
     @Override
     public void setDataSource(DataSource ds) {
-        this.dataSource = ds;
         this.template = new JdbcTemplate(ds);
     }
 
@@ -311,21 +309,18 @@ public class MeleeDB implements MeleeDAO {
         newCharacter.AirMobB = (Float) entry.get("AirMobB");
         newCharacter.ALag = (Float) entry.get("ALag");
         newCharacter.BLag = (Float) entry.get("BLag");
-        newCharacter.ChDirFrames = (Integer) entry.get("ChDrFrames");
+        newCharacter.ChDirFrames = (Float) entry.get("ChDrFrames");
         newCharacter.DashAccelA = (Float) entry.get("DashAccelA");
         newCharacter.DashAccelB = (Float) entry.get("DashAccelB");
         newCharacter.DashInitVel = (Float) entry.get("DashInitVel");
         newCharacter.DashTermVel = (Float) entry.get("DashTermVel");
         newCharacter.DblJMult = (Float) entry.get("DashTermVel");
         newCharacter.DLag = (Float) entry.get("DLag");
-        newCharacter.FastWalkMin = (Float) entry.get("FastWalkMin");
         newCharacter.FFTermVel = (Float) entry.get("FFTermVel");
         newCharacter.FLag = (Float) entry.get("FLag");
         newCharacter.Friction = (Float) entry.get("Fricton");
         newCharacter.Gravity = (Float) entry.get("Gravity");
         newCharacter.InitWalkVel = (Float) entry.get("InitWalkVel");
-        newCharacter.Jab2Window = (Integer) entry.get("Jab2Window");
-        newCharacter.Jab3Window = (Integer) entry.get("Jab3Window");
         newCharacter.JumpFrames = (Float) entry.get("JumpFrames");
         newCharacter.JumpHInitVel = (Float) entry.get("JumpHInitVel");
         newCharacter.JumpHMaxVel = (Float) entry.get("JumpHMaxVel");
@@ -334,25 +329,21 @@ public class MeleeDB implements MeleeDAO {
         newCharacter.LdgJmpHVel = (Float) entry.get("LdgJumpHVel");
         newCharacter.LdgJmpVVel = (Float) entry.get("LdgJumpVVel");
         newCharacter.MaxAirHVel = (Float) entry.get("MaxAirHVel");
-        newCharacter.MidWalkPoint = (Float) entry.get("MidWalkPoint");
         newCharacter.ModelScaling = (Float) entry.get("ModelScaling");
         newCharacter.NLag = (Float) entry.get("NLag");
         newCharacter.NumJumps = (Integer) entry.get("NumJumps");
         newCharacter.RpdJabWindow = (Integer) entry.get("RpdJabWindow");
-        newCharacter.RunAccel = (Float) entry.get("RunAccel");
         newCharacter.RunAnimScal = (Float) entry.get("RunAnimScal");
         newCharacter.ShieldSize = (Float) entry.get("ShieldSize");
         newCharacter.ShldBrkInitVel = (Float) entry.get("ShldBrkInitVel");
         newCharacter.SHVInitVel = (Float) entry.get("SHVInitVel");
-        newCharacter.SlowWalkMax = (Float) entry.get("SlowWalkMax");
         newCharacter.StarDmg = (Float) entry.get("StarDmg");
         newCharacter.TermVel = (Float) entry.get("TermVel");
         newCharacter.ThrowVel = (Float) entry.get("ThrowVel");
         newCharacter.ULag = (Float) entry.get("ULag");
         newCharacter.VMdlScaling = (Float) entry.get("VMdlScaling");
-        newCharacter.WalkAccel = (Float) entry.get("WalkAccel");
         newCharacter.WalkMaxVel = (Float) entry.get("WalkMaxVel");
-        newCharacter.Weight = (Integer) entry.get("Weight");
+        newCharacter.Weight = (Float) entry.get("Weight");
         newCharacter.WJmpHVel = (Float) entry.get("WJmpHVel");
         newCharacter.WJmpVVel = (Float) entry.get("WJmpVVell");
         newCharacter.id = (String) entry.get("id");
