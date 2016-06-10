@@ -21,3 +21,19 @@ body {
    display: inline-grid;
    margin-right: 15px;
 }
+
+#framestrip td, #framestrip th{
+   width: 30px;
+   height: 30px;
+   vertical-align: middle;
+}
+
+#framestrip td {
+   text-align: center;
+   padding: 0px;
+}
+
+#framestrip th {
+   text-align: right;
+   padding-right: 5px;
+}

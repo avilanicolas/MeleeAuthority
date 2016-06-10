@@ -1,5 +1,4 @@
 exports.getCharId = function(name) {
-   console.log(name);
    newname = name.toLowerCase().replace(/[^a-zA-Z]/g, '');
    switch(newname) {
    case 'wireframemale':
@@ -76,7 +75,6 @@ exports.getCharId = function(name) {
 }
 
 exports.getName = function(name) {
-   console.log(name);
    newname = name.toLowerCase().replace(/[^a-zA-Z]/g, '');
    switch(newname) {
    case 'wireframemale':
@@ -150,4 +148,21 @@ exports.getName = function(name) {
    default:
       return name.replace(/-|\?|&|=|\\/g, '');
    }
+}
+
+exports.getFrameStrip = function (data) {
+   if (!data)
+      return [];
+   data = data[0]['frames'];
+   for (var i = 0; i < data.length; i++) {
+      for (key in data[i]) {
+         if (data[i][key]) {
+            data[i][key] = "█";
+         } else {
+            data[i][key] = "";
+         }
+      }
+   }
+
+   return data;
 }
