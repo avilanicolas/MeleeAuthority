@@ -30,6 +30,40 @@ public class MeleeDB implements MeleeDAO {
         System.out.println(template.queryForList("SHOW TABLES").size());
     }
 
+    public List<Hitbox> getHitboxesForMove(String charId, String animation) {
+        String sql = String.format(
+            "SELECT * FROM Hitboxes " +
+            "WHERE charId = '%s' AND animation = '%s'",
+            charId,
+            animation);
+
+        ImmutableList.Builder<Hitbox> hitboxList =
+            new ImmutableList.Builder<Hitbox>();
+        List<Map<String, Object>> result =
+            template.queryForList(sql);
+
+        for (Map<String, Object> entry : result) {
+            Hitbox hitbox = new Hitbox();
+
+            hitbox.groupId = (Integer) entry.get("groupId");
+            hitbox.hitboxId = (Integer) entry.get("hitboxId");
+            hitbox.bone = (Integer) entry.get("bone");
+            hitbox.damage = (Integer) entry.get("damage");
+            hitbox.zoffset = (Integer) entry.get("zoffset");
+            hitbox.yoffset = (Integer) entry.get("yoffset");
+            hitbox.xoffset = (Integer) entry.get("xoffset");
+            hitbox.angle = (Integer) entry.get("angle");
+            hitbox.knockbackScaling = (Integer) entry.get("knockbackScaling");
+            hitbox.fixedKnockback = (Integer) entry.get("fixedKnockback");
+            hitbox.baseKnockback = (Integer) entry.get("baseKnockback");
+            hitbox.shieldDamage = (Integer) entry.get("shieldDamage");
+
+            hitboxList.add(hitbox);
+        }
+
+        return hitboxList.build();
+    }
+
     public List<String> getCharacterIds() {
         List<Map<String, Object>> result = template.queryForList("SELECT id FROM Characters");
         ImmutableList.Builder<String> builder = new ImmutableList.Builder<String>();

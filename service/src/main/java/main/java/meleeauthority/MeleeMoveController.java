@@ -18,7 +18,22 @@ public class MeleeMoveController {
 
     private static final String ALL = "ALL";
     private static final String NONE = "NONE";
-    private static final float ZERO = 0;
+
+    @RequestMapping("/hitbox")
+    public List<Hitbox> hitbox(
+            @RequestParam(value="charId", defaultValue=NONE) String charId,
+            @RequestParam(value="animation", defaultValue=NONE) String animation) {
+
+        if (NONE.equals(charId) || NONE.equals(animation)) {
+            return ImmutableList.of();
+        }
+
+        if (validId(charId) && validAnimation(animation)) {
+            return getDB().getHitboxesForMove(charId, animation);
+        }
+
+        return ImmutableList.of();
+    }
 
     @RequestMapping("/move")
     public List<MeleeMove> move(
