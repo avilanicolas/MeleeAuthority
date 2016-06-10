@@ -16,7 +16,6 @@ VALUES
     ('Gw', 'Game & Watch'),
     ('Gn', 'Ganondorf'),
     ('Pp', 'Ice Climbers (Popo)'),
-    ('Nn', 'Ice Climbers (Nana)'),
     ('Pr', 'Jigglypuff'),
     ('Kb', 'Kirby'),
     ('Lg', 'Luigi'),

@@ -406,6 +406,8 @@ public class MeleeAuthorityScanner {
             actionToAnimation.forEach((action, animation) -> {
 
                 for (int i = 0; i < animation.frameStrip.size(); i++) {
+                    // start numbering at frame 1 instead of frame 0
+                    int frameStripNumber = i + 1;
 
                     // every 50,000 inserts, write another INSERT INTO so that we dont timeout
                     if (totalInserts.get() % 5000 == 0) {
@@ -425,7 +427,7 @@ public class MeleeAuthorityScanner {
                     totalInserts.incrementAndGet();
 
                     EnumSet<FrameStripType> flags = animation.frameStrip.get(i);
-                    tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + i + ", ");
+                    tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + frameStripNumber + ", ");
                     if (flags.contains(FrameStripType.HITBOX)) {
                         tryWrite(writer, "true, ");
                     } else {

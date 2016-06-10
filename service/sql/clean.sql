@@ -5,4 +5,3 @@ DROP TABLE IF EXISTS AnimationCommandTypes;
 DROP TABLE IF EXISTS SharedAnimations;
 DROP TABLE IF EXISTS CharacterAttributes;
 DROP TABLE IF EXISTS Characters;
-DROP TABLE IF EXISTS Hitboxes;
