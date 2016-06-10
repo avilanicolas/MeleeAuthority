@@ -12,16 +12,24 @@
   </table>
 {{/if}}
 
-{{#if frames}}
-<table class="datatable table table-striped table-bordered">
-  {{table td}}
-</table>
+{{#if hitboxv}}
+  <h3 style="text-align: center; width: 100%">{{hitboxv}}</h3>
+  <table class="table table-striped table-bordered">
+    {{hitboxvertical hitboxtd}}
+  </table>
+{{/if}}
+
+{{#if hitbox}}
+  <h3 style="text-align: center; width: 100%">{{hitbox}}</h3>
+  <table class="table table-striped table-bordered">
+    {{hitbox hitboxtd}}
+  </table>
 {{/if}}
 
 {{#if vertical}}
   <h3 style="text-align: center; width: 100%">{{vertical}}</h3>
   {{#if frame}}
-    <table class="table table-bordered" id="framestrip" style="width: 100%">
+    <table class="table table-bordered" id="framestrip">
   {{else}}
     <table class="table table-striped table-bordered" style="width: 100%">
   {{/if}}

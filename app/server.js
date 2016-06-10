@@ -31,7 +31,7 @@ router.get("/characters",function(req,res){
   request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var settings = {normaltd: JSON.parse(response.body)};
+      var settings = {datatabletd: melee.parseChar(JSON.parse(response.body))};
       settings.title = 'Characters';
       settings.character = true;
       settings.base = true;
@@ -53,60 +53,61 @@ router.get("/characters",function(req,res){
 router.get("/characters/:character",function(req,res){
   request(api + '/character?charId=' + melee.getCharId(req.params.character),
     function (error1, response1, body1) {
-    request(api + '/move?charId=' + melee.getCharId(req.params.character), 
+    request(api + '/hitbox?charId=' + melee.getCharId(req.params.character), 
       function (error2, response2, body2) {
         if (!error1 && response1.statusCode == 200 &&
             !error2 && response2.statusCode == 200) { 
-          var settings = {verticaltd: JSON.parse(response1.body)};
-          settings.normaltd = JSON.parse(response2.body);
+          var settings = {verticaltd: melee.parseChar(JSON.parse(response1.body))};
+          console.log(new Array(JSON.parse(response2.body)));
+          settings.hitboxtd = melee.parseMove(new Array(JSON.parse(response2.body)));
           settings.title = settings.verticaltd[0].name;
           settings.url = req.originalUrl;
           for (var a in req.params) { settings[a] = req.params[a]; }
           res.render("character", settings);
         } else {
-          console.log(error);
+          if (error1) {
+            console.log(erro1);
+          }
+          if (error2) {
+            console.log(error2);
+          }
           res.status(404).render("404", {title: 'Page Not Found'});
         }
       });
     });
 });
 
-router.get("/characters/:character/moves",function(req,res){
-  request(api + '/move?charId=' + melee.getCharId(req.params.character),
-    function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
-      settings.title = req.params.character + ' - Moves';
-      for (var a in req.params) { settings[a] = req.params[a]; }
-      res.render("allmoves", settings);
-    } else {
-      console.log(error);
-      res.status(404).render("404", {title: 'Page Not Found'});
-    }
-  });
-});
-
 router.get("/characters/:character/:move",function(req,res){
   request(api + '/move?charId=' + melee.getCharId(req.params.character) +
-    '&animation=' + req.params.move,
-    function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var settings = {verticaltd: melee.getFrameStrip(JSON.parse(response.body))};
-      settings.title = req.params.character + ' - ' + req.params.move;
-      for (var a in req.params) { settings[a] = req.params[a]; }
-      res.render("move", settings);
-    } else {
-      console.log(error);
-      res.status(404).render("404", {title: 'Page Not Found'});
-    }
-  });
+    '&animation=' + melee.getMove(req.params.move),
+    function (error1, response1, body1) {
+    request(api + '/hitbox?charId=' + melee.getCharId(req.params.character) +
+      '&animation=' + melee.getMove(req.params.move),
+      function (error2, response2, body2) {
+        if (!error1 && response1.statusCode == 200 &&
+            !error2 && response2.statusCode == 200) { 
+          var settings = {verticaltd: melee.getFrameStrip(JSON.parse(response1.body))};
+          settings.title = req.params.character + ' - ' + req.params.move;
+          for (var a in req.params) { settings[a] = req.params[a]; }
+          res.render("move", settings);
+        } else {
+          if (error1) {
+            console.log(erro1);
+          }
+          if (error2) {
+            console.log(error2);
+          }
+          res.status(404).render("404", {title: 'Page Not Found'});
+        }
+      });
+    });
 });
 
 router.get("/moves",function(req,res){
-  request(api + '/character',
+  request(api + '/move',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
+      var settings = {normaltd: JSON.parse(response.body)};
       settings.title = 'Moves';
       settings.move = true;
       settings.base = true;
@@ -136,6 +137,27 @@ router.get("/moves/:move",function(req,res){
 
 router.get("/contact",function(req,res){
   res.render("contact", {title: 'Contact Us', contact: true});
+});
+
+router.get("/builder",function(req,res){
+  request(api + '/character?charId=' + melee.getCharId(req.params.character),
+    function (error1, response1, body1) {
+    request(api + '/move?charId=' + melee.getCharId(req.params.character), 
+      function (error2, response2, body2) {
+        if (!error1 && response1.statusCode == 200 &&
+            !error2 && response2.statusCode == 200) { 
+          var settings = {verticaltd: melee.parseChar(JSON.parse(response1.body))};
+          settings.normaltd = melee.parseMove(JSON.parse(response2.body));
+          settings.title = settings.verticaltd[0].name;
+          settings.url = req.originalUrl;
+          for (var a in req.params) { settings[a] = req.params[a]; }
+          res.render("character", settings);
+        } else {
+          console.log(error);
+          res.status(404).render("404", {title: 'Page Not Found'});
+        }
+      });
+    });
 });
 
 app.use("/",router);
