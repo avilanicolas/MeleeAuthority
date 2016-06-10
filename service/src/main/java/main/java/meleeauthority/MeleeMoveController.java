@@ -1,12 +1,14 @@
 package main.java.meleeauthority;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 @RestController
 public class MeleeMoveController {
@@ -20,19 +22,25 @@ public class MeleeMoveController {
     private static final String NONE = "NONE";
 
     @RequestMapping("/hitbox")
-    public List<Hitbox> hitbox(
+    public Map<String, List<Hitbox>> hitbox(
             @RequestParam(value="charId", defaultValue=NONE) String charId,
-            @RequestParam(value="animation", defaultValue=NONE) String animation) {
+            @RequestParam(value="animation", defaultValue=ALL) String animation) {
 
-        if (NONE.equals(charId) || NONE.equals(animation)) {
-            return ImmutableList.of();
+        if (NONE.equals(charId)) {
+            return ImmutableMap.of();
+        }
+
+        if (!NONE.equals(charId) && ALL.equals(animation)) {
+            if (validId(charId)) {
+                return getDB().getHitboxesForCharacter(charId);
+            }
         }
 
         if (validId(charId) && validAnimation(animation)) {
-            return getDB().getHitboxesForMove(charId, animation);
+            return ImmutableMap.of(animation, getDB().getHitboxesForMove(charId, animation));
         }
 
-        return ImmutableList.of();
+        return ImmutableMap.of();
     }
 
     @RequestMapping("/move")

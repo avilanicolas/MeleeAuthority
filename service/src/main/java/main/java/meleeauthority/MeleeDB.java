@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class MeleeDB implements MeleeDAO {
@@ -28,6 +29,24 @@ public class MeleeDB implements MeleeDAO {
     @Override
     public void asdf() {
         System.out.println(template.queryForList("SHOW TABLES").size());
+    }
+
+    public Map<String, List<Hitbox>> getHitboxesForCharacter(String charId) {
+        String sql = String.format(
+            "SELECT * FROM Hitboxes " +
+            "WHERE charId = '%s'",
+            charId,
+            animation);
+
+        new ImmutableMap.Builder<String, List<Hitbox>> hitboxMap =
+            new ImmutableMap.Builder<String, List<Hitbox>>();
+
+        List<Map<String, Object>> result = template.queryForList(sql);
+        for (Map<String, Object> entry : result) {
+            hitboxMap.put(entry.get("animation"), getHitboxesForMove(charId, entry.get("animation")));
+        }
+
+        return hitboxMap.build();
     }
 
     public List<Hitbox> getHitboxesForMove(String charId, String animation) {
