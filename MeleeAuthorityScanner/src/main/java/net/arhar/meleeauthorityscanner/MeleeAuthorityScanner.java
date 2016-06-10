@@ -9,11 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -71,10 +69,13 @@ public class MeleeAuthorityScanner {
                 String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
                 if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
                     // TODO possible do something more intelligent when a character doesn't have a "shared" animation
+                    System.out.println("SubAction not found for " + character.name()
+                            + " enum: <<" + subAction.name() + ">> desc: <<" + subAction.description + ">>");
                     continue;
                 }
-                if (!temp.contains(internalName)) {
-                    System.out.println("internal name for " + character.name() + " " + subAction.description + " not found: " + internalName);
+                if (!internalName.equals(subAction.name())) {
+                    System.out.println("internal name does not match. " + character.name()
+                            + " desc: <<" + subAction.description + ">> enum: <<" + subAction.name() + ">> internal: <<" + internalName + ">>");
                 }
 
                 int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
@@ -122,17 +123,17 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Characters.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE Characters (\n"
-                + INDENT + "id CHAR(2),\n"
-                + INDENT + "fullName VARCHAR(32),\n"
-                + INDENT + "PRIMARY KEY (id)\n"
-                + ");\n\n");
+        writer.write("CREATE TABLE Characters (\n");
+        writer.write(INDENT + "id CHAR(2),\n");
+        writer.write(INDENT + "fullName VARCHAR(32),\n");
+        writer.write(INDENT + "PRIMARY KEY (id)\n");
+        writer.write(");\n\n");
         writer.flush();
 
         // INSERT
-        writer.write("INSERT INTO Characters\n"
-                + INDENT + "(id, fullName)\n"
-                + "VALUES\n");
+        writer.write("INSERT INTO Characters\n");
+        writer.write(INDENT + "(id, fullName)\n");
+        writer.write("VALUES\n");
         boolean first = true;
         for (Character character : Character.values()) {
             if (first) {
@@ -270,28 +271,25 @@ public class MeleeAuthorityScanner {
         writer.write("INSERT INTO SharedAnimations\n");
         writer.write(INDENT + "(internalName, description)\n");
         writer.write("VALUES\n");
-        Character character = Character.Ca; // falcon has all the moves we need names for
+//        Character character = Character.Ca; // falcon has all the moves we need names for
         boolean first = true;
-//        for (Entry<Integer, String> subAction : SubAction.SUBACTIONS.entrySet()) {
         for (SubAction subAction : SubAction.values()) {
             if (first) {
                 first = false;
             } else {
                 writer.write(",\n");
             }
-            String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
-            if (!internalName.equals(subAction.name())) {
-                System.out.println("SubAction names dont match. enum: " + subAction.name() + ", internal: " + internalName);
-            }
-            temp.add(internalName);
-            writer.write(INDENT + "('" + internalName + "', '" + subAction.description + "')");
+//            String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
+//            if (!internalName.equals(subAction.name())) {
+//                System.out.println("\ninternal name for SharedAnimations does not match. enum: <<" + subAction.name() + ">> internal: <<" + internalName + ">>");
+//            }
+//            writer.write(INDENT + "('" + internalName + "', '" + subAction.description + "')");
+            writer.write(String.format(INDENT + "('%s', '%s')", subAction.name(), subAction.description));
         }
         writer.write(";\n");
         writer.flush();
         writer.close();
     }
-
-    private static final Set<String> temp = new HashSet<>();
 
     private static void writeAnimationCommandTypes() throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "AnimationCommandTypes.sql"));

@@ -33,3 +33,8 @@ marth up b
 
 FallSpecial
 post up-b "gimp"
+
+
+LandingAirLw
+without l cancel advances 0.94 "animation frames" per frame
+with l cancel - advances 1.88 frames per frame instead

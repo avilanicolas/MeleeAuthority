@@ -1,10 +1,8 @@
 package net.arhar.meleeauthorityscanner;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public enum SubAction {
@@ -15,14 +13,14 @@ public enum SubAction {
     Attack100Loop(0x32, "Rapid Jab Loop"),
     Attack100End(0x33, "Rapid Jab End"),
     AttackDash(0x34, "Dash Attack"),
-    AttackS3Hi(0x35, "Forward-Tilt (High),"),
+    AttackS3Hi(0x35, "Forward-Tilt (High)"),
     AttackS3S(0x37, "Forward-Tilt"),
-    AttackS3Lw(0x39, "Forward-Tilt (Low),"),
+    AttackS3Lw(0x39, "Forward-Tilt (Low)"),
     AttackHi3(0x3a, "Up-Tilt"),
     AttackLw3(0x3b, "Down-Tilt"),
-    AttackS4Hi(0x3c, "Forward-Smash (High),"),
+    AttackS4Hi(0x3c, "Forward-Smash (High)"),
     AttackS4S(0x3e, "Forward-Smash"),
-    AttackS4Lw(0x40, "Forward-Smash (Low),"),
+    AttackS4Lw(0x40, "Forward-Smash (Low)"),
     AttackHi4(0x42, "Up-Smash"),
     AttackLw4(0x43, "Down-Smash"),
     AttackAirN(0x44, "Neutral-Air"),
