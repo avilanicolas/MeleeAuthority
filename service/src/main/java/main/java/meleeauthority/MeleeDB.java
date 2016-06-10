@@ -35,15 +35,16 @@ public class MeleeDB implements MeleeDAO {
         String sql = String.format(
             "SELECT * FROM Hitboxes " +
             "WHERE charId = '%s'",
-            charId,
-            animation);
+            charId);
 
-        new ImmutableMap.Builder<String, List<Hitbox>> hitboxMap =
+        ImmutableMap.Builder<String, List<Hitbox>> hitboxMap =
             new ImmutableMap.Builder<String, List<Hitbox>>();
 
         List<Map<String, Object>> result = template.queryForList(sql);
         for (Map<String, Object> entry : result) {
-            hitboxMap.put(entry.get("animation"), getHitboxesForMove(charId, entry.get("animation")));
+            hitboxMap.put(
+                (String) entry.get("animation"),
+                getHitboxesForMove(charId, (String) entry.get("animation")));
         }
 
         return hitboxMap.build();
