@@ -37,6 +37,15 @@ $(document).ready(function() {
          table.search($('.form-control').val()).draw();
       }
    });
+   $('.datatable th').each(function(){
+      $(this).css('min-width', ($(this).width()+20) + 'px');
+      $(this).css('padding-right', 8 + 'px');
+      $(this).css('text-align', 'center');
+   });
+   if ($('.dataTables_wrapper').length) {
+      $('.dataTables_wrapper .row .col-sm-6').eq(0).prepend($('.page-header h1'));
+      $('.page-header').hide();
+   }
 });
 
 
