@@ -1,37 +1,42 @@
 $(document).ready(function() {
-   var table = $('table').DataTable({paging: false});
+   var table = $('.datatable').DataTable({paging: false});
    $('.dataTables_filter').prepend('<div class="dropdown">' +
-      '<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+      '<button class="btn btn-default dropdown-toggle" type="button" ' +
+      'data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
       'All Columns ' +
       '<span class="caret"></span>' + 
       '</button>' +
       '<ul class="dropdown-menu" id="dropdown">' +
-      '<li><a>All Columns</a></li><li role="separator" class="divider"></li>' +
+      '<li id="all"><a>All Columns</a></li><li role="separator" class="divider"></li>' +
       '</ul></div>');
    var ul = $('#dropdown');
    var dropdownlist = new Array();
-   $('table thead tr th').each(function(id) {
+   $('.datatable tr th').each(function(id) {
       var item = '<li id="'+id+'"><a>'+$(this).text()+'</a></li>';
       dropdownlist.push(item);
    });
    ul.append(dropdownlist.join(''));
    
-   var idx = 0;
+   var idx = 'all';
    $('.form-control').on('keyup', function() {
-      if (idx == 0) {
+      if (idx != 'all') {
          table.columns(idx).search($(this).val()).draw();
       } else {
          table.search($(this).val()).draw();
       }
    })
    $('.dropdown-menu li a').on('click', function() {
+      var selText = $(this).text();
+      $(this).parents('.dropdown').find('.dropdown-toggle')
+             .html(selText+' <span class="caret"></span>');
       table.columns(idx).search('').draw();
       idx = $(this).parent().attr('id');
-      var selText = $(this).text();
-      $(this).parents('.dropdown').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
-      table.columns(idx).search($('.form-control').val()).draw();
+      if (idx != 'all') {
+         table.columns(idx).search($('.form-control').val()).draw();
+      } else {
+         table.search($('.form-control').val()).draw();
+      }
    });
-
 });
 
 

@@ -31,7 +31,7 @@ router.get("/characters",function(req,res){
   request(api + '/character',
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
+      var settings = {normaltd: JSON.parse(response.body)};
       settings.title = 'Characters';
       settings.character = true;
       settings.base = true;
@@ -51,23 +51,28 @@ router.get("/characters",function(req,res){
 });
 
 router.get("/characters/:character",function(req,res){
-   request(api + '/character?charId=' + melee.getCharId(req.params.character),
-    function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
-      settings.title = settings.td[0].name;
-      settings.url = req.originalUrl;
-      for (var a in req.params) { settings[a] = req.params[a]; }
-      res.render("character", settings);
-    } else {
-      console.log(error);
-      res.status(404).render("404", {title: 'Page Not Found'});
-    }
-  });
+  request(api + '/character?charId=' + melee.getCharId(req.params.character),
+    function (error1, response1, body1) {
+    request(api + '/move?charId=' + melee.getCharId(req.params.character), 
+      function (error2, response2, body2) {
+        if (!error1 && response1.statusCode == 200 &&
+            !error2 && response2.statusCode == 200) { 
+          var settings = {verticaltd: JSON.parse(response1.body)};
+          settings.normaltd = JSON.parse(response2.body);
+          settings.title = settings.verticaltd[0].name;
+          settings.url = req.originalUrl;
+          for (var a in req.params) { settings[a] = req.params[a]; }
+          res.render("character", settings);
+        } else {
+          console.log(error);
+          res.status(404).render("404", {title: 'Page Not Found'});
+        }
+      });
+    });
 });
 
 router.get("/characters/:character/moves",function(req,res){
-  request(api + '/move/?charId=' + melee.getCharId(req.params.character),
+  request(api + '/move?charId=' + melee.getCharId(req.params.character),
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var settings = {td: JSON.parse(response.body)};
@@ -82,10 +87,11 @@ router.get("/characters/:character/moves",function(req,res){
 });
 
 router.get("/characters/:character/:move",function(req,res){
-  request(api + '/character',
+  request(api + '/move?charId=' + melee.getCharId(req.params.character) +
+    '&animation=' + req.params.move,
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
+      var settings = {verticaltd: melee.getFrameStrip(JSON.parse(response.body))};
       settings.title = req.params.character + ' - ' + req.params.move;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("move", settings);
