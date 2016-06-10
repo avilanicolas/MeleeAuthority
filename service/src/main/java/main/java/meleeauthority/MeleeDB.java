@@ -33,7 +33,7 @@ public class MeleeDB implements MeleeDAO {
 
     public Map<String, List<Hitbox>> getHitboxesForCharacter(String charId) {
         String sql = String.format(
-            "SELECT * FROM Hitboxes " +
+            "SELECT DISTINCT animation FROM Hitboxes " +
             "WHERE charId = '%s'",
             charId);
 
