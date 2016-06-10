@@ -46,6 +46,7 @@ public class MeleeAuthorityScanner {
         Path dirPath = Paths.get(DIRECTORY_NAME);
         Files.createDirectories(dirPath);
         writeCharacters();
+        // TODO writeAttributes();
         writeCharacterAttributes(fileSystem);
         writeSharedAnimations(fileSystem);
         writeAnimationCommandTypes();
@@ -150,10 +151,12 @@ public class MeleeAuthorityScanner {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAttributes.sql"));
 
         // CREATE TABLE
-        writer.write("CREATE TABLE CharacterAttributes (\n"
-                + INDENT + "id CHAR(2),");
+        writer.write("CREATE TABLE CharacterAttributes (\n");
+        writer.write(INDENT + "id CHAR(2),\n");
         for (Attribute attribute : Attribute.values()) {
-            writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",\n");
+            if (attribute.known) {
+                writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",\n");
+            }
         }
         writer.write(INDENT + "PRIMARY KEY (id),\n");
         writer.write(INDENT + "FOREIGN KEY (id) REFERENCES Characters(id)\n");
@@ -164,10 +167,12 @@ public class MeleeAuthorityScanner {
         writer.write("INSERT INTO CharacterAttributes\n");
         writer.write(INDENT + "(id");
         for (Attribute attribute : Attribute.values()) {
-            writer.write(", " + attribute.name());
+            if (attribute.known) {
+                writer.write(", " + attribute.name());
+            }
         }
-        writer.write(")\n"
-                + "VALUES\n");
+        writer.write(")\n");
+        writer.write("VALUES\n");
         writer.flush();
         // add one line for each characters values
         for (int i = 0; i < Character.values().length; i++) {
@@ -179,12 +184,16 @@ public class MeleeAuthorityScanner {
             writer.write(INDENT + "('" + character.name() + "'");
 
             for (Attribute attribute : Attribute.values()) {
-                writer.write(", ");
-
-                if (attribute.numberType == Float.class) {
-                    writer.write(String.valueOf(buffer.getFloat()));
+                if (attribute.known) {
+                    writer.write(", ");
+                    if (attribute.numberType == Float.class) {
+                        writer.write(String.valueOf(buffer.getFloat()));
+                    } else {
+                        writer.write(String.valueOf(buffer.getInt()));
+                    }
                 } else {
-                    writer.write(String.valueOf(buffer.getInt()));
+                    // advance down the buffer anyway so that we still have the ordinal-based offset
+                    buffer.getInt();
                 }
             }
 
@@ -252,7 +261,8 @@ public class MeleeAuthorityScanner {
         writer.write("CREATE TABLE SharedAnimations (\n");
         writer.write(INDENT + "internalName VARCHAR(32),\n");
         writer.write(INDENT + "description VARCHAR(64),\n");
-        writer.write(INDENT + "PRIMARY KEY (internalName)\n");
+        writer.write(INDENT + "PRIMARY KEY (internalName),\n");
+        writer.write(INDENT + "UNIQUE (description)\n");
         writer.write(");\n\n");
         writer.flush();
 
@@ -270,6 +280,9 @@ public class MeleeAuthorityScanner {
                 writer.write(",\n");
             }
             String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
+            if (!internalName.equals(subAction.name())) {
+                System.out.println("SubAction names dont match. enum: " + subAction.name() + ", internal: " + internalName);
+            }
             temp.add(internalName);
             writer.write(INDENT + "('" + internalName + "', '" + subAction.description + "')");
         }
@@ -374,7 +387,7 @@ public class MeleeAuthorityScanner {
 
         // CREATE TABLE
         writer.write("CREATE TABLE FrameStrips (\n");
-        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,");
+        writer.write(INDENT + "id INTEGER AUTO_INCREMENT,\n");
         writer.write(INDENT + "charId CHAR(2),\n");
         writer.write(INDENT + "animation VARCHAR(32),\n");
         writer.write(INDENT + "frame INTEGER,\n");

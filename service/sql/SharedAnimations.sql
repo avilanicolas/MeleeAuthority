@@ -1,7 +1,8 @@
 CREATE TABLE SharedAnimations (
     internalName VARCHAR(32),
     description VARCHAR(64),
-    PRIMARY KEY (internalName)
+    PRIMARY KEY (internalName),
+    UNIQUE (description)
 );
 
 INSERT INTO SharedAnimations
