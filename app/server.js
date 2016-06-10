@@ -58,7 +58,6 @@ router.get("/characters/:character",function(req,res){
         if (!error1 && response1.statusCode == 200 &&
             !error2 && response2.statusCode == 200) { 
           var settings = {verticaltd: melee.parseChar(JSON.parse(response1.body))};
-          console.log(new Array(JSON.parse(response2.body)));
           settings.hitboxtd = melee.parseMove(new Array(JSON.parse(response2.body)));
           settings.title = settings.verticaltd[0].name;
           settings.url = req.originalUrl;
@@ -66,7 +65,7 @@ router.get("/characters/:character",function(req,res){
           res.render("character", settings);
         } else {
           if (error1) {
-            console.log(erro1);
+            console.log(error1);
           }
           if (error2) {
             console.log(error2);
@@ -87,12 +86,14 @@ router.get("/characters/:character/:move",function(req,res){
         if (!error1 && response1.statusCode == 200 &&
             !error2 && response2.statusCode == 200) { 
           var settings = {verticaltd: melee.getFrameStrip(JSON.parse(response1.body))};
+          settings.hitboxtd = melee.parseMove(new Array(JSON.parse(response2.body)));
           settings.title = req.params.character + ' - ' + req.params.move;
+          settings.hitboxtd[1] = true;
           for (var a in req.params) { settings[a] = req.params[a]; }
           res.render("move", settings);
         } else {
           if (error1) {
-            console.log(erro1);
+            console.log(error1);
           }
           if (error2) {
             console.log(error2);
@@ -121,10 +122,10 @@ router.get("/moves",function(req,res){
 });
 
 router.get("/moves/:move",function(req,res){
-  request(api + '/character',
+  request(api + '/move?animation=' + melee.getMove(req.params.move),
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var settings = {td: JSON.parse(response.body)};
+      var settings = {verticaltd: JSON.parse(response.body)};
       settings.title = req.params.move;
       for (var a in req.params) { settings[a] = req.params[a]; }
       res.render("move", settings);

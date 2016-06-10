@@ -27,7 +27,7 @@ h1 {
    margin-right: 15px;
 }
 
-#framestrip td, #framestrip th{
+#framestrip td, #framestrip th {
    vertical-align: middle;
 }
 
@@ -43,7 +43,24 @@ h1 {
 #framestrip th {
    width: 100px;
    text-align: right;
-   padding: 0px 10px 0px 0px;
+   padding: 0px 10px 0px 10px;
+}
+
+#hitbox td, #hitbox th {
+   padding: 8px;
+}
+
+#hitbox th {
+   width: 25%;
+   padding-right: 10px;
+   font-size: 16px;
+   background-color: white;
+}
+
+#hitbox thead th {
+   text-align: center;
+   padding: 8px;
+   width: auto;
 }
 
 table.table-bordered thead th, table.table-bordered thead td,
@@ -64,6 +81,18 @@ table.table-bordered td {
    align-items: center;
 }
 
+.table-nonfluid {
+   width: auto !important;
+}
 
+table tr.separator {
+   height: 8px;
+}
 
+table tr.separator:nth-of-type(odd) {
+   background-color: white;
+}
 
+table #sep2 td {
+   border-top-width: 0px;
+}

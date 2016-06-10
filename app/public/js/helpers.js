@@ -103,18 +103,49 @@ exports.get = function(hbs) {
       },
 
       hitboxvertical: function(data) {
-         
-         console.log(data);
          if (!data)
             return "";
-         var body = '<thead>';
+         var body = '<thead><tr><th>Move</th>';
+         if (data[1]) {
+            body = "<thead><tr>";
+            body += '<th>Group</th>' +
+                    '<th>Hitbox</th>' +
+                    '<th>Bone</th>' +
+                    '<th>Damage</th>' +
+                    '<th>Z offset</th>' +
+                    '<th>Y offset</th>' +
+                    '<th>X offset</th>' +
+                    '<th>Angle</th>' +
+                    '<th>Knockback Scaling</th>' +
+                    '<th>Fixed Knockback</th>' +
+                    '<th>Base Knockback</th>' +
+                    '<th>Shield Damage</th>';
+         } else {
+            body += '<th>Group</th>' +
+                    '<th>Id</th>' +
+                    '<th>bone</th>' +
+                    '<th>dmg</th>' +
+                    '<th>z</th>' +
+                    '<th>y</th>' +
+                    '<th>x</th>' +
+                    '<th>angle</th>' +
+                    '<th>kbs</th>' +
+                    '<th>fkb</th>' +
+                    '<th>bkb</th>' +
+                    '<th>shld</th>';
+         }
+         body += '</thead>';
 
          var i = 0;
          for (var key in data[0]) {
             var arr = data[0][key];
             var text = hbs.handlebars.escapeExpression(key);
-            body += '<tr><th rowspan="' + arr.length + '">' +
-            exports.get(hbs).link(text, this.url + '/' + text) + '</th>';
+            if (data[1]) {
+               body += '<tr>';
+            } else {
+               body += '<tr><th rowspan="' + arr.length + '">' +
+               exports.get(hbs).link(text, this.url + '/' + text) + '</th>';
+            }
             var curgroup = 0;
             var curgrouplen = 0;
             var groupchange = true;
@@ -124,38 +155,39 @@ exports.get = function(hbs) {
                for (var len = k; len < arr.length; len++) {
                   if (!found) {
                      if (arr[len]['groupId'] != curgroup) {
-                        console.log("groupId:" + arr[k]['groupId']);
                         found = true;
                      } else {
                         curgrouplen++;
                      }
                   }
                }
-               console.log(curgrouplen);
                for (var keyy in arr[k]) {
                   if (groupchange) {
                      body += '<td rowspan="' + curgrouplen + '">' + arr[k][keyy] + '</td>';
                      groupchange=false;
-                     console.log("here");
                   } else {
                      if (keyy != 'groupId')
                         body += '<td>' + arr[k][keyy] + '</td>';
                   }
                }
+               if (k != arr.length -1) {
+                  body += '</tr>';
+               }
                if (curgrouplen == 1) {
                   groupchange = true;
+                  if (k != arr.length-1 && data[1])
+                  body += '<tr class="separator" id="sep1"><td colspan="12"></td></tr>' +
+                          '<tr class="separator" id="sep2"><td colspan="12"></td></tr>'
                } else {
                   groupchange = false;
                }
                curgrouplen = 0;
                if (k != arr.length -1) {
-                  body += '</tr><tr>';
+                  body += '<tr>';
                }
             }
             
             body += '</tr>';
-            if (i == 0)
-               body += '</thead>';
             i++;
          }
 
