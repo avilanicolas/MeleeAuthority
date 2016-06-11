@@ -96,3 +96,8 @@ table tr.separator:nth-of-type(odd) {
 table #sep2 td {
    border-top-width: 0px;
 }
+
+.builder {
+   display: inline-block;
+   border: 1px solid #333;
+}

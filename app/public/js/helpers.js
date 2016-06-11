@@ -1,3 +1,13 @@
+if (!require) {
+   function require (str) {
+      return "";
+   }
+   var exports = [];
+}
+
+var moveNames = require('../json/moveInternalNames.json');
+var charIds = require('../json/characterIds.json');
+
 function titleCase(str) {
    if (!str) {
       console.log("Error: No title given");
@@ -63,7 +73,7 @@ exports.get = function(hbs) {
             framestrip = true;
             body += '<tr><th>frame</th>';
             for (var c = 0; c < data.length; c++) {
-               body += '<td>' + c + '</td>';
+               body += '<td>' + (c+1) + '</td>';
             }
             body += '</tr></thead>';
          }
@@ -191,6 +201,31 @@ exports.get = function(hbs) {
             i++;
          }
 
+         return new hbs.handlebars.SafeString(body);
+      },
+
+      dropdown: function(text) {
+         console.log(text);
+         if (!text) return "";
+         var body = "";
+         body += '<div class="dropdown">' +
+                     '<button class="btn btn-default dropdown-toggle" type="button" ' +
+                     'data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+                        hbs.handlebars.escapeExpression(text) + ' ' +
+                        '<span class="caret"></span>' + 
+                     '</button>' +
+                  '<ul class="dropdown-menu" id="dropdown-' + 
+                  hbs.handlebars.escapeExpression(text).toLowerCase()+'">';
+         if (text == 'Character') {
+            for (key in charIds[1])
+               body += '<li><a>' + hbs.handlebars.escapeExpression(key) + '</a></li>';
+         } else if (text == 'Move') {
+            for (key in moveNames[1])
+               body += '<li><a>' + hbs.handlebars.escapeExpression(key) + '</a></li>';
+         } else {
+            return "";
+         }
+         body += '</ul></div>';
          return new hbs.handlebars.SafeString(body);
       },
 
