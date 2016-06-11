@@ -1,9 +1,9 @@
-if (!require) {
+/*if (typeof require != 'function') {
    function require (str) {
       return "";
    }
    var exports = [];
-}
+}*/
 
 var moveNames = require('../json/moveInternalNames.json');
 var charIds = require('../json/characterIds.json');
