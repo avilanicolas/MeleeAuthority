@@ -5,10 +5,14 @@ public class Hitbox {
     public final int id;
     public final int bone;
     public final int damage;
-//    public final float radius;
-    public final int zoffset;
-    public final int yoffset;
-    public final int xoffset;
+//    public final int radius;
+    public final float radius;
+//    public final int zoffset;
+    public final float zoffset;
+//    public final int yoffset;
+    public final float yoffset;
+//    public final int xoffset;
+    public final float xoffset;
     public final int angle;
     public final int knockbackScaling;
     public final int fixedKnockback;
@@ -35,14 +39,19 @@ public class Hitbox {
         damage = getBits(data, 23, 31, false);
 
         // size 32-47
+        radius = getFloatBits(data, 32, 47);
+//        radius = getBits(data, 32, 47, false);
 
         // offsets are signed
         // z offset 48-63
-        zoffset = getBits(data, 48, 63, true);
+//        zoffset = getBits(data, 48, 63, true);
+        zoffset = getFloatBits(data, 48, 63);
         // y offset 64-79
-        yoffset = getBits(data, 64, 79, true);
+//        yoffset = getBits(data, 64, 79, true);
+        yoffset = getFloatBits(data, 64, 79);
         // x offset 80-95
-        xoffset = getBits(data, 80, 95, true);
+//        xoffset = getBits(data, 80, 95, true);
+        xoffset = getFloatBits(data, 80, 95);
 
         // angle 96-104
         angle = getBits(data, 96, 104, false);
@@ -90,6 +99,34 @@ public class Hitbox {
             bits = signed ? bits >> (32 - length) : bits >>> (32 - length);
             return bits;
         }
+    }
+
+    private static float getFloatBits(byte[] data, int startIndex, int endIndex) {
+        int byteOffset = startIndex / 8;
+        int bitOffset = startIndex % 8;
+        int length = endIndex - startIndex + 1;
+        int bits;
+
+        // all floats are 2 bytes, they could be minifloats
+        // assume they are aligned to the bytes
+        bits = ((data[byteOffset] & 0xFF) << 8) | (data[byteOffset + 1] & 0xFF);
+        bits = bits << 16;
+        bits = bits >> 16; // sign extend?
+
+        int mantissa;
+        if ((bits & 0x0800) != 0) {
+            mantissa = (bits & 0x0FFF) | 0xF000;
+        } else {
+            mantissa = bits & 0x0FFF;
+        }
+        int exponent;
+        if (bits < 0) {
+            exponent = ((bits >> 12) & 0x0F) | 0xF0;
+        } else {
+            exponent = (bits >> 12) & 0x0F;
+        }
+
+        return mantissa * (float) Math.pow(10, exponent);
     }
 
     public static enum Sound {

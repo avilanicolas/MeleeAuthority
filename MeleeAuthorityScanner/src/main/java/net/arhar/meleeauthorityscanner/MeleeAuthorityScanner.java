@@ -464,6 +464,7 @@ public class MeleeAuthorityScanner {
         writer.write(INDENT + "hitboxId INTEGER,\n");
         writer.write(INDENT + "bone INTEGER,\n");
         writer.write(INDENT + "damage INTEGER,\n");
+        writer.write(INDENT + "radius FLOAT,\n");
         writer.write(INDENT + "zoffset INTEGER,\n");
         writer.write(INDENT + "yoffset INTEGER,\n");
         writer.write(INDENT + "xoffset INTEGER,\n");
@@ -482,7 +483,7 @@ public class MeleeAuthorityScanner {
 
         // INSERT
         writer.write("INSERT INTO Hitboxes\n");
-        writer.write(INDENT + "(charId, animation, groupId, hitboxId, bone, damage"
+        writer.write(INDENT + "(charId, animation, groupId, hitboxId, bone, damage, radius"
                 + ", zoffset, yoffset, xoffset, angle, knockbackScaling, fixedKnockback, baseKnockback, shieldDamage)\n");
         writer.write("VALUES\n");
         AtomicBoolean first = new AtomicBoolean(true);
@@ -497,7 +498,7 @@ public class MeleeAuthorityScanner {
                             tryWriteLine(writer, ",");
                         }
                         tryWrite(writer, INDENT + "('" + character.name() + "', '" + action.name() + "', " + i
-                                + ", " + hitbox.id + ", " + hitbox.bone + ", " + hitbox.damage
+                                + ", " + hitbox.id + ", " + hitbox.bone + ", " + hitbox.damage + ", " + hitbox.radius
                                 + ", " + hitbox.zoffset + ", " + hitbox.yoffset + ", " + hitbox.xoffset + ", " + hitbox.angle
                                 + ", " + hitbox.knockbackScaling + ", " + hitbox.fixedKnockback + ", " + hitbox.baseKnockback
                                 + ", " + hitbox.shieldDamage + ")");

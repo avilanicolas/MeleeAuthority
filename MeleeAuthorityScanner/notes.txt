@@ -82,4 +82,5 @@ nope.
 copying falcons shit into ganons
 falcon length: 26C5
 26C5 / F = 295 xxd lines to copy
-
+ganon length: 43AF
+43AF / F = 483 xxd lines to REPLACE
