@@ -56,4 +56,4 @@ FROM (
     JOIN Characters C ON C.id = SS1.charId
     JOIN SharedAnimations SA ON SA.internalName = SS1.animation
 WHERE SS2.animation IS NULL
-ORDER BY earliestFrame, 'character';
+ORDER BY earliestFrame, C.fullName;
