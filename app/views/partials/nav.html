@@ -13,29 +13,28 @@
           <a href="/characters">
           {{/if}}
           Characters</a></li>
-          <li><a href="/moves">Moves</a></li>
+          <li><a href="/builder">Builder</a></li>
+          <li><a href="/analysis">Analysis</a></li>
           <li><a href="/contact">Contact</a></li>
-        {{else if move}}
+        {{else if builder}}
           <li><a href="/characters">Characters</a></li>
-          <li class="active">
-          {{#if base}}
-          <a href="#">
-          {{else}}
-          <a href="/moves">
-          {{/if}}
-          Moves</a></li>
+          <li class="active"><a href="#">Builder</a></li>
+          <li><a href="/analysis">Analysis</a></li>
           <li><a href="/contact">Contact</a></li>
         {{else if contact}}
           <li><a href="/characters">Characters</a></li>
-          <li><a href="/moves">Moves</a></li>
+          <li><a href="/builder">Builder</a></li>
+          <li><a href="/analysis">Analysis</a></li>
           <li class="active"><a href="#">Contact</a></li>
-        {{else if other}}
+        {{else if analysis}}
           <li><a href="/characters">Characters</a></li>
-          <li><a href="/moves">Moves</a></li>
+          <li><a href="/builder">Builder</a></li>
+          <li class="active"><a href="#">Analysis</a></li>
           <li><a href="/contact">Contact</a></li>
         {{else}}
           <li><a href="/characters">Characters</a></li>
-          <li><a href="/moves">Moves</a></li>
+          <li><a href="/builder">Builder</a></li>
+          <li><a href="/analysis">Analysis</a></li>
           <li><a href="/contact">Contact</a></li>
         {{/if}}
       </ul>
