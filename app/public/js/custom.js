@@ -9,7 +9,7 @@ $(document).ready(function() {
       '<ul class="dropdown-menu" id="dropdown-search">' +
       '<li id="all"><a>All Columns</a></li><li role="separator" class="divider"></li>' +
       '</ul></div>');
-   var ul = $('#dropdown');
+   var ul = $('#dropdown-search');
    var dropdownlist = new Array();
    $('.datatable tr th').each(function(id) {
       var item = '<li id="'+id+'"><a>'+$(this).text()+'</a></li>';
@@ -88,33 +88,27 @@ $(document).ready(function() {
 });
 
 var movesList = function (charName, callback) {
-   $.getJSON('public/json/characterIds.json',
-      function (charIds){
-      var charId = charIds[1][charName];
-      $.getJSON('/move?charId=' + charId,
-         function (data) {
-            moves = []
-            for (var i = 0; i < data.length; i++) {
-               moves[i] = data[i]['animation'];
-            }
-            callback(moves);
-         });
+   var charId = charIds[1][charName];
+   $.getJSON('/move?charId=' + charId,
+      function (data) {
+         moves = []
+         for (var i = 0; i < data.length; i++) {
+            moves[i] = data[i]['animation'];
+         }
+         callback(moves);
       });
 }
 
 var getMove = function (charName, anim, callback) {
-   $.getJSON('public/json/characterIds.json',
-      function (charIds){
-      var charId = charIds[1][charName];
-      $.getJSON('/move?charId=' + charId,
-         function (data) {
-            moves = []
-            for (var i = 0; i < data.length; i++) {
-               if (data[i]['animation'] == anim) {
-                  callback(data[i])
-               }
+   var charId = charIds[1][charName];
+   $.getJSON('/move?charId=' + charId,
+      function (data) {
+         moves = []
+         for (var i = 0; i < data.length; i++) {
+            if (data[i]['animation'] == anim) {
+               callback(data[i])
             }
-         });
+         }
       });
 }
 
@@ -184,6 +178,67 @@ var verticaltable = function(data, start) {
 
    return body;
 }
+
+var charIds = [
+    {
+        "Kp": "Bowser",
+        "Ca": "Captain Falcon",
+        "Dr": "Doctor Mario",
+        "Dk": "Donkey Kong",
+        "Fc": "Falco",
+        "Fx": "Fox",
+        "Gw": "Game & Watch",
+        "Gn": "Ganondorf",
+        "Pp": "Ice Climbers (Popo)",
+        "Nn": "Ice Climbers (Nana)",
+        "Pr": "Jigglypuff",
+        "Kb": "Kirby",
+        "Lg": "Luigi",
+        "Lk": "Link",
+        "Mr": "Mario",
+        "Ms": "Marth",
+        "Mt": "Mewtwo",
+        "Ns": "Ness",
+        "Pe": "Peach",
+        "Pc": "Pichu",
+        "Pk": "Pikachu",
+        "Fe": "Roy",
+        "Ss": "Samus",
+        "Sk": "Sheik",
+        "Ys": "Yoshi",
+        "Cl": "Young Link",
+        "Zd": "Zelda"
+    },
+    {
+        "Bowser": "Kp",
+        "Captain Falcon": "Ca",
+        "Doctor Mario": "Dr",
+        "Donkey Kong": "Dk",
+        "Falco": "Fc",
+        "Fox": "Fx",
+        "Game & Watch": "Gw",
+        "Ganondorf": "Gn",
+        "Ice Climbers (Popo)": "Pp",
+        "Ice Climbers (Nana)": "Nn",
+        "Jigglypuff": "Pr",
+        "Kirby": "Kb",
+        "Luigi": "Lg",
+        "Link": "Lk",
+        "Mario": "Mr",
+        "Marth": "Ms",
+        "Mewtwo": "Mt",
+        "Ness": "Ns",
+        "Peach": "Pe",
+        "Pichu": "Pc",
+        "Pikachu": "Pk",
+        "Roy": "Fe",
+        "Samus": "Ss",
+        "Sheik": "Sk",
+        "Yoshi": "Ys",
+        "Young Link": "Cl",
+        "Zelda": "Zd"
+    }
+];
 
 /*$('dropdown-menu option:selected').val();
 $('#msds-select').change(function () {

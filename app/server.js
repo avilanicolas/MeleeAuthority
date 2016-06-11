@@ -108,7 +108,7 @@ router.get("/builder",function(req,res){
 });
 
 router.get("/analysis",function(req,res){
-  res.render("analysis", {title: 'Contact Us', analysis: true});
+  res.render("analysis", {title: 'Analysis', analysis: true});
 });
 
 router.get("/contact",function(req,res){
