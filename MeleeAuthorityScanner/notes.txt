@@ -38,3 +38,48 @@ post up-b "gimp"
 LandingAirLw
 without l cancel advances 0.94 "animation frames" per frame
 with l cancel - advances 1.88 frames per frame instead
+
+
+
+replacing ganons uptilt with falcons
+
+ganon uptilt command list start		PlGn.dat 0x7B80
+
+ganon subOffset				PlGn.dat 0x75F0
+AttackHi3 uptilt offset				 0x003A
+AttackHi3 uptilt offset * 6 * 4			 0x0570
+subOffset + x20 + xC + offset*6*4		 0x7B8C
+					PlGn.dat 0x7B8C = 0x00004850 -> +x20 points to command list
+
+so "subactionPointer" from crazy hand points to the green hilighted four bytes:
+http://smashboards.com/attachments/1-png.88524/
+
+character offset + subActionOffset*6*4 + 0x20 = "mother command"
+PlGn.dat:7B80 <- character offset + subactionoffset*6*4 + 0x20 "mother command"
+	[00,03] 0x00000824 ?
+	[04,07] 0x00054340 -> PlGnAJ.dat:0x54340 animation data?
+	[08,11] 0x000043AF -> length to read from in PlGnAJ.dat:0x54340
+	[12,15] 0x00004850 -> PlGn.dat:0x4850 add 0x20 to get animation command list
+	[16,19] 0x80000019 ?
+
+mother command bytes 5-8 -> x54340 in PlGnAJ.dat
+
+falcon uptilt command list start	PlCa.dat 0x4954
+subOffset + x20 + AttackHi3offset*6*4
+	x7a98 + x20 + x570		PlCa.dat 0x8028
+PlCa.dat 0x8028 mother command data
+	[00,03] 0x0000095C ?
+	[04,07] 0x00055E20 -> PlCaAJ.dat:55E20 uptilt animation data
+	[08,11] 0x000026C5 -> length in PlCaAj.dat
+	[12,15] 0x00004934 -> PlCa.dat:0x4934 + x20 to get to animation command list
+	[16,19] 0x80000002 ?
+
+i wonder if the length in Pl__AJ.dat determines the number of frames?
+falcon uptilt numframes: 39 0x27
+ganon uptilt numframes: 114 0x72
+nope.
+
+copying falcons shit into ganons
+falcon length: 26C5
+26C5 / F = 295 xxd lines to copy
+
