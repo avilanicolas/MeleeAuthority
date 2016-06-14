@@ -53,6 +53,93 @@ public class MeleeAuthorityScanner {
         writeHitboxes(animations);
         writeBuildScripts();
         System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
+
+        System.out.println("\n");
+        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlMs.dat")));
+    }
+
+    /**
+     * Header Data
+     *
+     * Data Block
+     *
+     * relocationTableCount # file offsets relative to data section (+0x20)
+     *
+     * two Root Node lists
+     * root nodes are a 4 byte data offset and a 4 byte string pointer
+     * size of lists are rootCount0x0C and rootCount0x10
+     *
+     * .dat file structure
+     * +-----------------------------------------------------------+
+     * | 0x20 bytes Header                                         |
+     * +-----------------------------------------------------------+
+     * | datasize/dataBlockSize bytes data                         |
+     * +-----------------------------------------------------------+
+     * | offsetCount/relocationTableCount bytes pointers to data   |
+     * +-----------------------------------------------------------+
+     * | ftDataCount/rootCount0x0C * 2 bytes ptr/stringpointers    |
+     * +-----------------------------------------------------------+
+     * | secondarySectionCount/rootCount0x10 ^                     |
+     * +-----------------------------------------------------------+
+     * | ?? bytes string table                                     |
+     * +-----------------------------------------------------------+
+     */
+
+    private static void asdf(ByteBuffer file) {
+        file.position(0);
+        int fileSize0x00 = file.getInt(); // filesize
+        int dataBlockSize0x04 = file.getInt(); // datasize
+        int relocationTableCount0x08 = file.getInt(); // offset count
+        int rootCount0x0C = file.getInt(); // FtData count
+        int rootCount0x10 = file.getInt(); // section type 2 count
+        int version = file.getInt(); // "001B"
+        int undefined18 = file.getInt();
+        int undefined1C = file.getInt();
+
+        int dataOffset = 0x20;
+        // TODO what is this relocation table for?
+        int relocOffset = dataOffset + dataBlockSize0x04;
+        int rootOffset0 = relocOffset + relocationTableCount0x08 * 4;
+        int rootOffset1 = rootOffset0 + rootCount0x0C * 8;
+        int tableOffset = rootOffset1 + rootCount0x10 * 8;
+
+        // print out all ROOT_NODEs
+        int position = rootOffset0;
+        while (position < rootOffset1) {
+            file.position(position);
+            int dataPointer = file.getInt();
+            int stringPointer = file.getInt();
+            position += 8;
+
+            String string;
+            if (tableOffset + stringPointer > file.limit()) {
+                string = "asdf";
+            } else {
+                file.position(tableOffset + stringPointer);
+    //            file.position(dataOffset + stringPointer);
+                StringBuilder builder = new StringBuilder();
+                while (true) {
+                    char next = (char) file.get();
+                    if (next == '\0') {
+                        break;
+                    }
+                    builder.append(next);
+                }
+                string = builder.toString();
+            }
+
+            System.out.printf("root node: dataPointer %08X <<%s>>\n", dataPointer, string);
+
+            // print out the FtData Header for this root node
+            file.position(dataPointer + dataOffset);
+            System.out.printf("attributes start: %08X\n", file.getInt());
+            System.out.printf("  attributes end: %08X\n", file.getInt());
+            System.out.printf("       undefined: %08X\n", file.getInt());
+            System.out.printf("subactions start: %08X\n", file.getInt());
+            System.out.printf("       undefined: %08X\n", file.getInt());
+            System.out.printf("  subactions end: %08X\n", file.getInt());
+            System.out.printf("       undefined: %08X\n", file.getInt());
+        }
     }
 
     private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {

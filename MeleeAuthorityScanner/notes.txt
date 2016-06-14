@@ -83,3 +83,14 @@ copying falcons shit into ganons
 falcon length: 26C5
 26C5 / F = 295 xxd lines to copy
 
+
+
+
+animation things
+waiting is shown as two things on the ingame display
+the first animation name column says "Wait"
+the second column either says "Wait1" or "Wait2" depending on the wait
+marths aerial up b:
+in game: 368 322 1.00
+in Ms.anm: SpecialAirHi 9292 712384 11281 130
+SubAction.java: (0x142, "Marth Up-B (Air)")
