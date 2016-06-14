@@ -83,6 +83,24 @@ public class MeleeAuthorityScanner {
      * +-----------------------------------------------------------+
      * | ?? bytes string table                                     |
      * +-----------------------------------------------------------+
+     *
+     * PlMs.dat
+     * 0x00000000 dat Header
+     * 0x00000020 data section start
+     * reset index to zero
+     * ?
+     * 0x00003724  attributes start
+     * 0x000038A8  attributes end
+     * ?
+     * 0x00007CF0  subactions start
+     * 0x00009B98  subactions end
+     * 0x00009D6C  "ftDataMars" -> attributes ptrs, subaction ptrs
+     * ?
+     * 0x000278A0 relocation table
+     * 0x0002AB9C rootOffset0
+     * 0x0002AB9C  ROOT_NODE "ftDataMars" -> 0x00009D6C
+     * 0x0002ABA4 rootOffset1
+     * 0x0002ABA4 string table
      */
 
     private static void asdf(ByteBuffer file) {
@@ -102,6 +120,11 @@ public class MeleeAuthorityScanner {
         int rootOffset0 = relocOffset + relocationTableCount0x08 * 4;
         int rootOffset1 = rootOffset0 + rootCount0x0C * 8;
         int tableOffset = rootOffset1 + rootCount0x10 * 8;
+        System.out.printf("%08X dataOffset\n" , dataOffset);
+        System.out.printf("%08X relocOffset\n" , relocOffset);
+        System.out.printf("%08X rootOffset0\n" , rootOffset0);
+        System.out.printf("%08X rootOffset1\n" , rootOffset1);
+        System.out.printf("%08X tableOffset\n" , tableOffset);
 
         // print out all ROOT_NODEs
         int position = rootOffset0;
@@ -111,35 +134,58 @@ public class MeleeAuthorityScanner {
             int stringPointer = file.getInt();
             position += 8;
 
-            String string;
-            if (tableOffset + stringPointer > file.limit()) {
-                string = "asdf";
-            } else {
-                file.position(tableOffset + stringPointer);
-    //            file.position(dataOffset + stringPointer);
-                StringBuilder builder = new StringBuilder();
-                while (true) {
-                    char next = (char) file.get();
-                    if (next == '\0') {
-                        break;
-                    }
-                    builder.append(next);
-                }
-                string = builder.toString();
-            }
+            String string = getString(file, tableOffset, stringPointer);
 
             System.out.printf("root node: dataPointer %08X <<%s>>\n", dataPointer, string);
 
             // print out the FtData Header for this root node
             file.position(dataPointer + dataOffset);
-            System.out.printf("attributes start: %08X\n", file.getInt());
-            System.out.printf("  attributes end: %08X\n", file.getInt());
-            System.out.printf("       undefined: %08X\n", file.getInt());
-            System.out.printf("subactions start: %08X\n", file.getInt());
-            System.out.printf("       undefined: %08X\n", file.getInt());
-            System.out.printf("  subactions end: %08X\n", file.getInt());
-            System.out.printf("       undefined: %08X\n", file.getInt());
+            int attributesStart = file.getInt();
+            int attributesEnd = file.getInt();
+            int undefined0x08 = file.getInt();
+            int subactionsStart = file.getInt();
+            int undefined0x16 = file.getInt();
+            int subactionsEnd = file.getInt();
+            int undefined0x24 = file.getInt();
+
+            file.position(subactionsStart + 0x20);
+            int subactionLength = 4 * 6;
+            int stringPointerOffset = 0;
+            int animationCommandListOffset = 4 * 3;
+            for (int i = 0; i < 20; i++) {
+                int subactionHeaderOffset = subactionsStart + 0x20 + subactionLength * i;
+                file.position(subactionHeaderOffset + stringPointerOffset);
+                int animationStringPointer = file.getInt();
+                file.position(subactionHeaderOffset + animationCommandListOffset);
+                int commandListPointer = file.getInt();
+
+                System.out.printf("%08X string pointer <<%s>>\n", animationStringPointer, getString(file, dataOffset, animationStringPointer));
+                System.out.printf("%08X command list pointer\n", commandListPointer);
+            }
         }
+    }
+
+    private static String getString(ByteBuffer file, int stringTableOffset, int stringPointer) {
+        if (stringPointer == 0) {
+            return "NULL_POINTER";
+        }
+        if (stringTableOffset + stringPointer > file.limit()) {
+//            throw new RuntimeException("out of range");
+            return "OUT_OF_BOUNDS";
+        }
+        int initialPosition = file.position();
+        file.position(stringTableOffset + stringPointer);
+//            file.position(dataOffset + stringPointer);
+        StringBuilder builder = new StringBuilder();
+        while (true) {
+            char next = (char) file.get();
+            if (next == '\0') {
+                break;
+            }
+            builder.append(next);
+        }
+        file.position(initialPosition);
+        return builder.toString();
     }
 
     private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {

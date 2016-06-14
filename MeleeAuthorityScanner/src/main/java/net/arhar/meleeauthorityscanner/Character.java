@@ -8,6 +8,7 @@ import java.util.function.Predicate;
  */
 public enum Character {
 
+    // TODO replace this enum with a map from id to fullname... and also id#
     Kp(0x5, "Bowser", 0x3644, 0x007b40, 0x0098e0),
     Ca(0x0, "Captain Falcon", 0x3774, 0x007a98, 0x009868),
     Dr(0x16, "Doctor Mario", 0x3540, 0x007264, 0x008ecc),
