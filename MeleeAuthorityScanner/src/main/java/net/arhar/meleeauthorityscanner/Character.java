@@ -1,41 +1,42 @@
 package net.arhar.meleeauthorityscanner;
 
-import java.util.Arrays;
-import java.util.function.Predicate;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Enum name represents internal character code
  */
 public enum Character {
 
-    // TODO replace this enum with a map from id to fullname... and also id#
-    Kp(0x5, "Bowser", 0x3644, 0x007b40, 0x0098e0),
-    Ca(0x0, "Captain Falcon", 0x3774, 0x007a98, 0x009868),
-    Dr(0x16, "Doctor Mario", 0x3540, 0x007264, 0x008ecc),
-    Dk(0x1, "Donkey Kong", 0x39B0, 0x007e78, 0x009e10),
-    Fc(0x14, "Falco", 0x37E4, 0x007804, 0x0096ac),
-    Fx(0x2, "Fox", 0x3714, 0x00771c, 0x0095c4),
-    Gw(0x3, "Game & Watch", 0x3614, 0x007c58, 0x009aa0),
-    Gn(0x19, "Ganondorf", 0x371c, 0x0075f0, 0x0093c0),
-    Pp(0xe, "Ice Climbers (Popo)", 0x32A4, 0x006f98, 0x008db0),
+    Kp(0x5, "Bowser"),
+    Ca(0x0, "Captain Falcon"),
+    Dr(0x16, "Doctor Mario"),
+    Dk(0x1, "Donkey Kong"),
+    Fc(0x14, "Falco"),
+    Fx(0x2, "Fox"),
+    Gw(0x3, "Game & Watch"),
+    Gn(0x19, "Ganondorf"),
+    Pp(0xe, "Ice Climbers (Popo)"),
 //    Nn(0x9999, "Ice Climbers (Nana)", 0x1188, 0x004d30, 0x006b48), // Nana is the same as popo but without animation commands
-    Pr(0xf, "Jigglypuff", 0x38BC, 0x006f3c, 0x008de4),
-    Kb(0x4, "Kirby", 0x4CE8, 0x00b280, 0x00df68),
-    Lg(0x7, "Luigi", 0x33A0, 0x006f40, 0x008c80),
-    Lk(0x6, "Link", 0x33FC, 0x007d90, 0x009b00),
-    Mr(0x8, "Mario", 0x32D8, 0x006f20, 0x008b88),
-    Ms(0x9, "Marth", 0x3744, 0x007cf0, 0x009b98),
-    Mt(0xa, "Mewtwo", 0x3750, 0x0075a0, 0x009310),
-    Ns(0xb, "Ness", 0x34E0, 0x007674, 0x009504),
-    Pe(0xc, "Peach", 0x3894, 0x008680, 0x00a450),
-    Pc(0x18, "Pichu", 0x3454, 0x0075c8, 0x0093c8),
-    Pk(0xd, "Pikachu", 0x3584, 0x0075f4, 0x0093f4),
-    Fe(0x17, "Roy", 0x389C, 0x00800c, 0x009eb4),
-    Ss(0x10, "Samus", 0x3484, 0x0079a8, 0x009700),
-    Sk(0x13, "Sheik", 0x3418, 0x007420, 0x0091d8),
-    Ys(0x11, "Yoshi", 0x335C, 0x007320, 0x009090),
-    Cl(0x15, "Young Link", 0x35A0, 0x00813c, 0x009eac),
-    Zd(0x12, "Zelda", 0x37F4, 0x007cc8, 0x0099f0);
+    Pr(0xf, "Jigglypuff"),
+    Kb(0x4, "Kirby"),
+    Lg(0x7, "Luigi"),
+    Lk(0x6, "Link"),
+    Mr(0x8, "Mario"),
+    Ms(0x9, "Marth"),
+    Mt(0xa, "Mewtwo"),
+    Ns(0xb, "Ness"),
+    Pe(0xc, "Peach"),
+    Pc(0x18, "Pichu"),
+    Pk(0xd, "Pikachu"),
+    Fe(0x17, "Roy"),
+    Ss(0x10, "Samus"),
+    Sk(0x13, "Sheik"),
+    Ys(0x11, "Yoshi"),
+    Cl(0x15, "Young Link"),
+    Zd(0x12, "Zelda");
 
     // nonplayable characters, removing because hitbox calculation makes duplicates in sql
 //    Bo(0x1b, "Wireframe (Male)", 0x31C8, 0x006214, 0x7DBC),
@@ -47,22 +48,265 @@ public enum Character {
 
     public final int id;
     public final String fullName;
-    public final int attributeOffset;
-    public final int subOffset;
-    public final int subEnd;
 
-    private Character(int id, String fullName, int attributeOffset, int subOffset, int subEnd) {
+    private Character(int id, String fullName) {
         this.id = id;
         this.fullName = fullName;
-        this.attributeOffset = attributeOffset;
-        this.subOffset = subOffset;
-        this.subEnd = subEnd;
     }
 
-    public static Character getCharacter(Predicate<Character> matcher) {
-        return Arrays.stream(values())
-            .filter(matcher)
-            .findFirst()
-            .get();
+    private static final int DATA_OFFSET = 0x20;
+
+    private static String getString(ByteBuffer file, int stringPointer) {
+        if (stringPointer > file.limit() || stringPointer < 0) {
+            throw new RuntimeException(String.format("out of range. stringPointer: %08X, file.limit(): %08X", stringPointer, file.limit()));
+//            return "OUT_OF_BOUNDS";
+        }
+        file.position(stringPointer);
+        StringBuilder builder = new StringBuilder();
+        while (true) {
+            char next = (char) file.get();
+            if (next == '\0') {
+                break;
+            }
+            builder.append(next);
+        }
+        return builder.toString();
+    }
+
+    public static Map<Character, List<Animation>> generateAllAnimations(MeleeImageFileSystem fileSystem) {
+        Map<Character, List<Animation>> animations = new HashMap<>();
+
+//        for (Character character : Character.values()) {
+        Character character = Character.Ms;
+            ByteBuffer pldat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+            ByteBuffer ajdat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + "AJ.dat"));
+
+            DatHeader plDatHeader = new DatHeader(pldat);
+
+            // pldat only has one root node
+            RootNode plDatRootNode = new RootNode(pldat, plDatHeader, plDatHeader.getRootOffset0());
+
+            FtDataHeader ftDataHeader = new FtDataHeader(pldat, plDatHeader, plDatRootNode);
+
+            // print out mother commands
+            for (int i = 0; i < ftDataHeader.getNumSubActions(); i++) {
+                SubActionHeader motherCommand = new SubActionHeader(pldat, ftDataHeader, i);
+                SubActionAJHeader ajHeader = new SubActionAJHeader(ajdat, motherCommand);
+//                System.out.println(motherCommand);
+//                System.out.println("frames: " + ajHeader.frameCount);
+            }
+
+            // aj stuff
+            // if each animation in the aj file is like its own dat file, then the string table goes at the end, right?
+            // and the info from the web page would be a root node right before the string table!
+            DatHeader ajDatHeader = new DatHeader(ajdat);
+            RootNode ajDatRootNode = new RootNode(ajdat, ajDatHeader, ajDatHeader.getRootOffset0());
+//        }
+
+        return animations;
+    }
+    public static void main(String[] args) {
+        System.out.printf("%08X\n", Float.floatToIntBits(39f));
+    }
+
+    /**
+     * Dat Header
+     * appears at the beginning of each dat file
+     * data section starts at the end of the Dat Header, at 0x20
+     *
+     * 0x00 filesize
+     * 0x04 data block size
+     * 0x08 relocation table count
+     * 0x0C root count
+     * 0x10 secondary root count
+     * 0x14 version? "001B"
+     * 0x18 undefined
+     * 0x1C undefined
+     */
+    private static class DatHeader {
+        public final int filesize;
+        public final int dataBlockSize;
+        public final int relocationTableCount;
+        public final int rootCount0x0C;
+        public final int rootCount0x10;
+        public final int version;
+        public final int undefined0x18;
+        public final int undefined0x1C;
+
+        public DatHeader(ByteBuffer pldat) {
+            pldat.position(0);
+            filesize = pldat.getInt();
+            dataBlockSize = pldat.getInt();
+            relocationTableCount = pldat.getInt();
+            rootCount0x0C = pldat.getInt();
+            rootCount0x10 = pldat.getInt();
+            version = pldat.getInt();
+            undefined0x18 = pldat.getInt();
+            undefined0x1C = pldat.getInt();
+        }
+
+        // TODO what is this relocation table for?
+        public int getRelocationOffset() {
+            return DATA_OFFSET + dataBlockSize;
+        }
+        public int getRootOffset0() {
+            return getRelocationOffset() + relocationTableCount * 4;
+        }
+        public int getRootOffset1() {
+            return getRootOffset0() + rootCount0x0C * 8;
+        }
+        public int getTableOffset() {
+            return getRootOffset1() + rootCount0x10 * 8;
+        }
+
+        public int getNumRootNodes() {
+            return rootCount0x0C + rootCount0x10;
+        }
+    }
+
+    /**
+     * Root Node
+     * one or more appear near the end of dat files
+     * has a pointer to data section
+     *
+     * 0x00 data pointer
+     * 0x04 string pointer
+     */
+    private static class RootNode {
+        public static final int ROOT_NODE_LENGTH_BYTES = 8;
+
+        public final int dataPointer;
+        public final int stringPointer;
+        public final String string;
+
+        public RootNode(ByteBuffer file, DatHeader datHeader, int rootOffset) {
+            file.position(rootOffset);
+            dataPointer = file.getInt();
+            stringPointer = file.getInt();
+            // the string comes from the string table at the end of the file
+            string = getString(file, datHeader.getTableOffset() + stringPointer);
+        }
+
+        public int getDataOffset() {
+            return DATA_OFFSET + dataPointer;
+        }
+    }
+
+    /**
+     * Ft Data Header
+     * contains pointers to character info sections
+     * pointed to by a root node
+     *
+     * 0x00 attributes start pointer
+     * 0x04 attributes end pointer
+     * 0x08 undefined
+     * 0x0C subaction headers list start pointer
+     * 0x10 undefined
+     * 0x14 subaction headers list end pointer
+     * 0x18 undefined
+     */
+    private static class FtDataHeader {
+        public final int attributesStart;
+        public final int attributesEnd;
+        public final int undefined0x08;
+        public final int subactionsStart;
+        public final int undefined0x10;
+        public final int subactionsEnd;
+        public final int undefined0x18;
+
+        public FtDataHeader(ByteBuffer pldat, DatHeader datHeader, RootNode rootNode) {
+            pldat.position(rootNode.getDataOffset());
+            attributesStart = pldat.getInt();
+            attributesEnd = pldat.getInt();
+            undefined0x08 = pldat.getInt();
+            subactionsStart = pldat.getInt();
+            undefined0x10 = pldat.getInt();
+            subactionsEnd = pldat.getInt();
+            undefined0x18 = pldat.getInt();
+        }
+
+        public int getNumSubActions() {
+            return (subactionsEnd - subactionsStart) / SubActionHeader.SUBACTION_HEADER_LENGTH_BYTES;
+        }
+        public int getSubactionsStart() {
+            return DATA_OFFSET + subactionsStart;
+        }
+        public int getSubactionsEnd() {
+            return DATA_OFFSET + subactionsEnd;
+        }
+        public int getAttributesStart() {
+            return DATA_OFFSET + attributesStart;
+        }
+        public int getAttributesEnd() {
+            return DATA_OFFSET + attributesEnd;
+        }
+    }
+
+    /**
+     * SubAction Header
+     * called "Mother Command" here: http://smashboards.com/threads/animation-hacking-documentation.426374/
+     * FtDataHeader has a pointer to a list of these which exist in the data section
+     *
+     * 0x00 string pointer (in data section)
+     * 0x04 Pl__AJ.dat pointer
+     * 0x08 Pl__AJ.dat length
+     * 0x0C subaction command list pointer
+     * 0x10 undefined
+     * 0x14 undefined
+     */
+    private static class SubActionHeader {
+        public static final int SUBACTION_HEADER_LENGTH_BYTES = 6 * 4;
+
+        public final int stringPointer;
+        public final String string;
+        public final int ajPointer;
+        public final int ajLength;
+        public final int commandListPointer;
+        public final int undefined0x10;
+        public final int undefined0x14;
+
+        public SubActionHeader(ByteBuffer pldat, FtDataHeader ftDataHeader, int index) {
+            pldat.position(ftDataHeader.getSubactionsStart() + index * SUBACTION_HEADER_LENGTH_BYTES);
+            stringPointer = pldat.getInt();
+            ajPointer = pldat.getInt();
+            ajLength = pldat.getInt();
+            commandListPointer = pldat.getInt();
+            undefined0x10 = pldat.getInt();
+            undefined0x14 = pldat.getInt();
+            string = getString(pldat, DATA_OFFSET + stringPointer);
+        }
+
+        public int getAjOffset() {
+            return DATA_OFFSET + ajPointer;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%08X %08X %08X %08X %08X %08X <<%s>>",
+                stringPointer,
+                ajPointer,
+                ajLength,
+                commandListPointer,
+                undefined0x10,
+                undefined0x14,
+                string);
+        }
+    }
+
+    private static class SubActionAJHeader {
+        public final int unknown0x00;
+        public final int unknown0x04;
+        public final float frameCount;
+        public final int boneListPointer;
+        public final int animationInfo;
+
+        public SubActionAJHeader(ByteBuffer ajdat, SubActionHeader subAction) {
+            ajdat.position(subAction.getAjOffset());
+            unknown0x00 = ajdat.getInt();
+            unknown0x04 = ajdat.getInt();
+            frameCount = ajdat.getFloat();
+            boneListPointer = ajdat.getInt();
+            animationInfo = ajdat.getInt();
+        }
     }
 }

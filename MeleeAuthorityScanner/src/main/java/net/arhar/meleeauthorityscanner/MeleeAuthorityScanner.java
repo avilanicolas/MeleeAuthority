@@ -39,24 +39,24 @@ public class MeleeAuthorityScanner {
 //        Scanner reader = new Scanner(MeleeAuthorityScanner.class.getResourceAsStream("/anm/Ms.anm"));
 //        System.out.println(reader.nextLine());
 
-        Map<Character, Map<SubAction, Animation>> animations = generateAnimations(fileSystem);
+//        Map<Character, Map<SubAction, Animation>> animations = generateAnimations(fileSystem);
 
         Path dirPath = Paths.get(DIRECTORY_NAME);
         Files.createDirectories(dirPath);
-        writeCharacters();
+//        writeCharacters();
         // TODO writeAttributes();
-        writeCharacterAttributes(fileSystem);
-        writeSharedAnimations(fileSystem);
-        writeAnimationCommandTypes();
-        writeCharacterAnimationCommands(fileSystem, animations);
-        writeFrameStrips(animations);
-        writeHitboxes(animations);
-        writeBuildScripts();
+//        writeCharacterAttributes(fileSystem);
+//        writeSharedAnimations(fileSystem);
+//        writeAnimationCommandTypes();
+//        writeCharacterAnimationCommands(fileSystem, animations);
+//        writeFrameStrips(animations);
+//        writeHitboxes(animations);
+//        writeBuildScripts();
         System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
 
         System.out.println("\n");
-//        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlMs.dat")));
-        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlGn.dat")));
+
+        Character.generateAllAnimations(fileSystem);
     }
 
     /**
@@ -117,182 +117,182 @@ public class MeleeAuthorityScanner {
      * 0x000312AC string table
      */
 
-    private static void asdf(ByteBuffer file) {
-        file.position(0);
-        int fileSize0x00 = file.getInt(); // filesize
-        int dataBlockSize0x04 = file.getInt(); // datasize
-        int relocationTableCount0x08 = file.getInt(); // offset count
-        int rootCount0x0C = file.getInt(); // FtData count
-        int rootCount0x10 = file.getInt(); // section type 2 count
-        int version = file.getInt(); // "001B"
-        int undefined18 = file.getInt();
-        int undefined1C = file.getInt();
-
-        int dataOffset = 0x20;
-        // TODO what is this relocation table for?
-        int relocOffset = dataOffset + dataBlockSize0x04;
-        int rootOffset0 = relocOffset + relocationTableCount0x08 * 4;
-        int rootOffset1 = rootOffset0 + rootCount0x0C * 8;
-        int tableOffset = rootOffset1 + rootCount0x10 * 8;
-        System.out.printf("%08X dataOffset\n" , dataOffset);
-        System.out.printf("%08X relocOffset\n" , relocOffset);
-        System.out.printf("%08X rootOffset0\n" , rootOffset0);
-        System.out.printf("%08X rootOffset1\n" , rootOffset1);
-        System.out.printf("%08X tableOffset\n" , tableOffset);
-
-        // print out all ROOT_NODEs
-        int position = rootOffset0;
-        while (position < rootOffset1) {
-            file.position(position);
-            int dataPointer = file.getInt();
-            int stringPointer = file.getInt();
-            position += 8;
-
-            // strings in the root nodes point to the string table at the end
-            // where others point to the beginning of the data section
-            String string = getString(file, tableOffset, stringPointer);
-
-            System.out.printf("root node: dataPointer %08X <<%s>>\n", dataPointer, string);
-
-            // print out the FtData Header for this root node
-            file.position(dataPointer + dataOffset);
-            int attributesStart = file.getInt();
-            int attributesEnd = file.getInt();
-            int undefined0x08 = file.getInt();
-            int subactionsStart = file.getInt();
-            int undefined0x16 = file.getInt();
-            int subactionsEnd = file.getInt();
-            int undefined0x24 = file.getInt();
-            System.out.printf("%08X attributesStart\n", attributesStart);
-            System.out.printf("%08X attributesEnd\n", attributesEnd);
-            System.out.printf("%08X subactionsStart\n", subactionsStart);
-            System.out.printf("%08X subactionsEnd\n", subactionsEnd);
-
-            file.position(subactionsStart + 0x20);
-            int subactionLength = 4 * 6;
-            int stringPointerOffset = 0;
-            int animationCommandListOffset = 4 * 3;
-            for (int i = 0; i < (subactionsEnd - subactionsStart) / (4 * 6); i++) {
-                /**
-                 * "Mother Command" SubAction Header
-                 * A list of these is located in the data section as specified by the root_node
-                 *
-                 * 0x00 string pointer
-                 * 0x04 Pl__AJ.dat pointer
-                 * 0x08 Pl__AJ.dat length
-                 * 0x12 subaction command list pointer in data section
-                 * 0x16 unknown
-                 * 0x20 unknown
-                 */
-                int subactionHeaderOffset = subactionsStart + 0x20 + subactionLength * i;
-                file.position(subactionHeaderOffset + stringPointerOffset);
-                int animationStringPointer = file.getInt();
-                file.position(subactionHeaderOffset + animationCommandListOffset);
-                int commandListPointer = file.getInt();
-
-//                System.out.printf("%08X <<%s>>\n", commandListPointer, getString(file, dataOffset, animationStringPointer));
-
-                file.position(subactionHeaderOffset);
-                System.out.printf("%08X: %08X %08X %08X %08X %08X %08X <<%s>>",
-                    subactionHeaderOffset,
-                    file.getInt(),
-                    file.getInt(),
-                    file.getInt(),
-                    file.getInt(),
-                    file.getInt(),
-                    file.getInt(),
-                    getString(file, dataOffset, animationStringPointer));
-                System.out.println();
-            }
-        }
-    }
-
-    private static String getString(ByteBuffer file, int stringTableOffset, int stringPointer) {
-//        if (stringPointer == 0) {
-//            return "NULL_POINTER";
+//    private static void asdf(ByteBuffer file) {
+//        file.position(0);
+//        int fileSize0x00 = file.getInt(); // filesize
+//        int dataBlockSize0x04 = file.getInt(); // datasize
+//        int relocationTableCount0x08 = file.getInt(); // offset count
+//        int rootCount0x0C = file.getInt(); // FtData count
+//        int rootCount0x10 = file.getInt(); // section type 2 count
+//        int version = file.getInt(); // "001B"
+//        int undefined18 = file.getInt();
+//        int undefined1C = file.getInt();
+//
+//        int dataOffset = 0x20;
+//        // TODO what is this relocation table for?
+//        int relocOffset = dataOffset + dataBlockSize0x04;
+//        int rootOffset0 = relocOffset + relocationTableCount0x08 * 4;
+//        int rootOffset1 = rootOffset0 + rootCount0x0C * 8;
+//        int tableOffset = rootOffset1 + rootCount0x10 * 8;
+//        System.out.printf("%08X dataOffset\n" , dataOffset);
+//        System.out.printf("%08X relocOffset\n" , relocOffset);
+//        System.out.printf("%08X rootOffset0\n" , rootOffset0);
+//        System.out.printf("%08X rootOffset1\n" , rootOffset1);
+//        System.out.printf("%08X tableOffset\n" , tableOffset);
+//
+//        // print out all ROOT_NODEs
+//        int position = rootOffset0;
+//        while (position < rootOffset1) {
+//            file.position(position);
+//            int dataPointer = file.getInt();
+//            int stringPointer = file.getInt();
+//            position += 8;
+//
+//            // strings in the root nodes point to the string table at the end
+//            // where others point to the beginning of the data section
+//            String string = getString(file, tableOffset, stringPointer);
+//
+//            System.out.printf("root node: dataPointer %08X <<%s>>\n", dataPointer, string);
+//
+//            // print out the FtData Header for this root node
+//            file.position(dataPointer + dataOffset);
+//            int attributesStart = file.getInt();
+//            int attributesEnd = file.getInt();
+//            int undefined0x08 = file.getInt();
+//            int subactionsStart = file.getInt();
+//            int undefined0x16 = file.getInt();
+//            int subactionsEnd = file.getInt();
+//            int undefined0x24 = file.getInt();
+//            System.out.printf("%08X attributesStart\n", attributesStart);
+//            System.out.printf("%08X attributesEnd\n", attributesEnd);
+//            System.out.printf("%08X subactionsStart\n", subactionsStart);
+//            System.out.printf("%08X subactionsEnd\n", subactionsEnd);
+//
+//            file.position(subactionsStart + 0x20);
+//            int subactionLength = 4 * 6;
+//            int stringPointerOffset = 0;
+//            int animationCommandListOffset = 4 * 3;
+//            for (int i = 0; i < (subactionsEnd - subactionsStart) / (4 * 6); i++) {
+//                /**
+//                 * "Mother Command" SubAction Header
+//                 * A list of these is located in the data section as specified by the root_node
+//                 *
+//                 * 0x00 string pointer
+//                 * 0x04 Pl__AJ.dat pointer
+//                 * 0x08 Pl__AJ.dat length
+//                 * 0x12 subaction command list pointer in data section
+//                 * 0x16 unknown
+//                 * 0x20 unknown
+//                 */
+//                int subactionHeaderOffset = subactionsStart + 0x20 + subactionLength * i;
+//                file.position(subactionHeaderOffset + stringPointerOffset);
+//                int animationStringPointer = file.getInt();
+//                file.position(subactionHeaderOffset + animationCommandListOffset);
+//                int commandListPointer = file.getInt();
+//
+////                System.out.printf("%08X <<%s>>\n", commandListPointer, getString(file, dataOffset, animationStringPointer));
+//
+//                file.position(subactionHeaderOffset);
+//                System.out.printf("%08X: %08X %08X %08X %08X %08X %08X <<%s>>",
+//                    subactionHeaderOffset,
+//                    file.getInt(),
+//                    file.getInt(),
+//                    file.getInt(),
+//                    file.getInt(),
+//                    file.getInt(),
+//                    file.getInt(),
+//                    getString(file, dataOffset, animationStringPointer));
+//                System.out.println();
+//            }
 //        }
-        if (stringTableOffset + stringPointer > file.limit()) {
-//            throw new RuntimeException("out of range");
-            return "OUT_OF_BOUNDS";
-        }
-        int initialPosition = file.position();
-        file.position(stringTableOffset + stringPointer);
-//            file.position(dataOffset + stringPointer);
-        StringBuilder builder = new StringBuilder();
-        while (true) {
-            char next = (char) file.get();
-            if (next == '\0') {
-                break;
-            }
-            builder.append(next);
-        }
-        file.position(initialPosition);
-        return builder.toString();
-    }
+//    }
 
-    private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {
-        Map<Character, Map<SubAction, Animation>> charactersToAnimations = new LinkedHashMap<>();
+//    private static String getString(ByteBuffer file, int stringTableOffset, int stringPointer) {
+////        if (stringPointer == 0) {
+////            return "NULL_POINTER";
+////        }
+//        if (stringTableOffset + stringPointer > file.limit()) {
+////            throw new RuntimeException("out of range");
+//            return "OUT_OF_BOUNDS";
+//        }
+//        int initialPosition = file.position();
+//        file.position(stringTableOffset + stringPointer);
+////            file.position(dataOffset + stringPointer);
+//        StringBuilder builder = new StringBuilder();
+//        while (true) {
+//            char next = (char) file.get();
+//            if (next == '\0') {
+//                break;
+//            }
+//            builder.append(next);
+//        }
+//        file.position(initialPosition);
+//        return builder.toString();
+//    }
 
-        for (Character character : Character.values()) {
-            Map<SubAction, Animation> animations = new LinkedHashMap<>();
-            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-
-            for (SubAction subAction : SubAction.getApplicableActions(character)) {
-
-                List<AnimationCommand> animationCommands = new ArrayList<>();
-
-                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
-                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
-                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
-                    System.out.println("SubAction not found for " + character.name()
-                            + " enum: <<" + subAction.name() + ">> desc: <<" + subAction.description + ">>");
-                    continue;
-                }
-                if (!internalName.equals(subAction.name())) {
-                    System.out.println("internal name does not match. " + character.name()
-                            + " desc: <<" + subAction.description + ">> enum: <<" + subAction.name() + ">> internal: <<" + internalName + ">>");
-                }
-
-                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
-                buffer.position(subactionPointer);
-                int offset = buffer.getInt();
-                buffer.position(offset + 0x20);
-
-                int bytesDown = 0;
-                while (buffer.getInt() != 0) {
-                    buffer.position(offset + 0x20 + bytesDown);
-                    // read the first byte to figure out which command it is
-                    int id = buffer.get() & 0xFF;
-                    // zero out lowest two bits
-                    id = (id & ~0b1) & ~0b10;
-                    AnimationCommandType command = AnimationCommandType.getById(id);
-                    buffer.position(offset + 0x20 + bytesDown);
-
-                    // read command data
-                    byte[] commandData = new byte[command.length];
-                    for (int j = 0; j < command.length; j++) {
-                        commandData[j] = buffer.get();
-                    }
-
-                    animationCommands.add(new AnimationCommand(command, commandData));
-
-                    bytesDown += command.length;
-                    buffer.position(offset + 0x20 + bytesDown);
-                }
-
-                if (character == Character.Ms
-                        && subAction == SubAction.AttackAirF) {
-                    Animation.temp = true;
-                }
-                animations.put(subAction, new Animation(animationCommands));
-                Animation.temp = false;
-            }
-
-            charactersToAnimations.put(character, animations);
-        }
-
-        return charactersToAnimations;
-    }
+//    private static Map<Character, Map<SubAction, Animation>> generateAnimations(MeleeImageFileSystem fileSystem) {
+//        Map<Character, Map<SubAction, Animation>> charactersToAnimations = new LinkedHashMap<>();
+//
+//        for (Character character : Character.values()) {
+//            Map<SubAction, Animation> animations = new LinkedHashMap<>();
+//            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+//
+//            for (SubAction subAction : SubAction.getApplicableActions(character)) {
+//
+//                List<AnimationCommand> animationCommands = new ArrayList<>();
+//
+//                String internalName = SubAction.getInternalName(fileSystem, character, subAction.offset);
+//                if (internalName.equals(SubAction.UNKNOWN_ANIMATION)) {
+//                    // TODO possible do something more intelligent when a character doesn't have a "shared" animation
+//                    System.out.println("SubAction not found for " + character.name()
+//                            + " enum: <<" + subAction.name() + ">> desc: <<" + subAction.description + ">>");
+//                    continue;
+//                }
+//                if (!internalName.equals(subAction.name())) {
+//                    System.out.println("internal name does not match. " + character.name()
+//                            + " desc: <<" + subAction.description + ">> enum: <<" + subAction.name() + ">> internal: <<" + internalName + ">>");
+//                }
+//
+//                int subactionPointer = character.subOffset + 0x20 + 4 * 3 + subAction.offset * 6 * 4;
+//                buffer.position(subactionPointer);
+//                int offset = buffer.getInt();
+//                buffer.position(offset + 0x20);
+//
+//                int bytesDown = 0;
+//                while (buffer.getInt() != 0) {
+//                    buffer.position(offset + 0x20 + bytesDown);
+//                    // read the first byte to figure out which command it is
+//                    int id = buffer.get() & 0xFF;
+//                    // zero out lowest two bits
+//                    id = (id & ~0b1) & ~0b10;
+//                    AnimationCommandType command = AnimationCommandType.getById(id);
+//                    buffer.position(offset + 0x20 + bytesDown);
+//
+//                    // read command data
+//                    byte[] commandData = new byte[command.length];
+//                    for (int j = 0; j < command.length; j++) {
+//                        commandData[j] = buffer.get();
+//                    }
+//
+//                    animationCommands.add(new AnimationCommand(command, commandData));
+//
+//                    bytesDown += command.length;
+//                    buffer.position(offset + 0x20 + bytesDown);
+//                }
+//
+//                if (character == Character.Ms
+//                        && subAction == SubAction.AttackAirF) {
+//                    Animation.temp = true;
+//                }
+//                animations.put(subAction, new Animation(animationCommands));
+//                Animation.temp = false;
+//            }
+//
+//            charactersToAnimations.put(character, animations);
+//        }
+//
+//        return charactersToAnimations;
+//    }
 
     private static void writeCharacters() throws IOException {
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "Characters.sql"));
@@ -323,66 +323,66 @@ public class MeleeAuthorityScanner {
         writer.close();
     }
 
-    private static void writeCharacterAttributes(MeleeImageFileSystem fileSystem) throws IOException {
-        BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAttributes.sql"));
-
-        // CREATE TABLE
-        writer.write("CREATE TABLE CharacterAttributes (\n");
-        writer.write(INDENT + "id CHAR(2),\n");
-        for (Attribute attribute : Attribute.values()) {
-            if (attribute.known) {
-                writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",\n");
-            }
-        }
-        writer.write(INDENT + "PRIMARY KEY (id),\n");
-        writer.write(INDENT + "FOREIGN KEY (id) REFERENCES Characters(id)\n");
-        writer.write(");\n\n");
-        writer.flush();
-
-        // INSERT
-        writer.write("INSERT INTO CharacterAttributes\n");
-        writer.write(INDENT + "(id");
-        for (Attribute attribute : Attribute.values()) {
-            if (attribute.known) {
-                writer.write(", " + attribute.name());
-            }
-        }
-        writer.write(")\n");
-        writer.write("VALUES\n");
-        writer.flush();
-        // add one line for each characters values
-        for (int i = 0; i < Character.values().length; i++) {
-            Character character = Character.values()[i];
-
-            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-            buffer.position(character.attributeOffset);
-
-            writer.write(INDENT + "('" + character.name() + "'");
-
-            for (Attribute attribute : Attribute.values()) {
-                if (attribute.known) {
-                    writer.write(", ");
-                    if (attribute.numberType == Float.class) {
-                        writer.write(String.valueOf(buffer.getFloat()));
-                    } else {
-                        writer.write(String.valueOf(buffer.getInt()));
-                    }
-                } else {
-                    // advance down the buffer anyway so that we still have the ordinal-based offset
-                    buffer.getInt();
-                }
-            }
-
-            if (i == Character.values().length - 1) {
-                // the last character gets a semicolon instead of a comma
-                writer.write(");\n");
-            } else {
-                writer.write("),\n");
-            }
-        }
-        writer.flush();
-        writer.close();
-    }
+//    private static void writeCharacterAttributes(MeleeImageFileSystem fileSystem) throws IOException {
+//        BufferedWriter writer = Files.newBufferedWriter(Paths.get(DIRECTORY_NAME + "CharacterAttributes.sql"));
+//
+//        // CREATE TABLE
+//        writer.write("CREATE TABLE CharacterAttributes (\n");
+//        writer.write(INDENT + "id CHAR(2),\n");
+//        for (Attribute attribute : Attribute.values()) {
+//            if (attribute.known) {
+//                writer.write(INDENT + attribute.name() + " " + attribute.numberType.getSimpleName().toUpperCase() + ",\n");
+//            }
+//        }
+//        writer.write(INDENT + "PRIMARY KEY (id),\n");
+//        writer.write(INDENT + "FOREIGN KEY (id) REFERENCES Characters(id)\n");
+//        writer.write(");\n\n");
+//        writer.flush();
+//
+//        // INSERT
+//        writer.write("INSERT INTO CharacterAttributes\n");
+//        writer.write(INDENT + "(id");
+//        for (Attribute attribute : Attribute.values()) {
+//            if (attribute.known) {
+//                writer.write(", " + attribute.name());
+//            }
+//        }
+//        writer.write(")\n");
+//        writer.write("VALUES\n");
+//        writer.flush();
+//        // add one line for each characters values
+//        for (int i = 0; i < Character.values().length; i++) {
+//            Character character = Character.values()[i];
+//
+//            ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+//            buffer.position(character.attributeOffset);
+//
+//            writer.write(INDENT + "('" + character.name() + "'");
+//
+//            for (Attribute attribute : Attribute.values()) {
+//                if (attribute.known) {
+//                    writer.write(", ");
+//                    if (attribute.numberType == Float.class) {
+//                        writer.write(String.valueOf(buffer.getFloat()));
+//                    } else {
+//                        writer.write(String.valueOf(buffer.getInt()));
+//                    }
+//                } else {
+//                    // advance down the buffer anyway so that we still have the ordinal-based offset
+//                    buffer.getInt();
+//                }
+//            }
+//
+//            if (i == Character.values().length - 1) {
+//                // the last character gets a semicolon instead of a comma
+//                writer.write(");\n");
+//            } else {
+//                writer.write("),\n");
+//            }
+//        }
+//        writer.flush();
+//        writer.close();
+//    }
 
 
     /**

@@ -9,9 +9,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 public class Animation {
+
+    private static final Map<Integer, String> SHARED_ANIMATION_NAMES = ImmutableMap.<Integer, String>builder()
+        .build();
 
     public final List<AnimationCommand> commands;
     public final List<EnumSet<FrameStripType>> frameStrip;

@@ -558,41 +558,41 @@ public enum SubAction {
     // these names seem to be just plain wrong
     // in game fox's fsmash is AttackS4S, but this calls it AttackS4
     // even crazy hand AND master hand both use this name and have it wrong
-    public static String getInternalName(MeleeImageFileSystem fileSystem, Character character, int subactionOffset) {
-
-        ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-        int pointerPointer = character.subOffset + 0x20 + subactionOffset * 6 * 4;
-        buffer.position(pointerPointer);
-        int pointer = buffer.getInt() + 0x20;
-        // TODO replace this check with a version check or something
-        if (pointer > buffer.limit() || pointer < 0) {
-            System.out.printf("Pl" + character.name() + ".dat - pointerpointer: %X, pointer: %X, limit: %X\n", pointerPointer, pointer, buffer.limit());
-            return "asdf";
-        }
-        buffer.position(pointer);
-        StringBuilder nameBuilder = new StringBuilder();
-        char temp;
-        int counter = 4;
-        while (true) {
-            temp = (char) buffer.get();
-            if (temp == 0) {
-                break;
-            }
-
-            if (temp == '_') {
-                counter--;
-            } else if (counter == 1) {
-                nameBuilder.append(temp);
-            }
-            if (counter == 0) {
-                break;
-            }
-        }
-
-        String name = nameBuilder.toString();
-        if (name.equals("")) {
-            return UNKNOWN_ANIMATION;
-        }
-        return name;
-    }
+//    public static String getInternalName(MeleeImageFileSystem fileSystem, Character character, int subactionOffset) {
+//
+//        ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+//        int pointerPointer = character.subOffset + 0x20 + subactionOffset * 6 * 4;
+//        buffer.position(pointerPointer);
+//        int pointer = buffer.getInt() + 0x20;
+//        // TODO replace this check with a version check or something
+//        if (pointer > buffer.limit() || pointer < 0) {
+//            System.out.printf("Pl" + character.name() + ".dat - pointerpointer: %X, pointer: %X, limit: %X\n", pointerPointer, pointer, buffer.limit());
+//            return "asdf";
+//        }
+//        buffer.position(pointer);
+//        StringBuilder nameBuilder = new StringBuilder();
+//        char temp;
+//        int counter = 4;
+//        while (true) {
+//            temp = (char) buffer.get();
+//            if (temp == 0) {
+//                break;
+//            }
+//
+//            if (temp == '_') {
+//                counter--;
+//            } else if (counter == 1) {
+//                nameBuilder.append(temp);
+//            }
+//            if (counter == 0) {
+//                break;
+//            }
+//        }
+//
+//        String name = nameBuilder.toString();
+//        if (name.equals("")) {
+//            return UNKNOWN_ANIMATION;
+//        }
+//        return name;
+//    }
 }

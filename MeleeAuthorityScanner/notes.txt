@@ -75,7 +75,7 @@ PlCa.dat 0x8028 mother command data
 	[16,19] 0x80000002 ?
 
 i wonder if the length in Pl__AJ.dat determines the number of frames?
-falcon uptilt numframes: 39 0x27
+falcon uptilt numframes: 39 0x27   float: 0x421C0000
 ganon uptilt numframes: 114 0x72
 nope.
 

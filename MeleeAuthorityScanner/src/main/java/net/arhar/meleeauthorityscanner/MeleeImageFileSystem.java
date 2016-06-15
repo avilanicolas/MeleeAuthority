@@ -158,7 +158,8 @@ public class MeleeImageFileSystem {
 	}
 
 	private boolean isMovesetFile(String name) {// should be 34 files
-		return (name.startsWith("Pl") && name.replace(".dat", "").length() == 4);
+		return (name.startsWith("Pl") && name.replace(".dat", "").length() == 4)
+		    || (name.startsWith("Pl") && name.endsWith("AJ.dat"));
 	}
 
 	public boolean replaceFile(MeleeImageFile file, byte[] data) throws IOException {
