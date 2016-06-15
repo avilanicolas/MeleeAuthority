@@ -55,7 +55,8 @@ public class MeleeAuthorityScanner {
         System.out.println("Wrote sql folder to " + dirPath.toAbsolutePath());
 
         System.out.println("\n");
-        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlMs.dat")));
+//        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlMs.dat")));
+        asdf(ByteBuffer.wrap(fileSystem.getFileData("PlGn.dat")));
     }
 
     /**
@@ -88,7 +89,7 @@ public class MeleeAuthorityScanner {
      * 0x00000000 dat Header
      * 0x00000020 data section start
      * reset index to zero
-     * ?
+     * ? string table
      * 0x00003724  attributes start
      * 0x000038A8  attributes end
      * ?
@@ -101,6 +102,19 @@ public class MeleeAuthorityScanner {
      * 0x0002AB9C  ROOT_NODE "ftDataMars" -> 0x00009D6C
      * 0x0002ABA4 rootOffset1
      * 0x0002ABA4 string table
+     *
+     *
+     * PlGn.dat
+     * [+0x20]
+     * 0x000036FC attributes start
+     * 0x00003880 attributes end
+     * 0x000075F0 subactions start
+     * 0x000093C0 subactions end
+     *
+     * 0x0002CE60 relocation offset
+     * 0x000312A4 rootOffset0
+     * 0x000312AC rootOffset1
+     * 0x000312AC string table
      */
 
     private static void asdf(ByteBuffer file) {
@@ -134,6 +148,8 @@ public class MeleeAuthorityScanner {
             int stringPointer = file.getInt();
             position += 8;
 
+            // strings in the root nodes point to the string table at the end
+            // where others point to the beginning of the data section
             String string = getString(file, tableOffset, stringPointer);
 
             System.out.printf("root node: dataPointer %08X <<%s>>\n", dataPointer, string);
@@ -147,28 +163,54 @@ public class MeleeAuthorityScanner {
             int undefined0x16 = file.getInt();
             int subactionsEnd = file.getInt();
             int undefined0x24 = file.getInt();
+            System.out.printf("%08X attributesStart\n", attributesStart);
+            System.out.printf("%08X attributesEnd\n", attributesEnd);
+            System.out.printf("%08X subactionsStart\n", subactionsStart);
+            System.out.printf("%08X subactionsEnd\n", subactionsEnd);
 
             file.position(subactionsStart + 0x20);
             int subactionLength = 4 * 6;
             int stringPointerOffset = 0;
             int animationCommandListOffset = 4 * 3;
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < (subactionsEnd - subactionsStart) / (4 * 6); i++) {
+                /**
+                 * "Mother Command" SubAction Header
+                 * A list of these is located in the data section as specified by the root_node
+                 *
+                 * 0x00 string pointer
+                 * 0x04 Pl__AJ.dat pointer
+                 * 0x08 Pl__AJ.dat length
+                 * 0x12 subaction command list pointer in data section
+                 * 0x16 unknown
+                 * 0x20 unknown
+                 */
                 int subactionHeaderOffset = subactionsStart + 0x20 + subactionLength * i;
                 file.position(subactionHeaderOffset + stringPointerOffset);
                 int animationStringPointer = file.getInt();
                 file.position(subactionHeaderOffset + animationCommandListOffset);
                 int commandListPointer = file.getInt();
 
-                System.out.printf("%08X string pointer <<%s>>\n", animationStringPointer, getString(file, dataOffset, animationStringPointer));
-                System.out.printf("%08X command list pointer\n", commandListPointer);
+//                System.out.printf("%08X <<%s>>\n", commandListPointer, getString(file, dataOffset, animationStringPointer));
+
+                file.position(subactionHeaderOffset);
+                System.out.printf("%08X: %08X %08X %08X %08X %08X %08X <<%s>>",
+                    subactionHeaderOffset,
+                    file.getInt(),
+                    file.getInt(),
+                    file.getInt(),
+                    file.getInt(),
+                    file.getInt(),
+                    file.getInt(),
+                    getString(file, dataOffset, animationStringPointer));
+                System.out.println();
             }
         }
     }
 
     private static String getString(ByteBuffer file, int stringTableOffset, int stringPointer) {
-        if (stringPointer == 0) {
-            return "NULL_POINTER";
-        }
+//        if (stringPointer == 0) {
+//            return "NULL_POINTER";
+//        }
         if (stringTableOffset + stringPointer > file.limit()) {
 //            throw new RuntimeException("out of range");
             return "OUT_OF_BOUNDS";
