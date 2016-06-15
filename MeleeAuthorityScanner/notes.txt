@@ -94,3 +94,19 @@ marths aerial up b:
 in game: 368 322 1.00
 in Ms.anm: SpecialAirHi 9292 712384 11281 130
 SubAction.java: (0x142, "Marth Up-B (Air)")
+
+
+
+falcon up tilt
+PlCaAJ.dat start 0x00055E20  <- header is 0x20 bytes
+    0x00: 0x000026C5 mini-dat size
+    0x04: 0x0000245C must be data section size
+    0x08: 0x00000085 ??
+    0x0C: 0x00000001 num animations thingy?
+0x00058288: root node thing with the frame length
+PlCaAJ.dat   end 0x000584e5
+
+rootOffset0 according to pl__.dat file structure
+2690 + 55E20 = 584B0
+root node data pointer: 0x00002448 -> 0x00058288
+got it!

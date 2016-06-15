@@ -77,36 +77,39 @@ public enum Character {
         Map<Character, List<Animation>> animations = new HashMap<>();
 
 //        for (Character character : Character.values()) {
-        Character character = Character.Ms;
+        Character character = Character.Ca;
             ByteBuffer pldat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
             ByteBuffer ajdat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + "AJ.dat"));
 
-            DatHeader plDatHeader = new DatHeader(pldat);
+            DatHeader plDatHeader = new DatHeader(pldat, 0);
 
             // pldat only has one root node
             RootNode plDatRootNode = new RootNode(pldat, plDatHeader, plDatHeader.getRootOffset0());
 
-            FtDataHeader ftDataHeader = new FtDataHeader(pldat, plDatHeader, plDatRootNode);
+            FtDataHeader ftDataHeader = new FtDataHeader(pldat, plDatRootNode);
 
             // print out mother commands
-            for (int i = 0; i < ftDataHeader.getNumSubActions(); i++) {
+//            for (int i = 0; i < ftDataHeader.getNumSubActions(); i++) {
+            int i = 0x3a;
                 SubActionHeader motherCommand = new SubActionHeader(pldat, ftDataHeader, i);
-                SubActionAJHeader ajHeader = new SubActionAJHeader(ajdat, motherCommand);
-//                System.out.println(motherCommand);
-//                System.out.println("frames: " + ajHeader.frameCount);
-            }
+                System.out.println(motherCommand);
+
+                // inner-aj animation dat file
+                DatHeader ajDatHeader = new DatHeader(ajdat, motherCommand.ajPointer);
+                RootNode ajRootNode = new RootNode(ajdat, ajDatHeader, ajDatHeader.getRootOffset0());
+                System.out.printf("ajrootnode data pointer: %08X\n", ajRootNode.dataPointer);
+                AJDataHeader ajDataHeader = new AJDataHeader(ajdat, ajRootNode);
+                System.out.println("frame count: " + ajDataHeader.frameCount);
+//            }
 
             // aj stuff
             // if each animation in the aj file is like its own dat file, then the string table goes at the end, right?
             // and the info from the web page would be a root node right before the string table!
-            DatHeader ajDatHeader = new DatHeader(ajdat);
-            RootNode ajDatRootNode = new RootNode(ajdat, ajDatHeader, ajDatHeader.getRootOffset0());
+//            DatHeader ajDatHeader = new DatHeader(ajdat);
+//            RootNode ajDatRootNode = new RootNode(ajdat, ajDatHeader, ajDatHeader.getRootOffset0());
 //        }
 
         return animations;
-    }
-    public static void main(String[] args) {
-        System.out.printf("%08X\n", Float.floatToIntBits(39f));
     }
 
     /**
@@ -124,6 +127,7 @@ public enum Character {
      * 0x1C undefined
      */
     private static class DatHeader {
+        public final int offset;
         public final int filesize;
         public final int dataBlockSize;
         public final int relocationTableCount;
@@ -133,8 +137,9 @@ public enum Character {
         public final int undefined0x18;
         public final int undefined0x1C;
 
-        public DatHeader(ByteBuffer pldat) {
-            pldat.position(0);
+        public DatHeader(ByteBuffer pldat, int offset) {
+            this.offset = offset;
+            pldat.position(offset);
             filesize = pldat.getInt();
             dataBlockSize = pldat.getInt();
             relocationTableCount = pldat.getInt();
@@ -145,9 +150,12 @@ public enum Character {
             undefined0x1C = pldat.getInt();
         }
 
+        public int getDataBlockOffset() {
+            return offset + DATA_OFFSET;
+        }
         // TODO what is this relocation table for?
         public int getRelocationOffset() {
-            return DATA_OFFSET + dataBlockSize;
+            return getDataBlockOffset() + dataBlockSize;
         }
         public int getRootOffset0() {
             return getRelocationOffset() + relocationTableCount * 4;
@@ -173,13 +181,13 @@ public enum Character {
      * 0x04 string pointer
      */
     private static class RootNode {
-        public static final int ROOT_NODE_LENGTH_BYTES = 8;
-
         public final int dataPointer;
         public final int stringPointer;
         public final String string;
+        public final DatHeader datHeader;
 
         public RootNode(ByteBuffer file, DatHeader datHeader, int rootOffset) {
+            this.datHeader = datHeader;
             file.position(rootOffset);
             dataPointer = file.getInt();
             stringPointer = file.getInt();
@@ -188,7 +196,7 @@ public enum Character {
         }
 
         public int getDataOffset() {
-            return DATA_OFFSET + dataPointer;
+            return datHeader.getDataBlockOffset() + dataPointer;
         }
     }
 
@@ -214,7 +222,7 @@ public enum Character {
         public final int subactionsEnd;
         public final int undefined0x18;
 
-        public FtDataHeader(ByteBuffer pldat, DatHeader datHeader, RootNode rootNode) {
+        public FtDataHeader(ByteBuffer pldat, RootNode rootNode) {
             pldat.position(rootNode.getDataOffset());
             attributesStart = pldat.getInt();
             attributesEnd = pldat.getInt();
@@ -276,9 +284,9 @@ public enum Character {
             string = getString(pldat, DATA_OFFSET + stringPointer);
         }
 
-        public int getAjOffset() {
-            return DATA_OFFSET + ajPointer;
-        }
+//        public int getAjOffset() {
+//            return DATA_OFFSET + ajPointer;
+//        }
 
         @Override
         public String toString() {
@@ -293,20 +301,57 @@ public enum Character {
         }
     }
 
-    private static class SubActionAJHeader {
-        public final int unknown0x00;
-        public final int unknown0x04;
-        public final float frameCount;
-        public final int boneListPointer;
-        public final int animationInfo;
+    /**
+     * Each animation in the AJ files have their own header
+     *
+     * 0x00 animation size
+     * 0x04 data section size
+     * 0x08 ? this seems important - 0x00000085 for falcon up tilt
+     * 0x0C ? one of these is probably a string pointer set to zero
+     * 0x10 ?
+     * 0x14 ?
+     * 0x18 ?
+     * 0x1C ?
+     *
+     * Single animation within Pl__AJ.dat
+     * +--------------------+
+     * | 0x20 header        |
+     * +--------------------+
+     * | data section       |
+     * +--------------------+
+     * | ?                  |
+     * +--------------------+
+     * | string table       |
+     * +--------------------+
+     */
 
-        public SubActionAJHeader(ByteBuffer ajdat, SubActionHeader subAction) {
-            ajdat.position(subAction.getAjOffset());
-            unknown0x00 = ajdat.getInt();
-            unknown0x04 = ajdat.getInt();
+    /**
+     * animation header data? for inner-AJ dat files
+     * similar to FtDataHeader
+     *
+     * 0x00 ? could be number of animations, always 1
+     * 0x04 ? always 0
+     * 0x08 frame count FLOAT
+     * 0x0C bone table pointer
+     * 0x10-- animation info
+     */
+    private static class AJDataHeader {
+        public final int undefined0x00;
+        public final int undefined0x04;
+        public final float frameCount;
+        public final int boneTablePointer;
+
+        public AJDataHeader(ByteBuffer ajdat, RootNode rootNode) {
+            ajdat.position(rootNode.getDataOffset());
+            undefined0x00 = ajdat.getInt();
+            undefined0x04 = ajdat.getInt();
             frameCount = ajdat.getFloat();
-            boneListPointer = ajdat.getInt();
-            animationInfo = ajdat.getInt();
+            boneTablePointer = ajdat.getInt();
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.printf("%08X\n", Float.floatToIntBits(39f));
+        System.out.printf("%f\n", Float.intBitsToFloat(0x42200000));
     }
 }
