@@ -110,3 +110,7 @@ rootOffset0 according to pl__.dat file structure
 2690 + 55E20 = 584B0
 root node data pointer: 0x00002448 -> 0x00058288
 got it!
+
+WallDamage
+id: 000  strPtr: 00000018 ajPtr: 00180080 ajLen: 00002E2F commandsPtr: 00004620 "PlyMars5K_Share_ACTION_WallDamage_figatree" "WallDamage"
+id: 0D4  strPtr: 00000018 ajPtr: 00180080 ajLen: 00002E2F commandsPtr: 0000620C "PlyMars5K_Share_ACTION_WallDamage_figatree" "WallDamage"

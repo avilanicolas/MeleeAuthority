@@ -1,260 +1,355 @@
 package net.arhar.meleeauthorityscanner;
 
-import static net.arhar.meleeauthorityscanner.Character.Ca;
-import static net.arhar.meleeauthorityscanner.Character.Cl;
-import static net.arhar.meleeauthorityscanner.Character.Dk;
-import static net.arhar.meleeauthorityscanner.Character.Dr;
-import static net.arhar.meleeauthorityscanner.Character.Fc;
-import static net.arhar.meleeauthorityscanner.Character.Fe;
-import static net.arhar.meleeauthorityscanner.Character.Fx;
-import static net.arhar.meleeauthorityscanner.Character.Gn;
-import static net.arhar.meleeauthorityscanner.Character.Gw;
-import static net.arhar.meleeauthorityscanner.Character.Kp;
-import static net.arhar.meleeauthorityscanner.Character.Lg;
-import static net.arhar.meleeauthorityscanner.Character.Lk;
-import static net.arhar.meleeauthorityscanner.Character.Mr;
-import static net.arhar.meleeauthorityscanner.Character.Ms;
-import static net.arhar.meleeauthorityscanner.Character.Mt;
-import static net.arhar.meleeauthorityscanner.Character.Ns;
-import static net.arhar.meleeauthorityscanner.Character.Pc;
-import static net.arhar.meleeauthorityscanner.Character.Pe;
-import static net.arhar.meleeauthorityscanner.Character.Pk;
-import static net.arhar.meleeauthorityscanner.Character.Pp;
-import static net.arhar.meleeauthorityscanner.Character.Pr;
-import static net.arhar.meleeauthorityscanner.Character.Sk;
-import static net.arhar.meleeauthorityscanner.Character.Ss;
-import static net.arhar.meleeauthorityscanner.Character.Ys;
-import static net.arhar.meleeauthorityscanner.Character.Zd;
+import java.util.Map;
+import static net.arhar.meleeauthorityscanner.Character.*;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
 
-import com.google.common.collect.ImmutableSet;
+public class SubAction {
 
-public enum SubAction {
+    public static final Map<Integer, SubAction> SUBACTION_ID_TO_DESCRIPTION = ImmutableMap.<Integer, SubAction>builder()
+        .put(0x000, new SubAction())
+        // TODO ...
+        .put(0x00F, new SubAction("Jump Squat/Charge")) // this information is in the character attribute "JumpFrames"
 
-    Attack11(0x2e, "Jab 1"),
-    Attack12(0x2f, "Jab 2"),
-    Attack100Start(0x31, "Rapid Jab Start"),
-    Attack100Loop(0x32, "Rapid Jab Loop"),
-    Attack100End(0x33, "Rapid Jab End"),
-    AttackDash(0x34, "Dash Attack"),
-    AttackS3Hi(0x35, "Forward-Tilt (High)"),
-    AttackS3S(0x37, "Forward-Tilt"),
-    AttackS3Lw(0x39, "Forward-Tilt (Low)"),
-    AttackHi3(0x3a, "Up-Tilt"),
-    AttackLw3(0x3b, "Down-Tilt"),
-    AttackS4Hi(0x3c, "Forward-Smash (High)"),
-    AttackS4S(0x3e, "Forward-Smash"),
-    AttackS4Lw(0x40, "Forward-Smash (Low)"),
-    AttackHi4(0x42, "Up-Smash"),
-    AttackLw4(0x43, "Down-Smash"),
-    AttackAirN(0x44, "Neutral-Air"),
-    AttackAirF(0x45, "Forward-Air"),
-    AttackAirB(0x46, "Back-Air"),
-    AttackAirHi(0x47, "Up-Air"),
-    AttackAirLw(0x48, "Down-Air"),
-    ThrowF(0xf7, "Forward Throw"),
-    ThrowB(0xf8, "Back Throw"),
-    ThrowHi(0xf9, "Up Throw"),
-    ThrowLw(0xfa, "Down Throw"),
+        .put(0x02E, new SubAction("Jab 1"))
+        .put(0x02F, new SubAction("Jab 2"))
+        .put(0x031, new SubAction("Rapid Jab Start"))
+        .put(0x032, new SubAction("Rapid Jab Loop"))
+        .put(0x033, new SubAction("Rapid Jab End"))
+        .put(0x034, new SubAction("Dash Attack"))
+        .put(0x035, new SubAction("Forward-Tilt (High)"))
+        .put(0x037, new SubAction("Forward-Tilt"))
+        .put(0x039, new SubAction("Forward-Tilt (Low)"))
+        .put(0x03A, new SubAction("Up-Tilt"))
+        .put(0x03B, new SubAction("Down-Tilt"))
+        .put(0x03C, new SubAction("Forward-Smash (High)"))
+        .put(0x03E, new SubAction("Forward-Smash"))
+        .put(0x040, new SubAction("Forward-Smash (Low)"))
+        .put(0x042, new SubAction("Up-Smash"))
+        .put(0x043, new SubAction("Down-Smash"))
+        .put(0x044, new SubAction("Neutral-Air"))
+        .put(0x045, new SubAction("Forward-Air"))
+        .put(0x046, new SubAction("Back-Air"))
+        .put(0x047, new SubAction("Up-Air"))
+        .put(0x048, new SubAction("Down-Air"))
 
-    GuardOn(0x25, "Start Shield"),
-    GuardOff(0x27, "Stop Shield"),
-    EscapeN(0x29, "Spot Dodge"),
-    EscapeF(0x2a, "Dodge Roll Forward"),
-    EscapeB(0x2b, "Dodge Roll Backward"),
-    EscapeAir(0x2c, "Air Dodge"),
-    //        (0xf, "Jump Squat/Charge"), // this information is in the character attribute "JumpFrames"
+        .put(0x0F7, new SubAction("Forward Throw"))
+        .put(0x0F8, new SubAction("Back Throw"))
+        .put(0x0F9, new SubAction("Up Throw"))
+        .put(0x0FA, new SubAction("Down Throw"))
 
-    LandingAirN(0x49, "Nair Landing Lag"),
-    LandingAirF(0x4a, "Fair Landing Lag"),
-    LandingAirB(0x4b, "Bair Landing Lag"),
-    LandingAirHi(0x4c, "Uair Landing Lag"),
-    LandingAirLw(0x4d, "Dair Landing Lag"),
-    //        (0x24, "Special/Wavedash Landing Lag"), // this is broken and keeps calling itself "Landing" instead of "LandingFallSpecial"
+        .put(0x024, new SubAction("Special/Wavedash Landing Lag")) // this is broken?
 
-    // Special Moves
+        .put(0x025, new SubAction("Start Shield"))
+        .put(0x027, new SubAction("Stop Shield"))
+        .put(0x029, new SubAction("Spot Dodge"))
+        .put(0x02A, new SubAction("Dodge Roll Forward"))
+        .put(0x02B, new SubAction("Dodge Roll Backward"))
+        .put(0x02C, new SubAction("Air Dodge"))
 
-    // Bowser / Giga Bowser
-    Kp_127(0x127, "Bowser Neutral-B Start (Ground)", Kp),
-    Kp_128(0x128, "Bowser Neutral-B Loop (Ground)", Kp),
-    Kp_129(0x129, "Bowser Neutral-B End (Ground)", Kp),
-    Kp_12A(0x12A, "Bowser (Air)Neutral-B Start", Kp),
-    Kp_12B(0x12B, "Bowser (Air)Neutral-B Loop", Kp),
-    Kp_12C(0x12C, "Bowser (Air)Neutral-B End", Kp),
-    Kp_12D(0x12D, "Bowser Side-B Start (Ground)", Kp),
-    Kp_12E(0x12E, "Bowser Side-B Hit (Ground)", Kp),//One is forward, other is behind?
-    Kp_12F(0x12F, "Bowser Side-B Hit(2) (Ground)", Kp),//One is forward, other is behind?
-    Kp_130(0x130, "Bowser Side-B End Forward (Ground)", Kp),
-    Kp_131(0x131, "Bowser Side-B End Backward (Ground)", Kp),
-    Kp_132(0x132, "Bowser (Air)Side-B Start", Kp),
-    Kp_133(0x133, "Bowser (Air)Side-B Hit", Kp),//One is forward, other is behind?
-    Kp_134(0x134, "Bowser (Air)Side-B Hit(2)", Kp),//One is forward, other is behind?
-    Kp_135(0x135, "Bowser (Air)Side-B End Forward", Kp),
-    Kp_136(0x136, "Bowser (Air)Side-B End Backward", Kp),
-    Kp_137(0x137, "Bowser (Ground)Up-B", Kp),
-    Kp_138(0x138, "Bowser (Air)Up-B", Kp),
-    Kp_139(0x139, "Bowser (Ground)Down-B", Kp),
-    Kp_13A(0x13A, "Bowser (Air)Down-B", Kp),
-    Kp_13B(0x13B, "Bowser Down-B Landing", Kp),
+        .put(0x049, new SubAction("Nair Landing Lag"))
+        .put(0x04A, new SubAction("Fair Landing Lag"))
+        .put(0x04B, new SubAction("Bair Landing Lag"))
+        .put(0x04C, new SubAction("Uair Landing Lag"))
+        .put(0x04D, new SubAction("Dair Landing Lag"))
 
-    // Ganon / Falcon
-    Ca_12D(0x12D, "Falcon (Ground)Neutral-B", Ca, Gn),
-    Ca_12E(0x12E, "Falcon (Air)Neutral-B", Ca, Gn),
-    Ca_12F(0x12F, "Falcon (Ground)Side-B Start", Ca, Gn),
-    Ca_130(0x130, "Falcon (Ground)Side-B", Ca, Gn),
-    Ca_131(0x131, "Falcon (Air)Side-B Start", Ca, Gn),
-    Ca_132(0x132, "Falcon (Air)Side-B", Ca, Gn),
-    Ca_133(0x133, "Falcon (Ground)Up-B", Ca, Gn),
-    Ca_134(0x134, "Falcon (Air)Up-B", Ca, Gn),
-    Ca_135(0x135, "Falcon Up-B Hold", Ca, Gn),
-    Ca_136(0x136, "Falcon Up-B Release", Ca, Gn),
-    Ca_137(0x137, "Falcon (Ground)Down-B", Ca, Gn),
-    Ca_138(0x138, "Falcon (Ground)Down-B End", Ca, Gn),
-    Ca_139(0x139, "Falcon (Air)Down-B", Ca, Gn),
-    Ca_13A(0x13A, "Falcon (Air)Down-B End", Ca, Gn),
-    Ca_13B(0x13B, "Falcon (Ground)Down-B End In-Air", Ca, Gn),
-    Ca_13C(0x13C, "Falcon (Air)Down-B End In-Air", Ca, Gn),
 
-    // Mario / Doctor Mario
-    Mr_127(0x127, "Mario (Ground)Neutral-B", Mr, Dr),
-    Mr_128(0x128, "Mario (Air)Neutral-B", Mr, Dr),
-    Mr_129(0x129, "Mario (Ground)Side-B", Mr, Dr),
-    Mr_12a(0x12a, "Mario (Air)Side-B", Mr, Dr),
-    Mr_12b(0x12b, "Mario (Ground)Up-B", Mr, Dr),
-    Mr_12c(0x12c, "Mario (Air)Up-B", Mr, Dr),
-    Mr_12d(0x12d, "Mario (Ground)Down-B", Mr, Dr),
-    Mr_12e(0x12e, "Mario (Air)Down-B", Mr, Dr),
 
-    // Donkey Kong
-    Dk_13F(0x13F, "Donkey Kong (Ground)Neutral-B Start", Dk),
-    Dk_140(0x140, "Donkey Kong (Ground)Neutral-B Loop", Dk),
-    Dk_141(0x141, "Donkey Kong (Ground)Neutral-B Cancel", Dk),
-    Dk_142(0x142, "Donkey Kong (Ground)Neutral-B", Dk),
-    Dk_143(0x143, "Donkey Kong (Ground)Neutral-B(2)", Dk),
-    Dk_144(0x144, "Donkey Kong (Air)Neutral-B Start", Dk),
-    Dk_145(0x145, "Donkey Kong (Air)Neutral-B Loop", Dk),
-    Dk_146(0x146, "Donkey Kong (Air)Neutral-B Cancel", Dk),
-    Dk_147(0x147, "Donkey Kong (Air)Neutral-B", Dk),
-    Dk_148(0x148, "Donkey Kong (Air)Neutral-B(2)", Dk),
-    Dk_149(0x149, "Donkey Kong (Ground)Side-B", Dk),
-    Dk_14A(0x14A, "Donkey Kong (Air)Side-B", Dk),
-    Dk_14B(0x14B, "Donkey Kong (Ground)Up-B", Dk),
-    Dk_14C(0x14C, "Donkey Kong (Air)Up-B", Dk),
-    Dk_14D(0x14D, "Donkey Kong Down-B Start", Dk),
-    Dk_14E(0x14E, "Donkey Kong Down-B Loop", Dk),
-    Dk_14F(0x14F, "Donkey Kong Down-B End", Dk),
-    Dk_150(0x150, "Donkey Kong Down-B End(2)", Dk),
+        // Special Moves
 
-    // Fox / Falco
-    Fx_127(0x127, "Fox (Ground)Neutral-B Start", Fx, Fc),
-    Fx_128(0x128, "Fox (Ground)Neutral-B Loop", Fx, Fc),
-    Fx_129(0x129, "Fox (Ground)Neutral-B End", Fx, Fc),
-    Fx_12A(0x12A, "Fox (Air)Neutral-B Start", Fx, Fc),
-    Fx_12B(0x12B, "Fox (Air)Neutral-B Loop", Fx, Fc),
-    Fx_12C(0x12C, "Fox (Air)Neutral-B End", Fx, Fc),
-    Fx_12D(0x12D, "Fox (Ground)Side-B Start", Fx, Fc),
-    Fx_12E(0x12E, "Fox (Ground)Side-B", Fx, Fc),
-    Fx_12F(0x12F, "Fox (Ground)Side-B End", Fx, Fc),
-    Fx_130(0x130, "Fox (Air)Side-B Start", Fx, Fc),
-    Fx_131(0x131, "Fox (Air)Side-B", Fx, Fc),
-    Fx_132(0x132, "Fox (Air)Side-B End", Fx, Fc),
-    Fx_133(0x133, "Fox (Ground)Up-B Hold", Fx, Fc),
-    Fx_134(0x134, "Fox (Air)Up-B Hold", Fx, Fc),
-    Fx_135(0x135, "Fox Up-B", Fx, Fc),
-    Fx_136(0x136, "Fox Up-B Landing", Fx, Fc),
-    Fx_137(0x137, "Fox Up-B Fall", Fx, Fc),
-    Fx_138(0x138, "Fox Up-B Bound", Fx, Fc),
-    Fx_139(0x139, "Fox (Ground)Down-B Start", Fx, Fc),
-    Fx_13A(0x13A, "Fox (Ground)Down-B Loop", Fx, Fc),
-    Fx_13B(0x13B, "Fox (Ground)Down-B Hit", Fx, Fc),
-    Fx_13C(0x13C, "Fox (Ground)Down-B End", Fx, Fc),
-    Fx_13D(0x13D, "Fox (Air)Down-B Start", Fx, Fc),
-    Fx_13E(0x13E, "Fox (Air)Down-B Loop", Fx, Fc),
-    Fx_13F(0x13F, "Fox (Air)Down-B Hit", Fx, Fc),
-    Fx_140(0x140, "Fox (Air)Down-B End", Fx, Fc),
 
-    // Mr. Game and Watch
-    Gw_127(0x127, "G&W (Ground)Neutral-B", Gw),
-    Gw_128(0x128, "G&W (Air)Neutral-B", Gw),
-    Gw_129(0x129, "G&W (Ground)Side-B (1)", Gw),
-    Gw_12A(0x12A, "G&W (Ground)Side-B (2)", Gw),
-    Gw_12B(0x12B, "G&W (Ground)Side-B (3)", Gw),
-    Gw_12C(0x12C, "G&W (Ground)Side-B (4)", Gw),
-    Gw_12D(0x12D, "G&W (Ground)Side-B (5)", Gw),
-    Gw_12E(0x12E, "G&W (Ground)Side-B (6)", Gw),
-    Gw_12F(0x12F, "G&W (Ground)Side-B (7)", Gw),
-    Gw_130(0x130, "G&W (Ground)Side-B (8)", Gw),
-    Gw_131(0x131, "G&W (Ground)Side-B (9)", Gw),
-    Gw_132(0x132, "G&W (Air)Side-B (1)", Gw),
-    Gw_133(0x133, "G&W (Air)Side-B (2)", Gw),
-    Gw_134(0x134, "G&W (Air)Side-B (3)", Gw),
-    Gw_135(0x135, "G&W (Air)Side-B (4)", Gw),
-    Gw_136(0x136, "G&W (Air)Side-B (5)", Gw),
-    Gw_137(0x137, "G&W (Air)Side-B (6)", Gw),
-    Gw_138(0x138, "G&W (Air)Side-B (7)", Gw),
-    Gw_139(0x139, "G&W (Air)Side-B (8)", Gw),
-    Gw_13A(0x13A, "G&W (Air)Side-B (9)", Gw),
-    Gw_13B(0x13B, "G&W (Ground)Up-B", Gw),
-    Gw_13C(0x13C, "G&W (Air)Up-B", Gw),
-    Gw_13D(0x13D, "G&W (Ground)Down-B", Gw),
-    Gw_13E(0x13E, "G&W (Ground)Down-B Absorb", Gw),
-    Gw_13F(0x13F, "G&W (Ground)Down-B Shoot", Gw),
-    Gw_140(0x140, "G&W (Air)Down-B", Gw),
-    Gw_141(0x141, "G&W (Air)Down-B Absorb", Gw),
-    Gw_142(0x142, "G&W (Air)Down-B Shoot", Gw),
 
-    // Ice Climbers
-    Pp_127(0x127, "Ice Climbers (Ground)Neutral-B", Pp),
-    Pp_128(0x128, "Ice Climbers (Air)Neutral-B", Pp),
-    Pp_129(0x129, "Ice Climbers (Ground)Side-B (1)", Pp),
-    Pp_12A(0x12A, "Ice Climbers (Ground)Side-B (2)", Pp),
-    Pp_12B(0x12B, "Ice Climbers (Air)Side-B (1)", Pp),
-    Pp_12C(0x12C, "Ice Climbers (Air)Side-B (2)", Pp),
-    Pp_12D(0x12D, "Ice Climbers (Ground)Up-B Start", Pp),
-    Pp_12E(0x12E, "Ice Climbers (Ground)Up-B Throw(1)", Pp),
-    Pp_12F(0x12F, "Ice Climbers (Ground)Up-B Throw(2)", Pp),
-    Pp_130(0x130, "Ice Climbers (Ground)Up-B Throw(3)", Pp),
-    Pp_131(0x131, "Ice Climbers (Ground)Up-B Throw(4)", Pp),
-    Pp_132(0x132, "Ice Climbers (Air)Up-B Start", Pp),
-    Pp_133(0x133, "Ice Climbers (Air)Up-B Throw(1)", Pp),
-    Pp_134(0x134, "Ice Climbers (Air)Up-B Throw(2)", Pp),
-    Pp_135(0x135, "Ice Climbers (Air)Up-B Throw(3)", Pp),
-    Pp_136(0x136, "Ice Climbers (Air)Up-B Throw(4)", Pp),
-    Pp_137(0x137, "Ice Climbers (Ground)Down-B", Pp),
-    Pp_138(0x138, "Ice Climbers (Air)Down-B", Pp),
+        .put(0x127, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B Start (Ground)"))
+            .put(Mr, new SubActionDescription("Mario Neutral-B (Ground)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Neutral-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B Start (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B Start (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Neutral-B (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Neutral-B (Ground)"))
+            .build()))
+        .put(0x128, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B Loop (Ground)"))
+            .put(Mr, new SubActionDescription("Mario Neutral-B (Air)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Neutral-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B Loop (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B Loop (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Neutral-B (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Neutral-B (Air)"))
+            .build()))
+        .put(0x129, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B End (Ground)"))
+            .put(Mr, new SubActionDescription("Mario Side-B (Ground)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Side-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B End (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B End (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(1) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Side-B(1) (Ground)"))
+            .build()))
+        .put(0x12A, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B Start (Air)"))
+            .put(Mr, new SubActionDescription("Mario Side-B (Air)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Side-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B Start (Air)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B Start (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(2) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Side-B(2) (Ground)"))
+            .build()))
+        .put(0x12B, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B Loop (Air)"))
+            .put(Mr, new SubActionDescription("Mario Up-B (Ground)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Up-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B Loop (Air)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B Loop (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(3) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Side-B(1) (Air)"))
+            .build()))
+        .put(0x12C, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Neutral-B End (Air)"))
+            .put(Mr, new SubActionDescription("Mario Up-B (Air)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Up-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Neutral-B End (Air)"))
+            .put(Fc, new SubActionDescription("Falco Neutral-B End (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(4) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Side-B(2) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (R)"))
+            .build()))
+        .put(0x12D, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Start (Ground)"))
+            .put(Ca, new SubActionDescription("Falcon Neutral-B (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Neutral-B (Ground)"))
+            .put(Mr, new SubActionDescription("Mario Down-B (Ground)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Down-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Side-B Start (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Side-B Start (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(5) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Start (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (L)"))
+            .build()))
+        .put(0x12E, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Hit (Ground)")) //One is forward, other is behind?
+            .put(Ca, new SubActionDescription("Falcon Neutral-B (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Neutral-B (Air)"))
+            .put(Mr, new SubActionDescription("Mario Down-B (Air)"))
+            .put(Dr, new SubActionDescription("Dr. Mario Down-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Side-B (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Side-B (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(6) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(1) (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(1)"))
+            .build()))
+        .put(0x12F, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Hit(2) (Ground)")) //One is forward, other is behind?
+            .put(Ca, new SubActionDescription("Falcon Side-B Start (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Side-B Start (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Side-B End (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Side-B End (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(7) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(2) (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(2)"))
+            .build()))
+        .put(0x130, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B End Forward (Ground)"))
+            .put(Ca, new SubActionDescription("Falcon Side-B (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Side-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Side-B Start (Air)"))
+            .put(Fc, new SubActionDescription("Falco Side-B Start (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(8) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(3) (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(3)"))
+            .build()))
+        .put(0x131, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B End Backward (Ground)"))
+            .put(Ca, new SubActionDescription("Falcon Side-B Start (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Side-B Start (Air)"))
+            .put(Fx, new SubActionDescription("Fox Side-B (Air)"))
+            .put(Fc, new SubActionDescription("Falco Side-B (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(9) (Ground)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(4) (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(4)"))
+            .build()))
+        .put(0x132, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Start (Air)"))
+            .put(Ca, new SubActionDescription("Falcon Side-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Side-B End (Air)"))
+            .put(Fc, new SubActionDescription("Falco Side-B End (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(1) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Start (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (R)"))
+            .build()))
+        .put(0x133, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Hit (Air)")) //One is forward, other is behind?
+            .put(Ca, new SubActionDescription("Falcon Up-B (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Up-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Up-B Hold (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Up-B Hold (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(2) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(1) (Air)"))
+            .build()))
+        .put(0x134, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B Hit(2) (Air)")) //One is forward, other is behind?
+            .put(Ca, new SubActionDescription("Falcon Up-B (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Up-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Up-B Hold (Air)"))
+            .put(Fc, new SubActionDescription("Falco Up-B Hold (Air)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(3) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(2) (Air)"))
+            .build()))
+        .put(0x135, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B End Forward (Air)"))
+            .put(Ca, new SubActionDescription("Falcon Up-B Hold"))
+            .put(Gn, new SubActionDescription("Ganon Up-B Hold"))
+            .put(Fx, new SubActionDescription("Fox Up-B"))
+            .put(Fc, new SubActionDescription("Falco Up-B"))
+            .put(Gw, new SubActionDescription("G&W Side-B(4) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(3) (Air)"))
+            .build()))
+        .put(0x136, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Side-B End Backward (Air)"))
+            .put(Ca, new SubActionDescription("Falcon Up-B Release"))
+            .put(Gn, new SubActionDescription("Ganon Up-B Release"))
+            .put(Fx, new SubActionDescription("Fox Up-B Landing"))
+            .put(Fc, new SubActionDescription("Falco Up-B Landing"))
+            .put(Gw, new SubActionDescription("G&W Side-B(5) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(4) (Air)"))
+            .build()))
+        .put(0x137, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Up-B (Ground)"))
+            .put(Ca, new SubActionDescription("Falcon Down-B (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Up-B Fall"))
+            .put(Fc, new SubActionDescription("Falco Up-B Fall"))
+            .put(Gw, new SubActionDescription("G&W Side-B(6) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Down-B (Ground)"))
+            .build()))
+        .put(0x138, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Up-B (Air)"))
+            .put(Ca, new SubActionDescription("Falcon Down-B End (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B End (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Up-B Bound"))
+            .put(Fc, new SubActionDescription("Falco Up-B Bound"))
+            .put(Gw, new SubActionDescription("G&W Side-B(7) (Air)"))
+            .put(Pp, new SubActionDescription("Ice Climbers Down-B (Air)"))
+            .build()))
+        .put(0x139, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Down-B (Ground)"))
+            .put(Ca, new SubActionDescription("Falcon Down-B (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B (Air)"))
+            .put(Fx, new SubActionDescription("Fox Down-B Start (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Start (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(8) (Air)"))
+            .build()))
+        .put(0x13A, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Down-B (Air)"))
+            .put(Ca, new SubActionDescription("Falcon Down-B End (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B End (Air)"))
+            .put(Fx, new SubActionDescription("Fox Down-B Loop (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Loop (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Side-B(9) (Air)"))
+            .build()))
+        .put(0x13B, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Kp, new SubActionDescription("Bowser Down-B Landing"))
+            .put(Ca, new SubActionDescription("Falcon Down-B End In-Air (Ground)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B End In-Air (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Down-B Hit (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Hit (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Up-B (Ground)"))
+            .build()))
+        .put(0x13C, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Ca, new SubActionDescription("Falcon Down-B End In-Air (Air)"))
+            .put(Gn, new SubActionDescription("Ganon Down-B End In-Air (Air)"))
+            .put(Fx, new SubActionDescription("Fox Down-B End (Ground)"))
+            .put(Fc, new SubActionDescription("Falco Down-B End (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Up-B (Air)"))
+            .build()))
+        .put(0x13D, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Fx, new SubActionDescription("Fox Down-B Start (Air)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Start (Air)"))
+            .put(Gw, new SubActionDescription("G&W Down-B (Ground)"))
+            .build()))
+        .put(0x13E, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Fx, new SubActionDescription("Fox Down-B Loop (Air)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Loop (Air)"))
+            .put(Gw, new SubActionDescription("G&W Down-B Absorb (Ground)"))
+            .build()))
+        .put(0x13F, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Start (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Down-B Hit (Air)"))
+            .put(Fc, new SubActionDescription("Falco Down-B Hit (Air)"))
+            .put(Gw, new SubActionDescription("G&W Down-B Shoot (Ground)"))
+            .build()))
+        .put(0x140, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Loop (Ground)"))
+            .put(Fx, new SubActionDescription("Fox Down-B End (Air)"))
+            .put(Fc, new SubActionDescription("Falco Down-B End (Air)"))
+            .put(Gw, new SubActionDescription("G&W Down-B (Air)"))
+            .build()))
+        .put(0x141, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Cancel (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Down-B Absorb (Air)"))
+            .build()))
+        .put(0x142, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B (Ground)"))
+            .put(Gw, new SubActionDescription("G&W Down-B Shoot (Air)"))
+            .build()))
+        .put(0x143, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B(2) (Ground)"))
+            .build()))
+        .put(0x144, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Start (Air)"))
+            .build()))
+        .put(0x145, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Loop (Air)"))
+            .build()))
+        .put(0x146, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Cancel (Air)"))
+            .build()))
+        .put(0x147, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B (Air)"))
+            .build()))
+        .put(0x148, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Neutral-B(2) (Air)"))
+            .build()))
+        .put(0x149, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Side-B (Ground)"))
+            .build()))
+        .put(0x14A, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Side-B (Air)"))
+            .build()))
+        .put(0x14B, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Up-B (Ground)"))
+            .build()))
+        .put(0x14C, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Up-B (Air)"))
+            .build()))
+        .put(0x14D, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Down-B Start"))
+            .build()))
+        .put(0x14E, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Down-B Loop"))
+            .build()))
+        .put(0x14F, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Down-B End"))
+            .build()))
+        .put(0x150, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
+            .put(Dk, new SubActionDescription("Donkey Kong Down-B End(2)"))
+            .build()))
+        .build();
 
-    // Jigglypuff
-    Pr_12C(0x12C, "Jigglypuff (Ground)Neutral-B Start (R)", Pr),
-    Pr_12D(0x12D, "Jigglypuff (Ground)Neutral-B Start (L)", Pr),
-    Pr_12E(0x12E, "Jigglypuff (Ground)Neutral-B(1)", Pr),
-    Pr_12F(0x12F, "Jigglypuff (Ground)Neutral-B(2)", Pr),
-    Pr_130(0x130, "Jigglypuff (Ground)Neutral-B(3)", Pr),
-    Pr_131(0x131, "Jigglypuff (Ground)Neutral-B(4)", Pr),
-    Pr_132(0x132, "Jigglypuff (Ground)Neutral-B End (R)", Pr),
-    Pr_133(0x133, "Jigglypuff (Ground)Neutral-B End (L)", Pr),
-//    Pr_12C(0x12C, "Jigglypuff (Air)Neutral-B Start (R)", Pr),
-//    Pr_12D(0x12D, "Jigglypuff (Air)Neutral-B Start (L)", Pr),
-//    Pr_12E(0x12E, "Jigglypuff (Air)Neutral-B(1)", Pr),
-//    Pr_12F(0x12F, "Jigglypuff (Air)Neutral-B(2)", Pr),
-//    Pr_130(0x130, "Jigglypuff (Air)Neutral-B(3)", Pr),
-//    Pr_131(0x131, "Jigglypuff (Air)Neutral-B(4)", Pr),
-//    Pr_132(0x132, "Jigglypuff (Air)Neutral-B End (R)", Pr),
-//    Pr_133(0x133, "Jigglypuff (Air)Neutral-B End (L)", Pr),
-    Pr_13C(0x13C, "Jigglypuff Neutral-B", Pr),
-    Pr_13D(0x13D, "Jigglypuff (Ground)Side-B", Pr),
-    Pr_13E(0x13E, "Jigglypuff (Air)Side-B", Pr),
-    Pr_13F(0x13F, "Jigglypuff (Ground)Up-B (L)", Pr),
-    Pr_140(0x140, "Jigglypuff (Air)Up-B (L)", Pr),
-    Pr_141(0x141, "Jigglypuff (Ground)Up-B (R)", Pr),
-    Pr_142(0x142, "Jigglypuff (Air)Up-B (R)", Pr),
-    Pr_143(0x143, "Jigglypuff (Ground)Down-B (L)", Pr),
-    Pr_144(0x144, "Jigglypuff (Air)Down-B (L)", Pr),
-    Pr_145(0x145, "Jigglypuff (Ground)Down-B (R)", Pr),
-    Pr_146(0x146, "Jigglypuff (Air)Down-B (R)", Pr),
+
+    Pr_133(Pr, new SubActionDescription("Jigglypuff Neutral-B End (L)"))
+    Pr_13C(Pr, new SubActionDescription("Jigglypuff Neutral-B"))
+    Pr_13D(Pr, new SubActionDescription("Jigglypuff Side-B (Ground)"))
+    Pr_13F(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Ground)"))
+    Pr_141(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Ground)"))
+    Pr_143(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Ground)"))
+    Pr_145(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Ground)"))
+    Pr_142(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Air)"))
+    Pr_144(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Air)"))
+    Pr_146(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Air)"))
+    Pr_13E(Pr, new SubActionDescription("Jigglypuff Side-B (Air)"))
+    Pr_140(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Air)"))
 
     // Skipping Kirby TODO
 
@@ -514,85 +609,65 @@ public enum SubAction {
     Zd_135(0x135, "Zelda (Air)Down-B(?)", Zd),
     Zd_136(0x136, "Zelda (Air)Down-B(?)(2)", Zd);
 
-    public final int offset;
-    public final String description;
-    public final Character[] characters; // null for all characters
 
-    private SubAction(int offset, String description) {
-        this.offset = offset;
-        this.description = description;
-        this.characters = null;
+        .build();
+
+    // TODO represent l cancelling somehow, this is also related to variable "frame" per frame speeds
+//    public static final Set<SubAction> L_CANCELLABLE = ImmutableSet.of(
+//        LandingAirN,
+//        LandingAirF,
+//        LandingAirB,
+//        LandingAirHi,
+//        LandingAirLw);
+//    public static final String UNKNOWN_ANIMATION = "[Unknown]";
+
+    private final SubActionDescription description;
+    private final Map<Character, SubActionDescription> characterToDescription;
+
+    public SubAction() {
+        // no description
+        this.description = null;
+        this.characterToDescription = null;
     }
 
-    private SubAction(int offset, String description, Character... characters) {
-        this.offset = offset;
-        this.description = description;
-        this.characters = characters;
+    public SubAction(String description, SubActionCategory... categories) {
+        this.description = new SubActionDescription(description, categories);
+        this.characterToDescription = null;
     }
 
-    public static final Set<SubAction> L_CANCELLABLE = ImmutableSet.of(
-        LandingAirN,
-        LandingAirF,
-        LandingAirB,
-        LandingAirHi,
-        LandingAirLw);
+    public SubAction(Map<Character, SubActionDescription> characterToDescription) {
+        this.description = null;
+        this.characterToDescription = characterToDescription;
+    }
 
-    public static final String UNKNOWN_ANIMATION = "[Unknown]";
-
-    public static List<SubAction> getApplicableActions(Character character) {
-        List<SubAction> actions = new ArrayList<>();
-        for (SubAction action : values()) {
-            if (action.characters == null) {
-                actions.add(action);
-            } else {
-                for (Character applicableCharacter : action.characters) {
-                    if (applicableCharacter == character) {
-                        actions.add(action);
-                    }
-                }
-            }
+    public SubActionDescription getDescription(Character character) {
+        if (description != null) {
+            return description;
         }
-        return actions;
+        if (characterToDescription != null && characterToDescription.containsKey(character)) {
+            return characterToDescription.get(character);
+        }
+        return NO_DESCRIPTION;
     }
 
-    // these names seem to be just plain wrong
-    // in game fox's fsmash is AttackS4S, but this calls it AttackS4
-    // even crazy hand AND master hand both use this name and have it wrong
-//    public static String getInternalName(MeleeImageFileSystem fileSystem, Character character, int subactionOffset) {
-//
-//        ByteBuffer buffer = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
-//        int pointerPointer = character.subOffset + 0x20 + subactionOffset * 6 * 4;
-//        buffer.position(pointerPointer);
-//        int pointer = buffer.getInt() + 0x20;
-//        // TODO replace this check with a version check or something
-//        if (pointer > buffer.limit() || pointer < 0) {
-//            System.out.printf("Pl" + character.name() + ".dat - pointerpointer: %X, pointer: %X, limit: %X\n", pointerPointer, pointer, buffer.limit());
-//            return "asdf";
-//        }
-//        buffer.position(pointer);
-//        StringBuilder nameBuilder = new StringBuilder();
-//        char temp;
-//        int counter = 4;
-//        while (true) {
-//            temp = (char) buffer.get();
-//            if (temp == 0) {
-//                break;
-//            }
-//
-//            if (temp == '_') {
-//                counter--;
-//            } else if (counter == 1) {
-//                nameBuilder.append(temp);
-//            }
-//            if (counter == 0) {
-//                break;
-//            }
-//        }
-//
-//        String name = nameBuilder.toString();
-//        if (name.equals("")) {
-//            return UNKNOWN_ANIMATION;
-//        }
-//        return name;
-//    }
+    public static final SubActionDescription NO_DESCRIPTION = new SubActionDescription("(No Description)");
+
+    public static class SubActionDescription {
+        private final String description;
+        private final SubActionCategory[] categories;
+
+        public SubActionDescription(String description, SubActionCategory... categories) {
+            this.description = description;
+            this.categories = categories;
+        }
+    }
+
+    public static enum SubActionCategory {
+        ATTACK,
+        THROW,
+        ITEM,
+        SPECIAL,
+        MOVEMENT,
+        OTHER
+    }
 }

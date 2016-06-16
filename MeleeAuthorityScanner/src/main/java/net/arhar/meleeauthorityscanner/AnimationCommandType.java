@@ -9,7 +9,7 @@ public enum AnimationCommandType {
     CHARGE(0xE0, 0x8, "Start Smash Charge"),
     BODY_STATE(0x68, 0x4, "Body State"),
     SELF_DAMAGE(0xCC, 0x4, "Self-Damage"),
-    TERMINATE_COLLISIONS(0x40, 0x4, "Terminate Collisions"),
+    TERMINATE_ALL_COLLISIONS(0x40, 0x4, "Terminate Collisions"),
     CONTINUATION(0xD0, 0x4, "Continuation control?"),
     IASA(0x5C, 0x4, "Allow Interrupt (IASA)"),
     AUTOCANCEL(0x4C, 0x4, "Autocancel"),
@@ -52,11 +52,16 @@ public enum AnimationCommandType {
 	    .getAsInt();
 
 	public static AnimationCommandType getById(int id) {
+	    // clear lowest two bits
+	    id &= ~0b11;
+
 	    for (AnimationCommandType command : AnimationCommandType.values()) {
 	        if (command.id == id) {
 	            return command;
 	        }
 	    }
+
+	    // TODO there should probably be an entry in the enum for each id that exists
 	    return UNKNOWN;
 	}
 }
