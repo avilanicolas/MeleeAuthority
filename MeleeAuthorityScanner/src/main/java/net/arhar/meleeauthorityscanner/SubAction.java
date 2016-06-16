@@ -1,13 +1,38 @@
 package net.arhar.meleeauthorityscanner;
 
+import static net.arhar.meleeauthorityscanner.Character.Ca;
+import static net.arhar.meleeauthorityscanner.Character.Cl;
+import static net.arhar.meleeauthorityscanner.Character.Dk;
+import static net.arhar.meleeauthorityscanner.Character.Dr;
+import static net.arhar.meleeauthorityscanner.Character.Fc;
+import static net.arhar.meleeauthorityscanner.Character.Fe;
+import static net.arhar.meleeauthorityscanner.Character.Fx;
+import static net.arhar.meleeauthorityscanner.Character.Gn;
+import static net.arhar.meleeauthorityscanner.Character.Gw;
+import static net.arhar.meleeauthorityscanner.Character.Kp;
+import static net.arhar.meleeauthorityscanner.Character.Lg;
+import static net.arhar.meleeauthorityscanner.Character.Lk;
+import static net.arhar.meleeauthorityscanner.Character.Mr;
+import static net.arhar.meleeauthorityscanner.Character.Ms;
+import static net.arhar.meleeauthorityscanner.Character.Mt;
+import static net.arhar.meleeauthorityscanner.Character.Ns;
+import static net.arhar.meleeauthorityscanner.Character.Pc;
+import static net.arhar.meleeauthorityscanner.Character.Pe;
+import static net.arhar.meleeauthorityscanner.Character.Pk;
+import static net.arhar.meleeauthorityscanner.Character.Pp;
+import static net.arhar.meleeauthorityscanner.Character.Pr;
+import static net.arhar.meleeauthorityscanner.Character.Sk;
+import static net.arhar.meleeauthorityscanner.Character.Ss;
+import static net.arhar.meleeauthorityscanner.Character.Ys;
+import static net.arhar.meleeauthorityscanner.Character.Zd;
+
 import java.util.Map;
-import static net.arhar.meleeauthorityscanner.Character.*;
 
 import com.google.common.collect.ImmutableMap;
 
 public class SubAction {
 
-    public static final Map<Integer, SubAction> SUBACTION_ID_TO_DESCRIPTION = ImmutableMap.<Integer, SubAction>builder()
+    public static final Map<Integer, SubAction> SUBACTIONS = ImmutableMap.<Integer, SubAction>builder()
         .put(0x000, new SubAction())
         // TODO ...
         .put(0x00F, new SubAction("Jump Squat/Charge")) // this information is in the character attribute "JumpFrames"
@@ -54,11 +79,7 @@ public class SubAction {
         .put(0x04C, new SubAction("Uair Landing Lag"))
         .put(0x04D, new SubAction("Dair Landing Lag"))
 
-
-
         // Special Moves
-
-
 
         .put(0x127, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B Start (Ground)"))
@@ -68,6 +89,16 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B Start (Ground)"))
             .put(Gw, new SubActionDescription("G&W Neutral-B (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Neutral-B (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Neutral-B (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B Start (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B Start (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Start (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Neutral-B (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Neutral-B (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Down-B? (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B Start (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Neutral-B (Ground)"))
             .build()))
         .put(0x128, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B Loop (Ground)"))
@@ -77,6 +108,18 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B Loop (Ground)"))
             .put(Gw, new SubActionDescription("G&W Neutral-B (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Neutral-B (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Neutral-B (Air)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B Hold (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B Hold (Ground)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B Start (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B Start (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Loop (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Neutral-B (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Neutral-B (Air)"))
+            .put(Ss, new SubActionDescription("Samus Down-B (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B(2) (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Neutral-B (Air)"))
             .build()))
         .put(0x129, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B End (Ground)"))
@@ -86,6 +129,18 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B End (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(1) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Side-B(1) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B Start (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B End (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B End (Ground)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B Charge (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B Charge (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Loop(2) (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B Start (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B Start (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-BStart"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B Cancel (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B(3) (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B Start (Ground)"))
             .build()))
         .put(0x12A, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B Start (Air)"))
@@ -95,6 +150,18 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B Start (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(2) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Side-B(2) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B Charge (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B End(2) (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B End(2) (Ground)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B End (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B End (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Cancel (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B Hold (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B Hold (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-B Hold"))
+            .put(Sk, new SubActionDescription("Sheik Shoot Needles(?) (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B Loop (Ground)"))
             .build()))
         .put(0x12B, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B Loop (Air)"))
@@ -104,6 +171,19 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B Loop (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(3) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Side-B(1) (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B(1) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B Start (Air)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B Start (Air)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B Start (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B Start (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B End (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Start (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-B Cancel"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B Start (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B(2) (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B End (Ground)"))
             .build()))
         .put(0x12C, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Neutral-B End (Air)"))
@@ -113,7 +193,20 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Neutral-B End (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(4) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Side-B(2) (Air)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (R)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (R) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B(2) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B Hold (Air)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B Hold (Air)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B Charge (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B Charge (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Start (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Hold (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B(2) (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B(2) (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-B"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Neutral-B(3) (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B Start (Air)"))
             .build()))
         .put(0x12D, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Start (Ground)"))
@@ -125,7 +218,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B Start (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(5) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Start (Ground)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (L)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (L) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B(3) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B End (Air)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B End (Air)"))
+            .put(Lk, new SubActionDescription("Link Neutral-B End (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Neutral-B End (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Loop(2) (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Hold(2) (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Down-B"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B End (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B End (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-B Start (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Neutral-B Cancel (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Start (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B Loop (Air)"))
             .build()))
         .put(0x12E, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Hit (Ground)")) //One is forward, other is behind?
@@ -137,7 +244,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(6) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(1) (Ground)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(1)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(1) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B End (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Neutral-B End(2) (Air)"))
+            .put(Fe, new SubActionDescription("Roy Neutral-B End(2) (Air)"))
+            .put(Lk, new SubActionDescription("Link Side-B Throw (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Throw (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Loop (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B End (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Side-B Start (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B Start (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B Start (Air)"))
+            .put(Ss, new SubActionDescription("Samus Neutral-B (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Shoot Needles(?) (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Loop (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Side-B End (Air)"))
             .build()))
         .put(0x12F, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Hit(2) (Ground)")) //One is forward, other is behind?
@@ -147,7 +268,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B End (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(7) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(2) (Ground)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(2)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(2) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B Start (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 1 (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 1 (Ground)"))
+            .put(Lk, new SubActionDescription("Link Side-B Catch (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Catch (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B Cancel (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Start (Air)"))
+            .put(Pe, new SubActionDescription("Peach Side-B Miss (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B Hold (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B Hold (Air)"))
+            .put(Ss, new SubActionDescription("Samus Homing Rocket (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B Start (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Loop(2) (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Up-B Start (Ground)"))
             .build()))
         .put(0x130, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B End Forward (Ground)"))
@@ -157,7 +292,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B Start (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(8) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(3) (Ground)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(3)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(3) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B Charge (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 2 Up (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 2 Up (Ground)"))
+            .put(Lk, new SubActionDescription("Link Side-B Throw(Angled) (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Throw(Angled) (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Neutral-B End (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Hold (Air)"))
+            .put(Pe, new SubActionDescription("Peach Side-B Hit"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B(2) (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B(2) (Air)"))
+            .put(Ss, new SubActionDescription("Samus Hard Rocket (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B End (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B End (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Up-B (Ground)"))
             .build()))
         .put(0x131, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B End Backward (Ground)"))
@@ -167,7 +316,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(9) (Ground)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(4) (Ground)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(4)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(4) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B(1) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 2 Side (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 2 Side (Ground)"))
+            .put(Lk, new SubActionDescription("Link Side-B Throw (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Throw (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Side-B (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B Hold(2) (Air)"))
+            .put(Pe, new SubActionDescription("Peach Side-B Start (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Side-B End (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Side-B End (Air)"))
+            .put(Ss, new SubActionDescription("Samus Homing Rocket(?) (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B Loop(?) (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Start (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Up-B Start (Air)"))
             .build()))
         .put(0x132, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Start (Air)"))
@@ -176,7 +339,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Side-B End (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(1) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Start (Air)"))
-            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (R)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (R) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B(2) (Air)")) // could be misfire
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Up (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Up (Ground)"))
+            .put(Lk, new SubActionDescription("Link Side-B Catch (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Catch (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Side-B (Air)"))
+            .put(Ns, new SubActionDescription("Ness Neutral-B End (Air)"))
+            .put(Pe, new SubActionDescription("Peach Side-B Miss (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B Start (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B Start (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Hard Rocket(?) (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B Start (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Loop (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Up-B (Air)"))
             .build()))
         .put(0x133, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Hit (Air)")) //One is forward, other is behind?
@@ -186,6 +363,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B Hold (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(2) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(1) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (L) (Ground)"))
+            .put(Lg, new SubActionDescription("Luigi Side-B End (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Side (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Side (Ground)"))
+            .put(Lk, new SubActionDescription("Link Side-B Throw(Angled) (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Side-B Throw(Angled) (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Up-B Start (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Side-B (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Side-B hit wall"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B Start(2) (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B Start(2) (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Screw Attack (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B End (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B Loop(2) (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Down-B(?) (Ground)"))
             .build()))
         .put(0x134, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B Hit(2) (Air)")) //One is forward, other is behind?
@@ -195,6 +387,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B Hold (Air)"))
             .put(Gw, new SubActionDescription("G&W Side-B(3) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(2) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (R) (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Up-B (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Down (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Down (Ground)"))
+            .put(Lk, new SubActionDescription("Link Up-B (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Up-B (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Up-B (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Side-B (Air)"))
+            .put(Pe, new SubActionDescription("Peach Up-B Start (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B End (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B End (Ground)"))
+            .put(Ss, new SubActionDescription("Samus Screw Attack (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Side-B Loop(?) (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Side-B End (Air)"))
+            .put(Zd, new SubActionDescription("Zelda Down-B(?)(2) (Ground)"))
             .build()))
         .put(0x135, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B End Forward (Air)"))
@@ -204,6 +411,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B"))
             .put(Gw, new SubActionDescription("G&W Side-B(4) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(3) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B Start (L) (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Up-B (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Up (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Up (Ground)"))
+            .put(Lk, new SubActionDescription("Link Up-B (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Up-B (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Up-B Lost"))
+            .put(Ns, new SubActionDescription("Ness Up-B Start (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Up-B End (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B Start (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B Start (Air)"))
+            .put(Ss, new SubActionDescription("Samus Down-B?(2) (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Up-B Start (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Up-B"))
+            .put(Zd, new SubActionDescription("Zelda Down-B(?) (Air)"))
             .build()))
         .put(0x136, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Side-B End Backward (Air)"))
@@ -213,6 +435,21 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B Landing"))
             .put(Gw, new SubActionDescription("G&W Side-B(5) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Up-B Throw(4) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(1) (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Down-B (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Side (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Side (Ground)"))
+            .put(Lk, new SubActionDescription("Link Down-B (Ground)"))
+            .put(Cl, new SubActionDescription("Young Link Down-B (Ground)"))
+            .put(Mt, new SubActionDescription("Mewtwo Up-B Start (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B Hold (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Up-B Start (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B Start(2) (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B Start(2) (Air)"))
+            .put(Ss, new SubActionDescription("Samus Down-B?(2) (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Up-B (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Down-B (Ground)"))
+            .put(Zd, new SubActionDescription("Zelda Down-B(?)(2) (Air)"))
             .build()))
         .put(0x137, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Up-B (Ground)"))
@@ -222,6 +459,19 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B Fall"))
             .put(Gw, new SubActionDescription("G&W Side-B(6) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Down-B (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(2) (Air)"))
+            .put(Lg, new SubActionDescription("Luigi Down-B (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Down (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Down (Ground)"))
+            .put(Lk, new SubActionDescription("Link Down-B (Air)"))
+            .put(Cl, new SubActionDescription("Young Link Down-B (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Up-B (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B End (Ground)"))
+            .put(Pe, new SubActionDescription("Peach Up-B End (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Up-B End (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Up-B End (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Up-B Start (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Down-B (Air)"))
             .build()))
         .put(0x138, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Up-B (Air)"))
@@ -231,6 +481,16 @@ public class SubAction {
             .put(Fc, new SubActionDescription("Falco Up-B Bound"))
             .put(Gw, new SubActionDescription("G&W Side-B(7) (Air)"))
             .put(Pp, new SubActionDescription("Ice Climbers Down-B (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(3) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 1 (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 1 (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Down-B (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Up-B"))
+            .put(Pe, new SubActionDescription("Peach Neutral-B (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Start (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Start (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Up-B (Air)"))
+            .put(Ys, new SubActionDescription("Yoshi Down-B Landing(?)"))
             .build()))
         .put(0x139, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Down-B (Ground)"))
@@ -239,6 +499,16 @@ public class SubAction {
             .put(Fx, new SubActionDescription("Fox Down-B Start (Ground)"))
             .put(Fc, new SubActionDescription("Falco Down-B Start (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(8) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B(4) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 2 Up (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 2 Up (Air)"))
+            .put(Mt, new SubActionDescription("Mewtwo Down-B (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B Start (Air)"))
+            .put(Pe, new SubActionDescription("Peach Neutral-B Counter (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Loop (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Loop (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Down-B Animation(?) (Ground)"))
+            .put(Ys, new SubActionDescription("Yoshi Down-B land (Air)"))
             .build()))
         .put(0x13A, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Down-B (Air)"))
@@ -247,6 +517,14 @@ public class SubAction {
             .put(Fx, new SubActionDescription("Fox Down-B Loop (Ground)"))
             .put(Fc, new SubActionDescription("Falco Down-B Loop (Ground)"))
             .put(Gw, new SubActionDescription("G&W Side-B(9) (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (R) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 2 Side (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 2 Side (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B Hold (Air)"))
+            .put(Pe, new SubActionDescription("Peach Neutral-B (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Loop(2) (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Loop(2) (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Down-B(?) (Ground)"))
             .build()))
         .put(0x13B, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Kp, new SubActionDescription("Bowser Down-B Landing"))
@@ -255,6 +533,14 @@ public class SubAction {
             .put(Fx, new SubActionDescription("Fox Down-B Hit (Ground)"))
             .put(Fc, new SubActionDescription("Falco Down-B Hit (Ground)"))
             .put(Gw, new SubActionDescription("G&W Up-B (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B End (L) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Up (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Up (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B End (Air)"))
+            .put(Pe, new SubActionDescription("Peach Neutral-B Counter (Air)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B End (Ground)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B End (Ground)"))
+            .put(Sk, new SubActionDescription("Sheik Down-B Animation(?) (Air)"))
             .build()))
         .put(0x13C, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Ca, new SubActionDescription("Falcon Down-B End In-Air (Air)"))
@@ -262,48 +548,102 @@ public class SubAction {
             .put(Fx, new SubActionDescription("Fox Down-B End (Ground)"))
             .put(Fc, new SubActionDescription("Falco Down-B End (Ground)"))
             .put(Gw, new SubActionDescription("G&W Up-B (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Neutral-B"))
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Side (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Side (Air)"))
+            .put(Ns, new SubActionDescription("Ness Up-B(2)"))
+            .put(Pe, new SubActionDescription("Peach Open Parasol"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Start (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Start (Air)"))
+            .put(Sk, new SubActionDescription("Sheik Down-B(?) (Air)"))
             .build()))
         .put(0x13D, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Fx, new SubActionDescription("Fox Down-B Start (Air)"))
             .put(Fc, new SubActionDescription("Falco Down-B Start (Air)"))
             .put(Gw, new SubActionDescription("G&W Down-B (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Side-B (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 3 Down (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 3 Down (Air)"))
+            .put(Ns, new SubActionDescription("Ness DamageFall"))
+            .put(Pe, new SubActionDescription("Peach Close Parasol"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Loop (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Loop (Air)"))
             .build()))
         .put(0x13E, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Fx, new SubActionDescription("Fox Down-B Loop (Air)"))
             .put(Fc, new SubActionDescription("Falco Down-B Loop (Air)"))
             .put(Gw, new SubActionDescription("G&W Down-B Absorb (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Side-B (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Up (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Up (Air)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Start (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B Loop(2) (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B Loop(2) (Air)"))
             .build()))
         .put(0x13F, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Start (Ground)"))
             .put(Fx, new SubActionDescription("Fox Down-B Hit (Air)"))
             .put(Fc, new SubActionDescription("Falco Down-B Hit (Air)"))
             .put(Gw, new SubActionDescription("G&W Down-B Shoot (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Side (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Side (Air)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Hold (Ground)"))
+            .put(Pk, new SubActionDescription("Pikachu Down-B End (Air)"))
+            .put(Pc, new SubActionDescription("Pichu Down-B End (Air)"))
             .build()))
         .put(0x140, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Loop (Ground)"))
             .put(Fx, new SubActionDescription("Fox Down-B End (Air)"))
             .put(Fc, new SubActionDescription("Falco Down-B End (Air)"))
             .put(Gw, new SubActionDescription("G&W Down-B (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Side-B 4 Down (Air)"))
+            .put(Fe, new SubActionDescription("Roy Side-B 4 Down (Air)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Hit (Ground)"))
             .build()))
         .put(0x141, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Cancel (Ground)"))
             .put(Gw, new SubActionDescription("G&W Down-B Absorb (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Up-B (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Up-B (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Down-B End (Ground)"))
             .build()))
         .put(0x142, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B (Ground)"))
             .put(Gw, new SubActionDescription("G&W Down-B Shoot (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Up-B (Air)"))
+            .put(Fe, new SubActionDescription("Roy Up-B (Air)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Start (Air)"))
             .build()))
         .put(0x143, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B(2) (Ground)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Down-B (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Down-B (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Hold (Air)"))
             .build()))
         .put(0x144, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Start (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Down-B Counter (Ground)"))
+            .put(Fe, new SubActionDescription("Roy Down-B Counter (Ground)"))
+            .put(Ns, new SubActionDescription("Ness Down-B Hit (Air)"))
             .build()))
         .put(0x145, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Loop (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Ground)"))
+            .put(Ms, new SubActionDescription("Marth Down-B (Air)"))
+            .put(Fe, new SubActionDescription("Roy Down-B (Air)"))
+            .put(Ns, new SubActionDescription("Ness Down-B End (Air)"))
             .build()))
         .put(0x146, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B Cancel (Air)"))
+            .put(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Air)"))
+            .put(Ms, new SubActionDescription("Marth Down-B Counter (Air)"))
+            .put(Fe, new SubActionDescription("Roy Down-B Counter (Air)"))
             .build()))
         .put(0x147, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Neutral-B (Air)"))
@@ -335,96 +675,12 @@ public class SubAction {
         .put(0x150, new SubAction(ImmutableMap.<Character, SubActionDescription>builder()
             .put(Dk, new SubActionDescription("Donkey Kong Down-B End(2)"))
             .build()))
+
         .build();
-
-
-    Pr_133(Pr, new SubActionDescription("Jigglypuff Neutral-B End (L)"))
-    Pr_13C(Pr, new SubActionDescription("Jigglypuff Neutral-B"))
-    Pr_13D(Pr, new SubActionDescription("Jigglypuff Side-B (Ground)"))
-    Pr_13F(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Ground)"))
-    Pr_141(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Ground)"))
-    Pr_143(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Ground)"))
-    Pr_145(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Ground)"))
-    Pr_142(Pr, new SubActionDescription("Jigglypuff Up-B (R) (Air)"))
-    Pr_144(Pr, new SubActionDescription("Jigglypuff Down-B (L) (Air)"))
-    Pr_146(Pr, new SubActionDescription("Jigglypuff Down-B (R) (Air)"))
-    Pr_13E(Pr, new SubActionDescription("Jigglypuff Side-B (Air)"))
-    Pr_140(Pr, new SubActionDescription("Jigglypuff Up-B (L) (Air)"))
 
     // Skipping Kirby TODO
 
-    // Luigi
-    Lg_127(0x127, "Luigi (Ground)Neutral-B", Lg),
-    Lg_128(0x128, "Luigi (Air)Neutral-B", Lg),
-    Lg_129(0x129, "Luigi (Ground)Side-B Start", Lg),
-    Lg_12A(0x12A, "Luigi (Ground)Side-B Charge", Lg),
-    Lg_12B(0x12B, "Luigi (Ground)Side-B(1)", Lg),
-    Lg_12C(0x12C, "Luigi (Ground)Side-B(2)", Lg),
-    Lg_12D(0x12D, "Luigi (Ground)Side-B(3)", Lg),
-    Lg_12E(0x12E, "Luigi (Ground)Side-B End", Lg),
-    Lg_12F(0x12F, "Luigi (Air)Side-B Start", Lg),
-    Lg_130(0x130, "Luigi (Air)Side-B Charge", Lg),
-    //Most likely, these two Side-B entries aren't air versions of the move, but are entries for misfire.
-    //We can re-label them later once we're sure.
-    Lg_131(0x131, "Luigi (Air)Side-B(1)", Lg),
-    Lg_132(0x132, "Luigi (Air)Side-B(2)", Lg),
-    Lg_133(0x133, "Luigi (Air)Side-B End", Lg),
-    Lg_134(0x134, "Luigi (Ground)Up-B", Lg),
-    Lg_135(0x135, "Luigi (Air)Up-B", Lg),
-    Lg_136(0x136, "Luigi (Ground)Down-B", Lg),
-    Lg_137(0x137, "Luigi (Air)Down-B", Lg),
-
-    // Marth / Roy
-    Ms_127(0x127, "Marth Neutral-B Start", Ms, Fe),
-    Ms_128(0x128, "Marth Neutral-B Hold", Ms, Fe),
-    Ms_129(0x129, "Marth Neutral-B End", Ms, Fe),
-    Ms_12A(0x12A, "Marth Neutral-B End(2)", Ms, Fe),
-    Ms_12B(0x12B, "Marth Neutral-B Start (Air)", Ms, Fe),
-    Ms_12C(0x12C, "Marth Neutral-B Hold (Air)", Ms, Fe),
-    Ms_12D(0x12D, "Marth Neutral-B End (Air)", Ms, Fe),
-    Ms_12E(0x12E, "Marth Neutral-B End(2) (Air)", Ms, Fe),
-    Ms_12F(0x12F, "Marth Side-B 1", Ms, Fe),
-    Ms_130(0x130, "Marth Side-B 2 Up", Ms, Fe),
-    Ms_131(0x131, "Marth Side-B 2 Side", Ms, Fe),
-    Ms_132(0x132, "Marth Side-B 3 Up", Ms, Fe),
-    Ms_133(0x133, "Marth Side-B 3 Side", Ms, Fe),
-    Ms_134(0x134, "Marth Side-B 3 Down", Ms, Fe),
-    Ms_135(0x135, "Marth Side-B 4 Up", Ms, Fe),
-    Ms_136(0x136, "Marth Side-B 4 Side", Ms, Fe),
-    Ms_137(0x137, "Marth Side-B 4 Down", Ms, Fe),
-    Ms_138(0x138, "Marth Side-B 1 (Air)", Ms, Fe),
-    Ms_139(0x139, "Marth Side-B 2 Up (Air)", Ms, Fe),
-    Ms_13A(0x13A, "Marth Side-B 2 Side (Air)", Ms, Fe),
-    Ms_13B(0x13B, "Marth Side-B 3 Up (Air)", Ms, Fe),
-    Ms_13C(0x13C, "Marth Side-B 3 Side (Air)", Ms, Fe),
-    Ms_13D(0x13D, "Marth Side-B 3 Down (Air)", Ms, Fe),
-    Ms_13E(0x13E, "Marth Side-B 4 Up (Air)", Ms, Fe),
-    Ms_13F(0x13F, "Marth Side-B 4 Side (Air)", Ms, Fe),
-    Ms_140(0x140, "Marth Side-B 4 Down (Air)", Ms, Fe),
-    Ms_141(0x141, "Marth Up-B (Ground)", Ms, Fe),
-    Ms_142(0x142, "Marth Up-B (Air)", Ms, Fe),
-    Ms_143(0x143, "Marth Down-B", Ms, Fe),
-    Ms_144(0x144, "Marth Down-B Counter", Ms, Fe),
-    Ms_145(0x145, "Marth Down-B (Air)", Ms, Fe),
-    Ms_146(0x146, "Marth Down-B Counter (Air)", Ms, Fe),
-
-    // Link / Young Link
-    Lk_128(0x128, "Link (Ground)Neutral-B Start", Lk, Cl),
-    Lk_129(0x129, "Link (Ground)Neutral-B Charge", Lk, Cl),
-    Lk_12A(0x12A, "Link (Ground)Neutral-B End", Lk, Cl),
-    Lk_12B(0x12B, "Link (Air)Neutral-B Start", Lk, Cl),
-    Lk_12C(0x12C, "Link (Air)Neutral-B Charge", Lk, Cl),
-    Lk_12D(0x12D, "Link (Air)Neutral-B End", Lk, Cl),
-    Lk_12E(0x12E, "Link (Ground)Side-B Throw", Lk, Cl),
-    Lk_12F(0x12F, "Link (Ground)Side-B Catch", Lk, Cl),
-    Lk_130(0x130, "Link (Ground)Side-B Throw(Angled, Lk, Cl)", Lk, Cl),
-    Lk_131(0x131, "Link (Air)Side-B Throw", Lk, Cl),
-    Lk_132(0x132, "Link (Air)Side-B Catch", Lk, Cl),
-    Lk_133(0x133, "Link (Air)Side-B Throw(Angled, Lk, Cl)", Lk, Cl),
-    Lk_134(0x134, "Link (Ground)Up-B", Lk, Cl),
-    Lk_135(0x135, "Link (Air)Up-B", Lk, Cl),
-    Lk_136(0x136, "Link (Ground)Down-B", Lk, Cl),
-    Lk_137(0x137, "Link (Air)Down-B", Lk, Cl),
+    // TODO link/cl stuff?
     //Two more entries below SpecialAirLw, AirCatch and AirCatchHit.
     //I'd assume that's links zair.
     //There's also an entry above SpecialNStart, AttackS42.
@@ -432,185 +688,6 @@ public class SubAction {
     //I'd assume this is the spike hitbox for link's down tilt.
     //Maybe consider creating a new list for misc. subactions for cases like this.
 
-    // Mewtwo
-    Mt_127(0x127, "Mewtwo (Ground)Neutral-B Start", Mt),
-    Mt_128(0x128, "Mewtwo (Ground)Neutral-B Loop", Mt),
-    Mt_129(0x129, "Mewtwo (Ground)Neutral-B Loop(2, Mt)", Mt),
-    Mt_12A(0x12A, "Mewtwo (Ground)Neutral-B Cancel", Mt),
-    Mt_12B(0x12B, "Mewtwo (Ground)Neutral-B End", Mt),
-    Mt_12C(0x12C, "Mewtwo (Air)Neutral-B Start", Mt),
-    Mt_12E(0x12E, "Mewtwo (Air)Neutral-B Loop", Mt),
-    Mt_12D(0x12D, "Mewtwo (Air)Neutral-B Loop(2, Mt)", Mt),
-    Mt_12F(0x12F, "Mewtwo (Air)Neutral-B Cancel", Mt),
-    Mt_130(0x130, "Mewtwo (Air)Neutral-B End", Mt),
-    Mt_131(0x131, "Mewtwo (Ground)Side-B", Mt),
-    Mt_132(0x132, "Mewtwo (Air)Side-B", Mt),
-    Mt_133(0x133, "Mewtwo (Ground)Up-B Start", Mt),
-    Mt_134(0x134, "Mewtwo (Ground)Up-B", Mt),
-    Mt_135(0x135, "Mewtwo Up-B Lost", Mt),
-    Mt_136(0x136, "Mewtwo (Air)Up-B Start", Mt),
-    Mt_137(0x137, "Mewtwo (Air)Up-B", Mt),
-    Mt_138(0x138, "Mewtwo (Ground)Down-B ", Mt),
-    Mt_139(0x139, "Mewtwo (Air)Down-B", Mt),
-
-    // Ness
-    Ns_12B(0x12B, "Ness (Ground)Neutral-B Start", Ns),
-    Ns_12C(0x12C, "Ness (Ground)Neutral-B Hold", Ns),
-    Ns_12D(0x12D, "Ness (Ground)Neutral-B Hold(2, Ns)", Ns),
-    Ns_12E(0x12E, "Ness (Ground)Neutral-B End", Ns),
-    Ns_12F(0x12F, "Ness (Air)Neutral-BStart", Ns),
-    Ns_130(0x130, "Ness (Air)Neutral-B Hold", Ns),
-    Ns_131(0x131, "Ness (Air)Neutral-B Hold(2, Ns)", Ns),
-    Ns_132(0x132, "Ness (Air)Neutral-B End", Ns),
-    Ns_133(0x133, "Ness (Ground)Side-B", Ns),
-    Ns_134(0x134, "Ness (Air)Side-B", Ns),
-    Ns_135(0x135, "Ness (Ground)Up-B Start", Ns),
-    Ns_136(0x136, "Ness (Ground)Up-B Hold", Ns),
-    Ns_137(0x137, "Ness (Ground)Up-B End", Ns),
-    Ns_138(0x138, "Ness Up-B", Ns),
-    Ns_139(0x139, "Ness (Air)Up-B Start", Ns),
-    Ns_13A(0x13A, "Ness (Air)Up-B Hold", Ns),
-    Ns_13B(0x13B, "Ness (Air)Up-B End", Ns),
-    Ns_13C(0x13C, "Ness Up-B(2, Ns)", Ns),
-    Ns_13D(0x13D, "Ness DamageFall", Ns),
-    Ns_13E(0x13E, "Ness (Ground)Down-B Start", Ns),
-    Ns_13F(0x13F, "Ness (Ground)Down-B Hold", Ns),
-    Ns_140(0x140, "Ness (Ground)Down-B Hit", Ns),
-    Ns_141(0x141, "Ness (Ground)Down-B End", Ns),
-    Ns_142(0x142, "Ness (Air)Down-B Start", Ns),
-    Ns_143(0x143, "Ness (Air)Down-B Hold", Ns),
-    Ns_144(0x144, "Ness (Air)Down-B Hit", Ns),
-    Ns_145(0x145, "Ness (Air)Down-B End", Ns),
-
-    // Peach
-    Pe_138(0x138, "Peach (Ground)Neutral-B", Pe),
-    Pe_139(0x139, "Peach (Ground)Neutral-B Counter", Pe),
-    Pe_13A(0x13A, "Peach (Air)Neutral-B", Pe),
-    Pe_13B(0x13B, "Peach (Air)Neutral-B Counter", Pe),
-    Pe_12E(0x12E, "Peach (Ground)Side-B Start", Pe),
-    Pe_12F(0x12F, "Peach (Ground)Side-B Miss", Pe),
-    Pe_130(0x130, "Peach Side-B Hit", Pe),
-    Pe_131(0x131, "Peach (Air)Side-B Start", Pe),
-    Pe_132(0x132, "Peach (Air)Side-B Miss", Pe),
-    Pe_133(0x133, "Peach Side-B hit wall(?, Pe)", Pe),
-    Pe_134(0x134, "Peach (Ground)Up-B Start", Pe),
-    Pe_135(0x135, "Peach (Ground)Up-B End", Pe),
-    Pe_136(0x136, "Peach (Air)Up-B Start", Pe),
-    Pe_137(0x137, "Peach (Air)Up-B End", Pe),
-    Pe_13C(0x13C, "Peach Open Parasol", Pe),
-    Pe_13D(0x13D, "Peach Close Parasol", Pe),
-    Pe_12D(0x12D, "Peach Down-B", Pe),
-
-    // Pikachu / Pichu
-    Pk_127(0x127, "Pikachu (Ground)Neutral-B", Pk, Pc),
-    Pk_128(0x128, "Pikachu (Air)Neutral-B", Pk, Pc),
-    Pk_129(0x129, "Pikachu (Ground)Side-B Start", Pk, Pc),
-    Pk_12A(0x12A, "Pikachu (Ground)Side-B Hold", Pk, Pc),
-    Pk_12B(0x12B, "Pikachu (Ground)Side-B", Pk, Pc),
-    Pk_12C(0x12C, "Pikachu (Ground)Side-B(2)", Pk, Pc),
-    Pk_12D(0x12D, "Pikachu (Ground)Side-B End", Pk, Pc),
-    Pk_12E(0x12E, "Pikachu (Air)Side-B Start", Pk, Pc),
-    Pk_12F(0x12F, "Pikachu (Air)Side-B Hold", Pk, Pc),
-    Pk_130(0x130, "Pikachu (Air)Side-B(2)", Pk, Pc),
-    Pk_131(0x131, "Pikachu (Air)Side-B End", Pk, Pc),
-    Pk_132(0x132, "Pikachu (Ground)Up-B Start", Pk, Pc),
-    Pk_133(0x133, "Pikachu (Ground)Up-B Start(2)", Pk, Pc),
-    Pk_134(0x134, "Pikachu (Ground)Up-B End", Pk, Pc),
-    Pk_135(0x135, "Pikachu (Air)Up-B Start", Pk, Pc),
-    Pk_136(0x136, "Pikachu (Air)Up-B Start(2)", Pk, Pc),
-    Pk_137(0x137, "Pikachu (Air)Up-B End", Pk, Pc),
-    Pk_138(0x138, "Pikachu (Ground)Down-B Start", Pk, Pc),
-    Pk_139(0x139, "Pikachu (Ground)Down-B Loop", Pk, Pc),
-    Pk_13A(0x13A, "Pikachu (Ground)Down-B Loop(2)", Pk, Pc),
-    Pk_13B(0x13B, "Pikachu (Ground)Down-B End", Pk, Pc),
-    Pk_13C(0x13C, "Pikachu (Air)Down-B Start", Pk, Pc),
-    Pk_13D(0x13D, "Pikachu (Air)Down-B Loop", Pk, Pc),
-    Pk_13E(0x13E, "Pikachu (Air)Down-B Loop(2)", Pk, Pc),
-    Pk_13F(0x13F, "Pikachu (Air)Down-B End", Pk, Pc),
-
-    // Samus
-    Ss_127(0x127, "Samus (Ground)Down-B?", Ss),
-    Ss_128(0x128, "Samus (Air)Down-B?", Ss),
-    Ss_129(0x129, "Samus Neutral-BStart", Ss),
-    Ss_12A(0x12A, "Samus Neutral-B Hold", Ss),
-    Ss_12B(0x12B, "Samus Neutral-B Cancel", Ss),
-    Ss_12C(0x12C, "Samus Neutral-B", Ss),
-    Ss_12D(0x12D, "Samus (Air)Neutral-B Start", Ss),
-    Ss_12E(0x12E, "Samus (Air)Neutral-B", Ss),
-    Ss_12F(0x12F, "Samus (Ground)Homing Rocket(?)", Ss),
-    Ss_130(0x130, "Samus (Ground)Hard Rocket(?)", Ss),
-    Ss_131(0x131, "Samus (Air)Homing Rocket(?)", Ss),
-    Ss_132(0x132, "Samus (Air)Hard Rocket(?)", Ss),
-    Ss_133(0x133, "Samus (Ground)Screw Attack", Ss),
-    Ss_134(0x134, "Samus (Air)Screw Attack", Ss),
-    Ss_135(0x135, "Samus (Ground)Down-B?(2)", Ss),
-    Ss_136(0x136, "Samus (Air)Down-B?(2)", Ss),
-
-    // Sheik
-    Sk_127(0x127, "Sheik (Ground)Neutral-B Start", Sk),
-    Sk_128(0x128, "Sheik (Ground)Neutral-B", Sk),
-    Sk_129(0x129, "Sheik (Ground)Neutral-B Cancel", Sk),
-    Sk_12A(0x12A, "Sheik (Ground)Shoot Needles(?)", Sk),
-    Sk_12B(0x12B, "Sheik (Air)Neutral-B Start", Sk),
-    Sk_12C(0x12C, "Sheik (Air)Neutral-B", Sk),
-    Sk_12D(0x12D, "Sheik (Air)Neutral-B Cancel", Sk),
-    Sk_12E(0x12E, "Sheik (Air)Shoot Needles(?)", Sk),
-    Sk_12F(0x12F, "Sheik (Ground)Side-B Start", Sk),
-    Sk_130(0x130, "Sheik (Ground)Side-B End", Sk),
-    Sk_131(0x131, "Sheik (Ground)Side-B Loop(?)", Sk),
-    Sk_132(0x132, "Sheik (Air)Side-B Start", Sk),
-    Sk_133(0x133, "Sheik (Air)Side-B End", Sk),
-    Sk_134(0x134, "Sheik (Air)Side-B Loop(?)", Sk),
-    Sk_135(0x135, "Sheik (Ground)Up-B Start", Sk),
-    Sk_136(0x136, "Sheik (Ground)Up-B", Sk),
-    Sk_137(0x137, "Sheik (Air)Up-B Start", Sk),
-    Sk_138(0x138, "Sheik (Air)Up-B", Sk),
-    Sk_139(0x139, "Sheik (Ground)Down-B Animation(?)", Sk),
-    Sk_13A(0x13A, "Sheik (Ground)Down-B(?)", Sk),
-    Sk_13B(0x13B, "Sheik (Air)Down-B Animation(?)", Sk),
-    Sk_13C(0x13C, "Sheik (Air)Down-B(?)", Sk),
-
-    // Yoshi
-    Ys_127(0x127, "Yoshi (Ground)Neutral-B", Ys),
-    Ys_128(0x128, "Yoshi (Ground)Neutral-B(2)", Ys),
-    Ys_129(0x129, "Yoshi (Ground)Neutral-B(3)", Ys),
-    Ys_12A(0x12A, "Yoshi (Air)Neutral-B", Ys),
-    Ys_12B(0x12B, "Yoshi (Air)Neutral-B(2)", Ys),
-    Ys_12C(0x12C, "Yoshi (Air)Neutral-B(3)", Ys),
-    Ys_12D(0x12D, "Yoshi (Ground)Side-B Start", Ys),
-    Ys_12E(0x12E, "Yoshi (Ground)Side-B Loop", Ys),
-    Ys_12F(0x12F, "Yoshi (Ground)Side-B Loop(2)", Ys),
-    Ys_130(0x130, "Yoshi (Ground)Side-B End", Ys),
-    Ys_131(0x131, "Yoshi (Air)Side-B Start", Ys),
-    Ys_132(0x132, "Yoshi (Air)Side-B Loop", Ys),
-    Ys_133(0x133, "Yoshi (Air)Side-B Loop(2)", Ys),
-    Ys_134(0x134, "Yoshi (Air)Side-B End", Ys),
-    Ys_135(0x135, "Yoshi Up-B", Ys),
-    Ys_136(0x136, "Yoshi (Ground)Down-B", Ys),
-    Ys_137(0x137, "Yoshi (Air)Down-B", Ys),
-    Ys_139(0x139, "Yoshi (Air)Down-B land", Ys),
-    Ys_138(0x138, "Yoshi Down-B Landing(?)", Ys),
-
-    // Zelda
-    Zd_127(0x127, "Zelda (Ground)Neutral-B", Zd),
-    Zd_128(0x128, "Zelda (Air)Neutral-B", Zd),
-    Zd_129(0x129, "Zelda (Ground)Side-B Start", Zd),
-    Zd_12A(0x12A, "Zelda (Ground)Side-B Loop", Zd),
-    Zd_12B(0x12B, "Zelda (Ground)Side-B End", Zd),
-    Zd_12C(0x12C, "Zelda (Air)Side-B Start", Zd),
-    Zd_12D(0x12D, "Zelda (Air)Side-B Loop", Zd),
-    Zd_12E(0x12E, "Zelda (Air)Side-B End", Zd),
-    Zd_12F(0x12F, "Zelda (Ground)Up-B Start", Zd),
-    Zd_130(0x130, "Zelda (Ground)Up-B", Zd),
-    Zd_131(0x131, "Zelda (Air)Up-B Start", Zd),
-    Zd_132(0x132, "Zelda (Air)Up-B", Zd),
-    Zd_133(0x133, "Zelda (Ground)Down-B(?)", Zd),
-    Zd_134(0x134, "Zelda (Ground)Down-B(?)(2)", Zd),
-    Zd_135(0x135, "Zelda (Air)Down-B(?)", Zd),
-    Zd_136(0x136, "Zelda (Air)Down-B(?)(2)", Zd);
-
-
-        .build();
 
     // TODO represent l cancelling somehow, this is also related to variable "frame" per frame speeds
 //    public static final Set<SubAction> L_CANCELLABLE = ImmutableSet.of(
@@ -624,18 +701,18 @@ public class SubAction {
     private final SubActionDescription description;
     private final Map<Character, SubActionDescription> characterToDescription;
 
-    public SubAction() {
+    private SubAction() {
         // no description
         this.description = null;
         this.characterToDescription = null;
     }
 
-    public SubAction(String description, SubActionCategory... categories) {
+    private SubAction(String description, SubActionCategory... categories) {
         this.description = new SubActionDescription(description, categories);
         this.characterToDescription = null;
     }
 
-    public SubAction(Map<Character, SubActionDescription> characterToDescription) {
+    private SubAction(Map<Character, SubActionDescription> characterToDescription) {
         this.description = null;
         this.characterToDescription = characterToDescription;
     }
