@@ -32,13 +32,26 @@ import com.google.common.collect.ImmutableMap;
 
 public class SubAction {
 
-    public static final Map<Integer, SubAction> SUBACTIONS = ImmutableMap.<Integer, SubAction>builder()
+    private static final Map<Integer, SubAction> SUBACTIONS = ImmutableMap.<Integer, SubAction>builder()
+
+        // Shared Moves
+
         .put(0x000, new SubAction())
         // TODO ...
         .put(0x00F, new SubAction("Jump Squat/Charge")) // this information is in the character attribute "JumpFrames"
 
+        .put(0x024, new SubAction("Special/Wavedash Landing Lag")) // this is broken?
+        .put(0x025, new SubAction("Start Shield"))
+
+        .put(0x027, new SubAction("Stop Shield"))
+
+        .put(0x029, new SubAction("Spot Dodge"))
+        .put(0x02A, new SubAction("Dodge Roll Forward"))
+        .put(0x02B, new SubAction("Dodge Roll Backward"))
+        .put(0x02C, new SubAction("Air Dodge"))
         .put(0x02E, new SubAction("Jab 1"))
         .put(0x02F, new SubAction("Jab 2"))
+
         .put(0x031, new SubAction("Rapid Jab Start"))
         .put(0x032, new SubAction("Rapid Jab Loop"))
         .put(0x033, new SubAction("Rapid Jab End"))
@@ -58,26 +71,16 @@ public class SubAction {
         .put(0x046, new SubAction("Back-Air"))
         .put(0x047, new SubAction("Up-Air"))
         .put(0x048, new SubAction("Down-Air"))
-
-        .put(0x0F7, new SubAction("Forward Throw"))
-        .put(0x0F8, new SubAction("Back Throw"))
-        .put(0x0F9, new SubAction("Up Throw"))
-        .put(0x0FA, new SubAction("Down Throw"))
-
-        .put(0x024, new SubAction("Special/Wavedash Landing Lag")) // this is broken?
-
-        .put(0x025, new SubAction("Start Shield"))
-        .put(0x027, new SubAction("Stop Shield"))
-        .put(0x029, new SubAction("Spot Dodge"))
-        .put(0x02A, new SubAction("Dodge Roll Forward"))
-        .put(0x02B, new SubAction("Dodge Roll Backward"))
-        .put(0x02C, new SubAction("Air Dodge"))
-
         .put(0x049, new SubAction("Nair Landing Lag"))
         .put(0x04A, new SubAction("Fair Landing Lag"))
         .put(0x04B, new SubAction("Bair Landing Lag"))
         .put(0x04C, new SubAction("Uair Landing Lag"))
         .put(0x04D, new SubAction("Dair Landing Lag"))
+
+        .put(0x0F7, new SubAction("Forward Throw"))
+        .put(0x0F8, new SubAction("Back Throw"))
+        .put(0x0F9, new SubAction("Up Throw"))
+        .put(0x0FA, new SubAction("Down Throw"))
 
         // Special Moves
 
@@ -717,7 +720,7 @@ public class SubAction {
         this.characterToDescription = characterToDescription;
     }
 
-    public SubActionDescription getDescription(Character character) {
+    private SubActionDescription getDescription(Character character) {
         if (description != null) {
             return description;
         }
@@ -727,11 +730,20 @@ public class SubAction {
         return NO_DESCRIPTION;
     }
 
+    public static SubActionDescription getDescription(Character character, int subActionId) {
+        if (!SUBACTIONS.containsKey(subActionId)) {
+            // TODO
+//            System.out.println("no entry for subaction: " + subActionId);
+            return NO_DESCRIPTION;
+        }
+        return SUBACTIONS.get(subActionId).getDescription(character);
+    }
+
     public static final SubActionDescription NO_DESCRIPTION = new SubActionDescription("(No Description)");
 
     public static class SubActionDescription {
-        private final String description;
-        private final SubActionCategory[] categories;
+        public final String description;
+        public final SubActionCategory[] categories;
 
         public SubActionDescription(String description, SubActionCategory... categories) {
             this.description = description;

@@ -14,10 +14,10 @@ public class DatReader {
     public static Map<Character, List<Animation>> readAllAnimations(MeleeImageFileSystem fileSystem) {
         Map<Character, List<Animation>> charactersToAnimations = new LinkedHashMap<>();
 
+        // TODO temp
         Map<Integer, Map<String, Integer>> subactionToNameCounts = new TreeMap<>();
 
         for (Character character : Character.values()) {
-//        Character character = Character.Ms; {
             List<Animation> animations = new ArrayList<>();
 
             ByteBuffer pldat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
@@ -37,6 +37,7 @@ public class DatReader {
                     continue;
                 }
 
+                // TODO temp
                 subactionToNameCounts.putIfAbsent(i, new LinkedHashMap<>());
                 Map<String, Integer> nameCounts = subactionToNameCounts.get(i);
                 nameCounts.putIfAbsent(motherCommand.shortName, 0);
@@ -48,7 +49,7 @@ public class DatReader {
                 AJDataHeader ajDataHeader = new AJDataHeader(ajdat, ajRootNode);
 
                 // read this animation
-//                animations.add(new Animation(pldat, motherCommand.getCommandListOffset(), ajDataHeader.frameCount));
+                animations.add(new Animation(pldat, motherCommand, ajDataHeader, character, i));
             }
 
             charactersToAnimations.put(character, animations);
@@ -73,6 +74,29 @@ public class DatReader {
         for (Character character : Character.values()) {
             Map<Attribute, Number> attributes = new LinkedHashMap<>();
 
+            ByteBuffer pldat = ByteBuffer.wrap(fileSystem.getFileData("Pl" + character.name() + ".dat"));
+
+            DatHeader plDatHeader = new DatHeader(pldat, 0);
+            RootNode plDatRootNode = new RootNode(pldat, plDatHeader, plDatHeader.getRootOffset0());
+            FtDataHeader ftDataHeader = new FtDataHeader(pldat, plDatRootNode);
+
+            // TODO make this actually read all the attributes, use attributesEnd
+            // TODO also read "special move attributes"
+            // for now, just use the offsets that we already have
+            pldat.position(ftDataHeader.attributesStart);
+            for (Attribute attribute : Attribute.values()) {
+                if (!attribute.known) {
+                    // skip this one
+                    pldat.getInt();
+                } else if (attribute.numberType == Integer.class) {
+                    attributes.put(attribute, pldat.getInt());
+                } else if (attribute.numberType == Float.class) {
+                    attributes.put(attribute, pldat.getFloat());
+                } else {
+                    throw new RuntimeException("unknown number type: " + attribute.numberType);
+                }
+            }
+
             charactersToAttributes.put(character, attributes);
         }
 
@@ -82,7 +106,6 @@ public class DatReader {
     private static String getString(ByteBuffer file, int stringPointer) {
         if (stringPointer > file.limit() || stringPointer < 0) {
             throw new RuntimeException(String.format("out of range. stringPointer: %08X, file.limit(): %08X", stringPointer, file.limit()));
-//            return "OUT_OF_BOUNDS";
         }
         file.position(stringPointer);
         StringBuilder builder = new StringBuilder();
@@ -305,7 +328,7 @@ public class DatReader {
      * 0x10 undefined
      * 0x14 undefined
      */
-    private static class SubActionHeader {
+    public static class SubActionHeader {
         public static final int SUBACTION_HEADER_LENGTH_BYTES = 6 * 4;
 
         public final int stringPointer;
@@ -431,7 +454,7 @@ public class DatReader {
      * 0x0C bone table pointer
      * 0x10-- animation info
      */
-    private static class AJDataHeader {
+    public static class AJDataHeader {
         public final int undefined0x00;
         public final int undefined0x04;
         public final float frameCount;

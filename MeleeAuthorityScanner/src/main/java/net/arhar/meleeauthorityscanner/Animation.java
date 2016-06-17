@@ -12,28 +12,39 @@ import java.util.TreeMap;
 
 import com.google.common.collect.Sets;
 
+import net.arhar.meleeauthorityscanner.DatReader.AJDataHeader;
+import net.arhar.meleeauthorityscanner.DatReader.SubActionHeader;
+
 public class Animation {
 
-//    public final SubAction subAction;
-//    public final Character character;
     public final float frameCount;
     public final List<AnimationCommand> commands;
     public final List<EnumSet<FrameStripType>> frameStrip;
     public final List<List<Hitbox>> hitboxes; // group to list of hitboxes
 
+    public final String internalName;
+    public final String description;
+    public final int subActionId;
+
             // TODO remove this
     public static boolean temp = false;
 
-    public Animation(ByteBuffer pldat, int commandListOffset, float frameCount) {
+    public Animation(ByteBuffer pldat, SubActionHeader motherCommand, AJDataHeader ajHeader, Character character, int subActionId) {
         if (temp) {
             System.out.println();
         }
 
-        this.frameCount = frameCount;
-        frameStrip = new ArrayList<>();
+        this.frameCount = ajHeader.frameCount;
+
+        // add description
+        this.subActionId = subActionId;
+        this.internalName = motherCommand.shortName;
+        this.description = SubAction.getDescription(character, subActionId).description;
 
         // parse the commands from the file
         commands = new ArrayList<>();
+        frameStrip = new ArrayList<>();
+        int commandListOffset = motherCommand.getCommandListOffset();
         int bytesDown = 0;
         pldat.position(commandListOffset + bytesDown);
         // command lists are null terminated by four zero bytes
@@ -59,7 +70,7 @@ public class Animation {
         int waitFrames = 0;
         int currentFrame = 1; // start frame numbering at 1 instead of 0
         int totalFrames = (int) frameCount; // TODO this is a guess, and some animations advance "frames" per frame faster than others
-        frameLoop: while (commandIterator.hasNext() || waitFrames > 0 || currentFrame < frameCount) { // TODO check is frameCount comparison is correct here
+        frameLoop: while (commandIterator.hasNext() || waitFrames > 0 || currentFrame < totalFrames) { // TODO check is frameCount comparison is correct here
             if (commandIterator.hasNext() && waitFrames == 0) {
                 // execute the next command because there is no wait left
                 AnimationCommand command = commandIterator.next();
@@ -72,6 +83,12 @@ public class Animation {
                         // wait frames = asyncframe - 1
                         // it isnt wait this number of frames its do this thing on this frame
                         waitFrames = (command.data[3] & 0xFF) - currentFrame;
+                        if (waitFrames < 0) {
+                            // the command is telling us to do something on a frame that already occured
+                            // just do it now i guess
+                            // TODO investigate this more, there are aync timers for frame 0 that worked before for some reason
+                            waitFrames = 0;
+                        }
                         if (temp) {
                             System.out.println("async on frame " + currentFrame + ": " + waitFrames);
                         }
@@ -173,6 +190,7 @@ public class Animation {
         IASA,
         HITBOX,
         AUTOCANCEL
+        // TODO add invulnerability, etc. here
     }
 
     public static class AnimationCommand {
