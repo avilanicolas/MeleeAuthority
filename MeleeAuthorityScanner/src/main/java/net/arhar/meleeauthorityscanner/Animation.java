@@ -19,7 +19,8 @@ public class Animation {
 
     public final float frameCount;
     public final List<AnimationCommand> commands;
-    public final List<EnumSet<FrameStripType>> frameStrip;
+    //public final List<EnumSet<FrameStripType>> frameStrip;
+    public final List<Set<FrameStripType>> frameStrip;
     public final List<List<Hitbox>> hitboxes; // group to list of hitboxes
 
     public final String internalName;
@@ -118,6 +119,25 @@ public class Animation {
                         break;
                     case AUTOCANCEL:
                         if ((command.data[3] & 0xFF) == 1) {
+                            if (!autocancel) {
+                                // if autocancel was off and we turned it off again, it may be
+                                // an indicator that this move has initial autocancel.
+                                // enable autocancel on all previous frames if none of them have it
+                                boolean hasPreviousAutocancel = false;
+                                for (Set<FrameStripType> frameStripEntry : frameStrip) {
+                                    if (frameStripEntry.contains(FrameStripType.AUTOCANCEL)) {
+                                        hasPreviousAutocancel = true;
+                                    }
+                                }
+                                if (!hasPreviousAutocancel) {
+                                    for (Set<FrameStripType> frameStripEntry : frameStrip) {
+                                        frameStripEntry.add(FrameStripType.AUTOCANCEL);
+                                    }
+                                } else {
+                                    // TODO remove this later? once i figure out if this stuff is ok
+                                    System.out.println("move has false lead for initial autocancel: " + character.id + " subAction " + subActionId);
+                                }
+                            }
                             autocancel = false;
                         } else {
                             autocancel = true;
@@ -175,7 +195,8 @@ public class Animation {
                 if (autocancel) {
                     stripEntry.add(FrameStripType.AUTOCANCEL);
                 }
-                frameStrip.add(Sets.newEnumSet(stripEntry, FrameStripType.class));
+                //frameStrip.add(Sets.newEnumSet(stripEntry, FrameStripType.class));
+                frameStrip.add(stripEntry);
             }
         }
 

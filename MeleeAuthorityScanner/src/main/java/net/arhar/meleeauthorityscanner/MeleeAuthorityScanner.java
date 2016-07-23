@@ -3,15 +3,12 @@ package net.arhar.meleeauthorityscanner;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -318,7 +315,7 @@ public class MeleeAuthorityScanner {
                     }
                     totalInserts.incrementAndGet();
 
-                    EnumSet<FrameStripType> flags = animation.frameStrip.get(i);
+                    Set<FrameStripType> flags = animation.frameStrip.get(i);
                     tryWrite(writer, INDENT + "('" + character.name() + "', " + animation.subActionId + ", " + frameStripNumber + ", ");
                     if (flags.contains(FrameStripType.HITBOX)) {
                         tryWrite(writer, "true, ");
