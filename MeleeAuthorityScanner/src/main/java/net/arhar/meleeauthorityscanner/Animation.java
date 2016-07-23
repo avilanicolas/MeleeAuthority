@@ -71,6 +71,11 @@ public class Animation {
         int currentFrame = 1; // start frame numbering at 1 instead of 0
         int totalFrames = (int) frameCount; // TODO this is a guess, and some animations advance "frames" per frame faster than others
         frameLoop: while (commandIterator.hasNext() || waitFrames > 0 || currentFrame < totalFrames) { // TODO check is frameCount comparison is correct here
+            // if we are past the total number of frames, then stop everything now? TODO
+            if (currentFrame >= totalFrames) {
+                break frameLoop;
+            }
+
             if (commandIterator.hasNext() && waitFrames == 0) {
                 // execute the next command because there is no wait left
                 AnimationCommand command = commandIterator.next();
