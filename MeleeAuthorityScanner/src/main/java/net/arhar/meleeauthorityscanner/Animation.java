@@ -2,7 +2,6 @@ package net.arhar.meleeauthorityscanner;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,11 +9,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.google.common.collect.Sets;
-
 import net.arhar.meleeauthorityscanner.DatReader.AJDataHeader;
 import net.arhar.meleeauthorityscanner.DatReader.SubActionHeader;
 
+// TODO make this an immutable pojo and move all constructor logic
+// to somewhere that has direct disc access for goto/branch shenanigans
 public class Animation {
 
     public final float frameCount;
